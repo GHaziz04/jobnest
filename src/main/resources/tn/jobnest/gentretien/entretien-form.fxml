@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.jobnest.gentretien.controller.EntretienFormController"
+      spacing="16" prefWidth="500" prefHeight="700" styleClass="form-container"
+      style="-fx-background-color: white;">
+
+    <padding>
+        <Insets top="30" right="35" bottom="30" left="35"/>
+    </padding>
+
+    <!-- TITRE DU FORMULAIRE -->
+    <Label text="📅 Planifier un Entretien" styleClass="form-title"
+           style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2C3E50;"/>
+
+    <Separator style="-fx-background-color: #E8EAF0; -fx-padding: 0 0 10 0;"/>
+
+    <!-- DATE DE L'ENTRETIEN -->
+    <VBox spacing="6">
+        <Label text="Date de l'entretien *" styleClass="form-label" />
+        <DatePicker fx:id="dateEntretien" prefWidth="430"
+                    promptText="Sélectionnez une date"
+                    style="-fx-font-size: 14px;"/>
+    </VBox>
+
+    <!-- HEURES -->
+    <HBox spacing="15">
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+            <Label text="Heure de début (HH:mm) *" styleClass="form-label" />
+            <TextField fx:id="heureDebut" promptText="Ex: 14:30"
+                       style="-fx-font-size: 14px;"/>
+        </VBox>
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+            <Label text="Heure de fin (HH:mm) *" styleClass="form-label" />
+            <TextField fx:id="heureFin" promptText="Ex: 15:30"
+                       style="-fx-font-size: 14px;"/>
+        </VBox>
+    </HBox>
+
+    <!-- TYPE D'ENTRETIEN -->
+    <VBox spacing="6">
+        <Label text="Type d'entretien *" styleClass="form-label" />
+        <ComboBox fx:id="typeEntretien" prefWidth="430"
+                  promptText="Choisissez le type"
+                  style="-fx-font-size: 14px;"/>
+    </VBox>
+
+    <!-- LIEU (PRÉSENTIEL) -->
+    <VBox spacing="6">
+        <Label text="Lieu (si présentiel)" styleClass="form-label" />
+        <TextField fx:id="lieu" promptText="Ex: 123 Avenue Habib Bourguiba, Tunis"
+                   style="-fx-font-size: 14px;"/>
+    </VBox>
+
+    <!-- LIEN VISIO -->
+    <VBox spacing="6">
+        <Label text="Lien Visioconférence (si visio)" styleClass="form-label" />
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <TextField fx:id="lienVisio"
+                       promptText="Lien généré automatiquement via Google Meet"
+                       HBox.hgrow="ALWAYS"
+                       style="-fx-font-size: 13px;"/>
+            <Button fx:id="btnGenererMeet" text="🔗 Générer Meet"
+                    onAction="#genererLienMeet"
+                    styleClass="button-add"
+                    prefHeight="42"
+                    prefWidth="150"
+                    style="-fx-font-size: 13px;"/>
+        </HBox>
+    </VBox>
+
+    <!-- STATUT -->
+    <VBox spacing="6">
+        <Label text="Statut de l'entretien *" styleClass="form-label" />
+        <ComboBox fx:id="statut" prefWidth="430"
+                  promptText="Sélectionnez le statut"
+                  style="-fx-font-size: 14px;"/>
+    </VBox>
+
+    <!-- NOTE RECRUTEUR -->
+    <VBox spacing="6">
+        <Label text="Note du recruteur (optionnel)" styleClass="form-label" />
+        <TextField fx:id="noteRecruteur"
+                   promptText="Ex: Candidat très motivé, bonne expérience..."
+                   style="-fx-font-size: 14px;"/>
+    </VBox>
+
+    <!-- SPACER -->
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <!-- BOUTON ENREGISTRER -->
+    <Button text="💾 Enregistrer l'entretien"
+            onAction="#save"
+            styleClass="button-save"
+            prefHeight="52"
+            prefWidth="430"
+            style="-fx-background-color: linear-gradient(135deg, #E67E22 0%, #D35400 100%);
+                   -fx-text-fill: white;
+                   -fx-font-size: 16px;
+                   -fx-font-weight: bold;
+                   -fx-background-radius: 12px;
+                   -fx-cursor: hand;"/>
+
+</VBox>
