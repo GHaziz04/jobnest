@@ -34,6 +34,10 @@ public class HelloApplication extends Application {
         // Permettre le redimensionnement
         stage.setResizable(true);
 
+
+
+
+
         stage.show();
     }
 
