@@ -7,6 +7,8 @@ import tn.jobnest.gentretien.model.Entretien;
 import tn.jobnest.gentretien.service.Entretienservice;
 import tn.jobnest.gentretien.service.GoogleMeetService;
 
+import java.awt.Desktop;
+import java.net.URI;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -16,6 +18,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Optional;
 
 public class EntretienFormController {
 
@@ -133,6 +136,42 @@ public class EntretienFormController {
             ex.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erreur",
                     "Impossible de générer le lien Meet : " + ex.getMessage());
+        }
+    }
+
+    @FXML
+    private void validerAdresse() {
+        String adresse = lieu.getText().trim();
+
+        if (adresse.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Champ vide",
+                    "Veuillez saisir une adresse.");
+            return;
+        }
+
+        try {
+            // Ouvrir directement sur Google Maps pour vérifier
+            String searchUrl = "https://www.google.com/maps/search/?api=1&query="
+                    + java.net.URLEncoder.encode(adresse, "UTF-8");
+
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmation.setTitle("Valider l'adresse");
+            confirmation.setHeaderText("Vérifier l'adresse sur Google Maps");
+            confirmation.setContentText("📍 Adresse : " + adresse + "\n\nVoulez-vous ouvrir Google Maps pour vérifier cette adresse ?");
+
+            ButtonType btnOui = new ButtonType("Oui, vérifier");
+            ButtonType btnNon = new ButtonType("Non, continuer");
+            confirmation.getButtonTypes().setAll(btnOui, btnNon);
+
+            Optional<ButtonType> result = confirmation.showAndWait();
+
+            if (result.isPresent() && result.get() == btnOui) {
+                Desktop.getDesktop().browse(new URI(searchUrl));
+            }
+
+        } catch (Exception ex) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir Google Maps : " + ex.getMessage());
         }
     }
 

@@ -51,8 +51,17 @@
     <!-- LIEU (PRÉSENTIEL) -->
     <VBox spacing="6">
         <Label text="Lieu (si présentiel)" styleClass="form-label" />
-        <TextField fx:id="lieu" promptText="Ex: 123 Avenue Habib Bourguiba, Tunis"
-                   style="-fx-font-size: 14px;"/>
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <TextField fx:id="lieu"
+                       promptText="Ex: 123 Avenue Habib Bourguiba, Tunis"
+                       HBox.hgrow="ALWAYS"
+                       style="-fx-font-size: 14px;"/>
+            <Button text="📍 Valider" onAction="#validerAdresse"
+                    styleClass="button-primary"
+                    prefHeight="42"
+                    prefWidth="110"
+                    style="-fx-font-size: 13px;"/>
+        </HBox>
     </VBox>
 
     <!-- LIEN VISIO -->

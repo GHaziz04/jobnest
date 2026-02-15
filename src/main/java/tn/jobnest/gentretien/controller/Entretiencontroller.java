@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+
 public class Entretiencontroller {
 
     @FXML
@@ -240,13 +241,13 @@ public class Entretiencontroller {
         HBox actionsRow1 = new HBox(10);
         actionsRow1.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
 
-        Button btnModifier = new Button("✏️ Modifier");
+        Button btnModifier = new Button("Modifier");
         btnModifier.getStyleClass().add("button-primary");
         btnModifier.setPrefWidth(110);
         btnModifier.setPrefHeight(42);
         btnModifier.setOnAction(ev -> openForm(true, e));
 
-        Button btnTermine = new Button("✅ Terminé");
+        Button btnTermine = new Button("Terminé");
         btnTermine.getStyleClass().add("button-success");
         btnTermine.setPrefWidth(110);
         btnTermine.setPrefHeight(42);
@@ -260,14 +261,14 @@ public class Entretiencontroller {
 
         Button btnActionSpecifique;
         if ("présentiel".equals(e.getTypeEntretien())) {
-            btnActionSpecifique = new Button("🗺️ Consulter map");
+            btnActionSpecifique = new Button("Consulter map");
             btnActionSpecifique.getStyleClass().add("button-map");
             btnActionSpecifique.setPrefWidth(140);
             btnActionSpecifique.setPrefHeight(42);
             btnActionSpecifique.setOnAction(ev -> consulterMap(e));
         } else {
             // ===== VALIDATION : Rejoindre Meet seulement le jour de l'entretien =====
-            btnActionSpecifique = new Button("🔗 Rejoindre");
+            btnActionSpecifique = new Button("Rejoindre");
             btnActionSpecifique.getStyleClass().add("button-visio");
             btnActionSpecifique.setPrefWidth(120);
             btnActionSpecifique.setPrefHeight(42);
@@ -287,17 +288,17 @@ public class Entretiencontroller {
                 if (!dateEntretien.equals(aujourdhui)) {
                     btnActionSpecifique.setDisable(true);
                     if (dateEntretien.isAfter(aujourdhui)) {
-                        btnActionSpecifique.setText("⏳ Pas encore");
+                        btnActionSpecifique.setText("Pas encore");
                         btnActionSpecifique.setPrefWidth(130);
                     } else {
-                        btnActionSpecifique.setText("⌛ Expiré");
+                        btnActionSpecifique.setText("Expiré");
                         btnActionSpecifique.setPrefWidth(120);
                     }
                 }
             }
         }
 
-        Button btnSupprimer = new Button("🗑️ Supprimer");
+        Button btnSupprimer = new Button("Supprimer");
         btnSupprimer.getStyleClass().add("button-danger");
         btnSupprimer.setPrefWidth(110);
         btnSupprimer.setPrefHeight(42);
@@ -338,11 +339,26 @@ public class Entretiencontroller {
     }
 
     private void marquerTermine(Entretien e) {
-        e.setStatut("réalisé");
+        // ===== OUVRIR LE FORMULAIRE DE FEEDBACK AVANT DE MARQUER COMME TERMINÉ =====
         try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/feedback-form.fxml"));
+            Stage stage = new Stage();
+            stage.setScene(new Scene(loader.load()));
+
+            FeedbackFormController ctrl = loader.getController();
+            ctrl.setEntretien(e);
+
+            stage.setTitle("Feedback - Entretien #" + e.getIdEntretien());
+            stage.showAndWait();
+
+            // ===== APRÈS AVOIR FERMÉ LE FORMULAIRE DE FEEDBACK, MARQUER COMME RÉALISÉ =====
+            e.setStatut("réalisé");
             service.update(e);
             rafraichirListe();
-            showAlert(Alert.AlertType.INFORMATION, "Succès", "Entretien marqué comme réalisé.");
+            showAlert(Alert.AlertType.INFORMATION, "Succès", "Entretien marqué comme réalisé et feedback enregistré.");
+
+        } catch (IOException ex) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le formulaire de feedback : " + ex.getMessage());
         } catch (SQLException ex) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de mettre à jour : " + ex.getMessage());
         }
@@ -382,8 +398,51 @@ public class Entretiencontroller {
 
     private void consulterMap(Entretien e) {
         if ("présentiel".equals(e.getTypeEntretien()) && e.getLieu() != null && !e.getLieu().isBlank()) {
-            showAlert(Alert.AlertType.INFORMATION, "Carte",
-                    "Intégration GPS à venir\n\nLieu: " + e.getLieu());
+            try {
+                Alert choix = new Alert(Alert.AlertType.CONFIRMATION);
+                choix.setTitle("Consulter la carte");
+                choix.setHeaderText("Ouvrir Google Maps ?");
+                choix.setContentText("📍 Lieu : " + e.getLieu());
+
+                ButtonType btnCarte = new ButtonType("🗺️ Voir sur la carte");
+                ButtonType btnItineraire = new ButtonType("🧭 Calculer itinéraire");
+                ButtonType btnAnnuler = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                choix.getButtonTypes().setAll(btnCarte, btnItineraire, btnAnnuler);
+
+                Optional<ButtonType> result = choix.showAndWait();
+
+                if (result.isPresent()) {
+                    if (result.get() == btnCarte) {
+                        // Ouvrir la localisation sur Google Maps
+                        String searchUrl = "https://www.google.com/maps/search/?api=1&query="
+                                + java.net.URLEncoder.encode(e.getLieu(), "UTF-8");
+                        Desktop.getDesktop().browse(new URI(searchUrl));
+
+                    } else if (result.get() == btnItineraire) {
+                        // Demander l'adresse de départ
+                        TextInputDialog dialog = new TextInputDialog("Ma position");
+                        dialog.setTitle("Point de départ");
+                        dialog.setHeaderText("Calculer l'itinéraire");
+                        dialog.setContentText("Votre adresse de départ :");
+
+                        Optional<String> depart = dialog.showAndWait();
+                        if (depart.isPresent() && !depart.get().trim().isEmpty()) {
+                            String itineraireUrl = String.format(
+                                    "https://www.google.com/maps/dir/?api=1&origin=%s&destination=%s&travelmode=driving",
+                                    java.net.URLEncoder.encode(depart.get(), "UTF-8"),
+                                    java.net.URLEncoder.encode(e.getLieu(), "UTF-8")
+                            );
+                            Desktop.getDesktop().browse(new URI(itineraireUrl));
+                        }
+                    }
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Erreur",
+                        "Impossible d'ouvrir Google Maps : " + ex.getMessage());
+            }
         }
     }
 
