@@ -1,0 +1,271 @@
+/* ===== VARIABLES DE COULEUR ===== */
+* {
+    -fx-primary: #2C3E50;
+    -fx-secondary: #34495E;
+    -fx-accent: #E67E22;
+    -fx-accent-hover: #D35400;
+    -fx-background: #ECF0F1;
+    -fx-white: #FFFFFF;
+    -fx-text-dark: #2C3E50;
+    -fx-text-light: #7F8C8D;
+    -fx-border: #BDC3C7;
+    -fx-success: #27AE60;
+    -fx-danger: #E74C3C;
+}
+
+/* ===== TOP BAR ===== */
+.top-bar {
+    -fx-background-color: -fx-primary;
+    -fx-padding: 15 30;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 2);
+}
+
+.top-logo-text {
+    -fx-text-fill: -fx-white;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.welcome-text {
+    -fx-text-fill: -fx-white;
+    -fx-font-size: 14px;
+    -fx-padding: 0 20 0 0;
+}
+
+.back-btn,
+.logout-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-white;
+    -fx-font-size: 13px;
+    -fx-padding: 8 15;
+    -fx-cursor: hand;
+    -fx-border-color: -fx-white;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.back-btn:hover,
+.logout-btn:hover {
+    -fx-background-color: rgba(255,255,255,0.1);
+}
+
+/* ===== SCROLL PANE ===== */
+.scroll-pane {
+    -fx-background-color: -fx-background;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: -fx-background;
+}
+
+/* ===== CONTAINER ===== */
+.profile-container {
+    -fx-background-color: -fx-background;
+}
+
+/* ===== PROFILE HEADER ===== */
+.profile-header {
+    -fx-background-color: -fx-white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 3);
+}
+
+.profile-image-container {
+    -fx-background-color: -fx-white;
+    -fx-background-radius: 100;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 20, 0, 0, 5);
+}
+
+/* ⚠️ CLIP CIRCULAIRE À FAIRE EN JAVA (PAS EN CSS) */
+.profile-image {
+    -fx-background-radius: 100;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 2);
+}
+
+.change-photo-btn {
+    -fx-background-color: -fx-accent;
+    -fx-text-fill: -fx-white;
+    -fx-font-size: 12px;
+    -fx-padding: 8 20;
+    -fx-cursor: hand;
+    -fx-background-radius: 5;
+    -fx-font-weight: bold;
+}
+
+.change-photo-btn:hover {
+    -fx-background-color: -fx-accent-hover;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* ===== PROFILE TEXT ===== */
+.profile-name {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-dark;
+}
+
+.profile-role {
+    -fx-font-size: 18px;
+    -fx-text-fill: -fx-accent;
+    -fx-font-weight: bold;
+}
+
+.profile-email {
+    -fx-font-size: 14px;
+    -fx-text-fill: -fx-text-light;
+}
+
+/* ===== SECTION CARDS ===== */
+.section-card {
+    -fx-background-color: -fx-white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 3);
+}
+
+.section-icon {
+    -fx-font-size: 24px;
+}
+
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-dark;
+}
+
+.separator {
+    -fx-background-color: -fx-border;
+}
+
+/* ===== FORM FIELDS ===== */
+.field-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-dark;
+    -fx-padding: 5 0 0 0;
+}
+
+.info-field {
+    -fx-background-color: -fx-background;
+    -fx-text-fill: -fx-text-dark;
+    -fx-font-size: 14px;
+    -fx-padding: 12 15;
+    -fx-border-color: -fx-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.info-field:focused {
+    -fx-border-color: -fx-accent;
+    -fx-border-width: 2;
+    -fx-background-color: -fx-white;
+}
+
+.info-field:disabled {
+    -fx-opacity: 0.8;
+}
+
+/* ===== BUTTONS ===== */
+.edit-btn {
+    -fx-background-color: -fx-accent;
+    -fx-text-fill: -fx-white;
+    -fx-font-size: 13px;
+    -fx-padding: 8 20;
+    -fx-cursor: hand;
+    -fx-background-radius: 6;
+    -fx-font-weight: bold;
+}
+
+.edit-btn:hover {
+    -fx-background-color: -fx-accent-hover;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.save-btn {
+    -fx-background-color: -fx-success;
+    -fx-text-fill: -fx-white;
+    -fx-font-size: 13px;
+    -fx-padding: 10 30;
+    -fx-cursor: hand;
+    -fx-background-radius: 6;
+    -fx-font-weight: bold;
+}
+
+.save-btn:hover {
+    -fx-background-color: derive(-fx-success, -10%);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.cancel-btn {
+    -fx-background-color: -fx-danger;
+    -fx-text-fill: -fx-white;
+    -fx-font-size: 13px;
+    -fx-padding: 10 30;
+    -fx-cursor: hand;
+    -fx-background-radius: 6;
+    -fx-font-weight: bold;
+}
+
+.cancel-btn:hover {
+    -fx-background-color: derive(-fx-danger, -10%);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.secondary-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-accent;
+    -fx-font-size: 13px;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+    -fx-border-color: -fx-accent;
+    -fx-border-width: 2;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-font-weight: bold;
+}
+
+.secondary-btn:hover {
+    -fx-background-color: -fx-accent;
+    -fx-text-fill: -fx-white;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* ===== STATISTICS CARDS ===== */
+.stat-card {
+    -fx-background-color: linear-gradient(to bottom right, -fx-primary, -fx-secondary);
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 3);
+    -fx-cursor: hand;
+}
+
+.stat-card:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.stat-value {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-white;
+}
+
+.stat-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: rgba(255,255,255,0.8);
+}
+
+/* ===== ANIMATIONS ===== */
+.edit-btn,
+.save-btn,
+.cancel-btn,
+.secondary-btn,
+.change-photo-btn,
+.stat-card {
+    -fx-transition: all 0.3s ease;
+}

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.controller.AdminDashboardController"
+            styleClass="root" stylesheets="@../css/admin-dashboard.css">
+
+    <!-- HEADER -->
+    <top>
+        <VBox styleClass="header">
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <Button text="← Retour" onAction="#goBack" styleClass="back-btn"/>
+                <Label fx:id="welcomeLabel" text="Dashboard Admin" styleClass="header-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="🔄 Actualiser" onAction="#refreshData" styleClass="refresh-btn"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- CENTER -->
+    <center>
+        <VBox spacing="20" styleClass="content">
+
+            <!-- STATISTICS CARDS -->
+            <HBox spacing="20" styleClass="stats-container">
+                <VBox styleClass="stat-card">
+                    <Label text="Total Utilisateurs" styleClass="stat-label"/>
+                    <Label fx:id="totalUsersLabel" text="0" styleClass="stat-value"/>
+                </VBox>
+
+                <VBox styleClass="stat-card stat-candidat">
+                    <Label text="Candidats" styleClass="stat-label"/>
+                    <Label fx:id="candidatsLabel" text="0" styleClass="stat-value"/>
+                </VBox>
+
+                <VBox styleClass="stat-card stat-recruteur">
+                    <Label text="Recruteurs" styleClass="stat-label"/>
+                    <Label fx:id="recruteursLabel" text="0" styleClass="stat-value"/>
+                </VBox>
+
+                <VBox styleClass="stat-card stat-formateur">
+                    <Label text="Formateurs" styleClass="stat-label"/>
+                    <Label fx:id="formateursLabel" text="0" styleClass="stat-value"/>
+                </VBox>
+            </HBox>
+
+            <!-- SEARCH AND FILTER -->
+            <HBox spacing="15" alignment="CENTER_LEFT" styleClass="search-bar">
+                <Label text="🔍" styleClass="search-icon"/>
+                <TextField fx:id="searchField" promptText="Rechercher par nom, email, téléphone..."
+                           HBox.hgrow="ALWAYS" styleClass="search-field"/>
+
+                <Label text="Rôle:"/>
+                <ComboBox fx:id="roleFilterCombo" styleClass="filter-combo"/>
+
+                <Button text="➕ Ajouter" onAction="#addUser" styleClass="add-btn"/>
+            </HBox>
+
+            <!-- TABLE -->
+            <TableView fx:id="usersTable" styleClass="users-table" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="50" sortable="true"/>
+                    <TableColumn fx:id="prenomColumn" text="Prénom" prefWidth="120" sortable="true"/>
+                    <TableColumn fx:id="nomColumn" text="Nom" prefWidth="120" sortable="true"/>
+                    <TableColumn fx:id="emailColumn" text="Email" prefWidth="200" sortable="true"/>
+                    <TableColumn fx:id="roleColumn" text="Rôle" prefWidth="100" sortable="true"/>
+                    <TableColumn fx:id="telephoneColumn" text="Téléphone" prefWidth="120" sortable="true"/>
+                    <TableColumn fx:id="dateCreationColumn" text="Date Création" prefWidth="140" sortable="true"/>
+                    <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="120" sortable="false"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+            </TableView>
+
+        </VBox>
+    </center>
+
+</BorderPane>

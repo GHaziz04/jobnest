@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.controller.LoginController"
+            stylesheets="/css/style.css">
+
+    <!-- LEFT PANEL -->
+    <left>
+        <VBox spacing="25" alignment="CENTER_LEFT" styleClass="left-pane">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ImageView fitWidth="40" preserveRatio="true">
+                    <image>
+                        <Image url="/images/logo.png"/>
+                    </image>
+                </ImageView>
+                <VBox>
+                    <Label text="JobNest" styleClass="brand-title"/>
+                    <Label text="Recrutement moderne" styleClass="brand-sub"/>
+                </VBox>
+            </HBox>
+
+            <Label text="Rejoignez la plateforme de recrutement nouvelle génération"
+                   wrapText="true"
+                   styleClass="big-title"/>
+
+            <Label text="Automatisez votre processus de recrutement et trouvez les meilleurs talents grâce à notre système de matching intelligent."
+                   wrapText="true"
+                   styleClass="description"/>
+
+            <VBox spacing="10">
+                <Label text="✔ Matching automatique CV ↔ Offres" styleClass="check"/>
+                <Label text="✔ Gestion complète des candidatures" styleClass="check"/>
+                <Label text="✔ Planification d'entretiens intelligente" styleClass="check"/>
+                <Label text="✔ Tableau de bord analytique" styleClass="check"/>
+                <Label text="✔ Authentification biométrique Face ID 🔐" styleClass="check"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- RIGHT CARD -->
+    <center>
+        <StackPane>
+
+            <!-- LOGIN CARD -->
+            <VBox fx:id="loginBox"
+                  spacing="18"
+                  alignment="CENTER"
+                  styleClass="card">
+
+                <Label text="Bon retour !" styleClass="title"/>
+
+                <Label text="Connectez-vous à votre compte JobNest"
+                       styleClass="subtitle"/>
+
+                <VBox spacing="6">
+                    <Label text="Email"/>
+                    <TextField fx:id="emailField"
+                               promptText="exemple@email.com"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Mot de passe"/>
+                    <PasswordField fx:id="passwordField"
+                                   promptText="••••••••"/>
+                </VBox>
+
+                <Label fx:id="loginErrorLabel"
+                       visible="false"
+                       managed="false"
+                       styleClass="error-label"/>
+
+                <Button fx:id="loginButton"
+                        text="Se connecter"
+                        styleClass="btn-primary"
+                        maxWidth="Infinity"
+                        onAction="#login"/>
+
+                <!-- NOUVEAU : Bouton Face ID -->
+                <HBox spacing="10" alignment="CENTER">
+                    <Separator HBox.hgrow="ALWAYS"/>
+                    <Label text="OU" styleClass="separator-text"/>
+                    <Separator HBox.hgrow="ALWAYS"/>
+                </HBox>
+
+                <Button fx:id="faceIdButton"
+                        text="🔐 Se connecter avec Face ID"
+                        styleClass="btn-face-id"
+                        maxWidth="Infinity"
+                        onAction="#loginWithFaceID"/>
+
+                <Hyperlink text="Mot de passe oublié ?"
+                           onAction="#showResetPassword"/>
+
+                <HBox alignment="CENTER" spacing="5">
+                    <Label text="Pas encore de compte ?"/>
+                    <Hyperlink text="Créer un compte"
+                               onAction="#showRegister"/>
+                </HBox>
+
+            </VBox>
+
+            <!-- REGISTER CARD -->
+            <VBox fx:id="registerBox"
+                  spacing="12"
+                  alignment="CENTER"
+                  styleClass="card"
+                  visible="false"
+                  managed="false">
+
+                <Label text="Créer un compte" styleClass="title"/>
+
+                <Label text="Rejoignez JobNest aujourd'hui"
+                       styleClass="subtitle"/>
+
+                <ComboBox fx:id="roleBox"
+                          promptText="Choisir un rôle"
+                          maxWidth="Infinity"/>
+
+                <HBox spacing="10">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Prénom"/>
+                        <TextField fx:id="prenomField"
+                                   promptText="Prénom"/>
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Nom"/>
+                        <TextField fx:id="nomField"
+                                   promptText="Nom"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="6">
+                    <Label text="Email"/>
+                    <TextField fx:id="emailRegField"
+                               promptText="exemple@email.com"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Téléphone"/>
+                    <TextField fx:id="phoneField"
+                               promptText="12345678"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Adresse"/>
+                    <TextField fx:id="adresseField"
+                               promptText="Votre adresse"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Mot de passe"/>
+                    <PasswordField fx:id="passwordRegField"
+                                   promptText="••••••••"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Confirmer le mot de passe"/>
+                    <PasswordField fx:id="confirmPasswordField"
+                                   promptText="••••••••"/>
+                </VBox>
+
+                <VBox spacing="10" alignment="CENTER">
+                    <ImageView fx:id="profileImage"
+                               fitWidth="80"
+                               fitHeight="80"
+                               preserveRatio="true"
+                               styleClass="profile-image">
+                        <image>
+                            <Image url="/images/default-avatar.png"/>
+                        </image>
+                    </ImageView>
+                    <Button text="Choisir une photo"
+                            styleClass="btn-secondary"
+                            onAction="#chooseImage"/>
+                </VBox>
+
+                <!-- NOUVEAU : Option Face ID lors de l'inscription -->
+                <HBox spacing="10" alignment="CENTER" styleClass="faceid-option-box">
+                    <CheckBox fx:id="enrollFaceIdCheckbox"
+                              text="🔐 Configurer Face ID"
+                              styleClass="faceid-checkbox"/>
+                    <Label text="(Recommandé pour une connexion rapide)"
+                           styleClass="faceid-hint"/>
+                </HBox>
+
+                <Button text="Créer mon compte"
+                        styleClass="btn-primary"
+                        maxWidth="Infinity"
+                        onAction="#handleRegister"/>
+
+                <HBox alignment="CENTER" spacing="5">
+                    <Label text="Déjà un compte ?"/>
+                    <Hyperlink text="Se connecter"
+                               onAction="#showLogin"/>
+                </HBox>
+
+            </VBox>
+
+            <!-- RESET PASSWORD CARD -->
+            <VBox fx:id="resetBox"
+                  spacing="18"
+                  alignment="CENTER"
+                  styleClass="card"
+                  visible="false"
+                  managed="false">
+
+                <Label text="Réinitialiser le mot de passe" styleClass="title"/>
+
+                <Label text="Entrez votre email pour recevoir un code OTP"
+                       styleClass="subtitle"/>
+
+                <VBox spacing="6">
+                    <Label text="Email"/>
+                    <TextField fx:id="resetEmailField"
+                               promptText="exemple@email.com"/>
+                </VBox>
+
+                <Button text="Envoyer le code OTP"
+                        styleClass="btn-primary"
+                        maxWidth="Infinity"
+                        onAction="#sendOtp"/>
+
+                <VBox spacing="6">
+                    <Label text="Code OTP"/>
+                    <TextField fx:id="otpField"
+                               promptText="Entrez le code à 6 chiffres"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Nouveau mot de passe"/>
+                    <PasswordField fx:id="newPasswordField"
+                                   promptText="••••••••"/>
+                </VBox>
+
+                <Button text="Réinitialiser le mot de passe"
+                        styleClass="btn-primary"
+                        maxWidth="Infinity"
+                        onAction="#resetPassword"/>
+
+                <Button text="← Retour à la connexion"
+                        styleClass="btn-secondary"
+                        maxWidth="Infinity"
+                        onAction="#showLogin"/>
+
+            </VBox>
+
+        </StackPane>
+
+    </center>
+
+
+</BorderPane>

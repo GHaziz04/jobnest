@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.controller.FaceIDController"
+      spacing="25"
+      alignment="CENTER"
+      styleClass="face-id-container"
+      stylesheets="@/css/faceid-style.css"
+      prefWidth="900"
+      prefHeight="1000"
+      minWidth="800"
+      minHeight="900">
+
+    <padding>
+        <Insets top="40" right="50" bottom="40" left="50"/>
+    </padding>
+
+    <!-- Logo Face ID -->
+    <VBox alignment="CENTER" spacing="15">
+        <Label text="🔐" styleClass="face-id-icon"/>
+        <Label text="Face ID" styleClass="face-id-title"/>
+        <Label text="Authentification biometrique" styleClass="face-id-subtitle"/>
+    </VBox>
+
+    <!-- Spacer -->
+    <Region VBox.vgrow="SOMETIMES" minHeight="10" maxHeight="20"/>
+
+    <!-- Zone de camera -->
+    <VBox alignment="CENTER" spacing="15" styleClass="camera-container">
+        <ImageView fx:id="cameraView"
+                   fitWidth="450"
+                   fitHeight="340"
+                   preserveRatio="true"
+                   styleClass="camera-view">
+        </ImageView>
+
+        <!-- Animation de scan -->
+        <StackPane styleClass="scan-animation" minHeight="80">
+            <ProgressIndicator fx:id="progressIndicator"
+                               styleClass="scan-progress"
+                               prefWidth="70"
+                               prefHeight="70"/>
+        </StackPane>
+    </VBox>
+
+    <!-- Spacer -->
+    <Region VBox.vgrow="SOMETIMES" minHeight="10" maxHeight="20"/>
+
+    <!-- Message de statut -->
+    <VBox alignment="CENTER" spacing="10">
+        <Label fx:id="statusLabel"
+               text="Positionnez votre visage face a la camera..."
+               wrapText="true"
+               textAlignment="CENTER"
+               styleClass="status-label"
+               maxWidth="550"
+               minHeight="60"/>
+    </VBox>
+
+    <!-- Spacer -->
+    <Region VBox.vgrow="SOMETIMES" minHeight="10" maxHeight="20"/>
+
+    <!-- Boutons d'action -->
+    <HBox spacing="20" alignment="CENTER">
+        <Button fx:id="retryButton"
+                text="Reessayer"
+                styleClass="btn-retry"
+                onAction="#retry"
+                visible="false"
+                minWidth="140"
+                minHeight="45"/>
+
+        <Button fx:id="cancelButton"
+                text="Annuler"
+                styleClass="btn-cancel"
+                onAction="#cancel"
+                minWidth="140"
+                minHeight="45"/>
+    </HBox>
+
+    <!-- Spacer -->
+    <Region VBox.vgrow="SOMETIMES" minHeight="10" maxHeight="20"/>
+
+    <!-- Instructions -->
+    <VBox spacing="10" styleClass="instructions-box" maxWidth="550">
+        <Label text="Instructions :" styleClass="instructions-title"/>
+        <Label text="• Regardez directement la camera" styleClass="instruction-item"/>
+        <Label text="• Assurez-vous d'avoir un bon eclairage" styleClass="instruction-item"/>
+        <Label text="• Retirez lunettes de soleil ou masque" styleClass="instruction-item"/>
+        <Label text="• Restez immobile pendant la reconnaissance" styleClass="instruction-item"/>
+    </VBox>
+
+    <!-- Spacer bottom -->
+    <Region VBox.vgrow="SOMETIMES" minHeight="5" maxHeight="15"/>
+
+</VBox>

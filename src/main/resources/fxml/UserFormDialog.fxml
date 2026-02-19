@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.controller.UserFormDialogController"
+      spacing="15" styleClass="dialog-root" stylesheets="@../css/user-form-dialog.css">
+
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
+
+    <Label text="Informations utilisateur" styleClass="dialog-title"/>
+
+    <GridPane hgap="10" vgap="15">
+        <columnConstraints>
+            <ColumnConstraints minWidth="100" prefWidth="100"/>
+            <ColumnConstraints minWidth="250" prefWidth="300"/>
+        </columnConstraints>
+
+        <Label text="Prénom *" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="prenomField" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                   promptText="Entrez le prénom"/>
+
+        <Label text="Nom *" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="nomField" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                   promptText="Entrez le nom"/>
+
+        <Label text="Email *" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                   promptText="exemple@email.com"/>
+
+        <Label text="Mot de passe *" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="3"
+                       promptText="Min 6 caractères"/>
+
+        <Label text="Téléphone *" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <TextField fx:id="telephoneField" GridPane.columnIndex="1" GridPane.rowIndex="4"
+                   promptText="Ex: 12345678"/>
+
+        <Label text="Rôle *" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <ComboBox fx:id="roleCombo" GridPane.columnIndex="1" GridPane.rowIndex="5"
+                  maxWidth="Infinity"/>
+
+        <Label text="Adresse" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+        <TextArea fx:id="adresseField" GridPane.columnIndex="1" GridPane.rowIndex="6"
+                  promptText="Adresse complète" prefRowCount="3"/>
+    </GridPane>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Annuler" onAction="#handleCancel" styleClass="cancel-btn"/>
+        <Button text="Enregistrer" onAction="#handleSave" styleClass="save-btn"/>
+    </HBox>
+
+</VBox>

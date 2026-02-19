@@ -1,0 +1,252 @@
+/* Face ID Interface - Theme Application (Violet/Pourpre) */
+
+/* Container principal - Meme gradient que l'application */
+.face-id-container {
+    -fx-background-color: linear-gradient(to bottom, #667eea, #764ba2);
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 30, 0, 0, 10);
+}
+
+/* Header - Icone et titres */
+.face-id-icon {
+    -fx-font-size: 80px;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.3), 8, 0, 0, 3);
+}
+
+.face-id-title {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+
+.face-id-subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: rgba(255, 255, 255, 0.9);
+    -fx-font-weight: 500;
+}
+
+/* Zone camera */
+.camera-container {
+    -fx-background-color: rgba(26, 26, 46, 0.9);
+    -fx-background-radius: 20px;
+    -fx-padding: 30px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 20, 0, 0, 5);
+    -fx-border-color: rgba(102, 126, 234, 0.5);
+    -fx-border-width: 2px;
+    -fx-border-radius: 20px;
+}
+
+.camera-view {
+    -fx-background-color: #000000;
+    -fx-background-radius: 15px;
+    -fx-border-color: #667eea;
+    -fx-border-width: 3px;
+    -fx-border-radius: 15px;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.6), 15, 0, 0, 0);
+}
+
+/* Animation de scan */
+.scan-animation {
+    -fx-min-height: 80px;
+    -fx-background-color: transparent;
+    -fx-alignment: center;
+}
+
+.scan-progress {
+    -fx-progress-color: #667eea;
+    -fx-pref-width: 60px;
+    -fx-pref-height: 60px;
+}
+
+.scan-progress .percentage {
+    -fx-fill: transparent;
+}
+
+/* Indicateur de progression */
+.progress-indicator {
+    -fx-progress-color: #667eea;
+    -fx-pref-width: 65px;
+    -fx-pref-height: 65px;
+}
+
+.progress-indicator .spinner {
+    -fx-border-color: #667eea white;
+    -fx-border-width: 4px;
+    -fx-border-radius: 50%;
+    -fx-background-color: transparent;
+}
+
+.progress-indicator .percentage {
+    -fx-fill: transparent;
+}
+
+/* Label de statut */
+.status-label {
+    -fx-font-size: 17px;
+    -fx-font-weight: 600;
+    -fx-text-fill: white;
+    -fx-padding: 18px;
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 12px;
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 2px;
+    -fx-border-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+}
+
+/* Boutons - Theme violet comme l'application */
+.btn-retry {
+    -fx-background-color: linear-gradient(to bottom, #667eea, #764ba2);
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10px;
+    -fx-padding: 14px 35px 14px 35px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.4), 12, 0, 0, 4);
+    -fx-border-color: rgba(255, 255, 255, 0.2);
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+}
+
+.btn-retry:hover {
+    -fx-background-color: linear-gradient(to bottom, #5568d3, #6a408b);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.6), 15, 0, 0, 5);
+    -fx-border-color: rgba(255, 255, 255, 0.4);
+}
+
+.btn-retry:pressed {
+    -fx-background-color: linear-gradient(to bottom, #4556c2, #5b3679);
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+.btn-cancel {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 10px;
+    -fx-padding: 14px 35px 14px 35px;
+    -fx-cursor: hand;
+    -fx-border-color: rgba(255, 255, 255, 0.4);
+    -fx-border-radius: 10px;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+}
+
+.btn-cancel:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.25);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-border-color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-cancel:pressed {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Focus pour accessibilite */
+.btn-retry:focused,
+.btn-cancel:focused {
+    -fx-border-color: white;
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.6), 15, 0, 0, 0);
+}
+
+/* Boite d'instructions - Accent jaune dore */
+.instructions-box {
+    -fx-background-color: rgba(254, 243, 199, 0.95);
+    -fx-border-color: #f59e0b;
+    -fx-border-width: 2px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 20px;
+    -fx-max-width: 500px;
+    -fx-effect: dropshadow(gaussian, rgba(245, 158, 11, 0.2), 10, 0, 0, 3);
+}
+
+.instructions-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #92400e;
+    -fx-padding: 0 0 8px 0;
+}
+
+.instruction-item {
+    -fx-font-size: 13px;
+    -fx-text-fill: #78350f;
+    -fx-padding: 4px 0 4px 0;
+}
+
+/* Etats visuels */
+.status-label.success {
+    -fx-background-color: rgba(16, 185, 129, 0.3);
+    -fx-border-color: #10b981;
+    -fx-text-fill: #ecfdf5;
+}
+
+.status-label.error {
+    -fx-background-color: rgba(239, 68, 68, 0.3);
+    -fx-border-color: #ef4444;
+    -fx-text-fill: #fef2f2;
+}
+
+.status-label.scanning {
+    -fx-background-color: rgba(102, 126, 234, 0.3);
+    -fx-border-color: #667eea;
+    -fx-text-fill: #eff6ff;
+}
+
+/* Effet de profondeur au hover */
+.face-id-container:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 35, 0, 0, 12);
+}
+
+/* Responsive - Petits ecrans */
+@media (max-width: 900px) {
+    .face-id-container {
+        -fx-padding: 30px;
+    }
+
+    .camera-view {
+        -fx-fit-width: 350px;
+        -fx-fit-height: 260px;
+    }
+
+    .face-id-title {
+        -fx-font-size: 32px;
+    }
+}
+
+@media (max-width: 700px) {
+    .face-id-icon {
+        -fx-font-size: 65px;
+    }
+
+    .face-id-title {
+        -fx-font-size: 28px;
+    }
+
+    .camera-view {
+        -fx-fit-width: 300px;
+        -fx-fit-height: 225px;
+    }
+
+    .instructions-box {
+        -fx-max-width: 400px;
+    }
+
+    .btn-retry,
+    .btn-cancel {
+        -fx-padding: 12px 28px 12px 28px;
+        -fx-font-size: 14px;
+    }
+}

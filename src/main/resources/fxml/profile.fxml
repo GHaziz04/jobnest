@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.controller.ProfileController"
+            stylesheets="@/css/profile.css">
+
+    <!-- ===== TOP BAR ===== -->
+    <top>
+        <HBox styleClass="top-bar" alignment="CENTER_LEFT">
+            <!-- LEFT : LOGO -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ImageView fitHeight="60" fitWidth="60" preserveRatio="true">
+                    <image>
+                        <Image url="@/images/logo.png"/>
+                    </image>
+                </ImageView>
+                <Label text="JobNest" styleClass="top-logo-text"/>
+            </HBox>
+
+            <!-- Spacer -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- RIGHT : USER -->
+            <Label fx:id="welcomeLabel" styleClass="welcome-text"/>
+            <Button text="Retour" onAction="#goBack" styleClass="back-btn"/>
+            <Button text="Déconnexion" onAction="#logout" styleClass="logout-btn"/>
+        </HBox>
+    </top>
+
+    <!-- ===== CONTENT ===== -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+            <VBox styleClass="profile-container" spacing="30">
+                <padding>
+                    <Insets top="30" right="30" bottom="30" left="30"/>
+                </padding>
+
+                <!-- ===== HEADER SECTION ===== -->
+                <HBox styleClass="profile-header" spacing="30" alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets top="30" right="30" bottom="30" left="30"/>
+                    </padding>
+
+                    <!-- Photo de profil -->
+                    <VBox alignment="CENTER" spacing="15">
+                        <StackPane styleClass="profile-image-container">
+                            <ImageView fx:id="profileImageView"
+                                       fitHeight="150"
+                                       fitWidth="150"
+                                       preserveRatio="true"
+                                       styleClass="profile-image">
+                                <image>
+                                    <Image url="@/images/default-avatar.png"/>
+                                </image>
+                            </ImageView>
+                        </StackPane>
+                        <Button text="Changer la photo"
+                                onAction="#changeProfileImage"
+                                styleClass="change-photo-btn"/>
+                    </VBox>
+
+                    <!-- Infos principales -->
+                    <VBox spacing="10" HBox.hgrow="ALWAYS">
+                        <Label fx:id="fullNameLabel" styleClass="profile-name"/>
+                        <Label fx:id="roleLabel" styleClass="profile-role"/>
+                        <Label fx:id="emailLabel" styleClass="profile-email"/>
+                    </VBox>
+                </HBox>
+
+                <!-- ===== INFORMATIONS PERSONNELLES ===== -->
+                <VBox styleClass="section-card" spacing="20">
+                    <padding>
+                        <Insets top="25" right="25" bottom="25" left="25"/>
+                    </padding>
+
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="👤" styleClass="section-icon"/>
+                        <Label text="Informations personnelles" styleClass="section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="editButton" text="Modifier"
+                                onAction="#toggleEditMode"
+                                styleClass="edit-btn"/>
+                    </HBox>
+
+                    <Separator/>
+
+                    <GridPane hgap="20" vgap="20">
+                        <!-- Prénom -->
+                        <Label text="Prénom" styleClass="field-label"
+                               GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <TextField fx:id="prenomField" editable="false"
+                                   styleClass="info-field"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                        <!-- Nom -->
+                        <Label text="Nom" styleClass="field-label"
+                               GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                        <TextField fx:id="nomField" editable="false"
+                                   styleClass="info-field"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                        <!-- Email -->
+                        <Label text="Email" styleClass="field-label"
+                               GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                        <TextField fx:id="emailField" editable="false"
+                                   styleClass="info-field"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                        <!-- Téléphone -->
+                        <Label text="Téléphone" styleClass="field-label"
+                               GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                        <TextField fx:id="phoneField" editable="false"
+                                   styleClass="info-field"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+                        <!-- Adresse -->
+                        <Label text="Adresse" styleClass="field-label"
+                               GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                        <TextField fx:id="adresseField" editable="false"
+                                   styleClass="info-field"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+                        <columnConstraints>
+                            <ColumnConstraints minWidth="150" prefWidth="150"/>
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="300"/>
+                        </columnConstraints>
+                    </GridPane>
+
+                    <!-- Boutons d'action -->
+                    <HBox fx:id="actionButtons" spacing="15" alignment="CENTER_RIGHT"
+                          visible="false" managed="false">
+                        <padding>
+                            <Insets top="10" right="0" bottom="0" left="0"/>
+                        </padding>
+                        <Button text="Annuler" onAction="#cancelEdit" styleClass="cancel-btn"/>
+                        <Button text="Enregistrer" onAction="#saveProfile" styleClass="save-btn"/>
+                    </HBox>
+                </VBox>
+
+                <!-- ===== SÉCURITÉ ===== -->
+                <VBox styleClass="section-card" spacing="20">
+                    <padding>
+                        <Insets top="25" right="25" bottom="25" left="25"/>
+                    </padding>
+
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="🔒" styleClass="section-icon"/>
+                        <Label text="Sécurité" styleClass="section-title"/>
+                    </HBox>
+
+                    <Separator/>
+
+                    <Button text="Changer le mot de passe"
+                            onAction="#changePassword"
+                            styleClass="secondary-btn"
+                            maxWidth="250"/>
+                </VBox>
+
+                <!-- ===== STATISTIQUES (si rôle approprié) ===== -->
+                <VBox fx:id="statsSection" styleClass="section-card" spacing="20">
+                    <padding>
+                        <Insets top="25" right="25" bottom="25" left="25"/>
+                    </padding>
+
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="📊" styleClass="section-icon"/>
+                        <Label text="Statistiques" styleClass="section-title"/>
+                    </HBox>
+
+                    <Separator/>
+
+                    <HBox spacing="30" alignment="CENTER_LEFT">
+                        <VBox styleClass="stat-card" spacing="5" alignment="CENTER">
+                            <padding>
+                                <Insets top="20" right="30" bottom="20" left="30"/>
+                            </padding>
+                            <Label fx:id="stat1Value" text="0" styleClass="stat-value"/>
+                            <Label fx:id="stat1Label" text="Candidatures" styleClass="stat-label"/>
+                        </VBox>
+
+                        <VBox styleClass="stat-card" spacing="5" alignment="CENTER">
+                            <padding>
+                                <Insets top="20" right="30" bottom="20" left="30"/>
+                            </padding>
+                            <Label fx:id="stat2Value" text="0" styleClass="stat-value"/>
+                            <Label fx:id="stat2Label" text="Entretiens" styleClass="stat-label"/>
+                        </VBox>
+
+                        <VBox styleClass="stat-card" spacing="5" alignment="CENTER">
+                            <padding>
+                                <Insets top="20" right="30" bottom="20" left="30"/>
+                            </padding>
+                            <Label fx:id="stat3Value" text="0" styleClass="stat-value"/>
+                            <Label fx:id="stat3Label" text="Offres" styleClass="stat-label"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>
