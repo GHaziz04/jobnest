@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.jobnest.gentretien.controller.FeedbackDetailController"
+      spacing="0" prefWidth="680" prefHeight="750"
+      style="-fx-background-color: #F5F7FB;">
+
+    <!-- ═══ HEADER ═══ -->
+    <VBox style="-fx-background-color: #1E3A5F; -fx-padding: 28 35 24 35;" spacing="10">
+
+        <!-- Titre + bouton fermer -->
+        <HBox alignment="CENTER_LEFT">
+            <HBox spacing="12" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                <StackPane>
+                    <Circle radius="20" fill="linear-gradient(to bottom right, #F97316, #2563EB)"/>
+                    <Text text="📊" style="-fx-font-size: 16px;"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Détail du Feedback"
+                           style="-fx-font-size: 20px; -fx-font-weight: 800; -fx-text-fill: white;"/>
+                    <Label fx:id="headerEntretienId"
+                           style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.55);"/>
+                </VBox>
+            </HBox>
+            <Button text="✕" onAction="#fermer"
+                    style="-fx-background-color: rgba(255,255,255,0.12);
+                           -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;
+                           -fx-background-radius: 50%; -fx-cursor: hand;
+                           -fx-min-width: 36px; -fx-min-height: 36px;"/>
+        </HBox>
+
+        <!-- Infos entretien -->
+        <VBox spacing="4" style="-fx-padding: 12 0 0 0;">
+            <Label fx:id="headerTitreOffre"
+                   style="-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: white;"/>
+            <HBox spacing="20">
+                <Label fx:id="headerCandidat"
+                       style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.75);"/>
+                <Label fx:id="headerDate"
+                       style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.75);"/>
+            </HBox>
+        </VBox>
+    </VBox>
+
+    <!-- Bande dégradée accent -->
+    <Region prefHeight="4"
+            style="-fx-background-color: linear-gradient(to right, #F97316, #2563EB);"/>
+
+    <!-- ═══ CORPS ═══ -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background: #F5F7FB; -fx-background-color: #F5F7FB; -fx-border-color: transparent;">
+        <VBox spacing="16" style="-fx-background-color: #F5F7FB;">
+            <padding><Insets top="20" right="30" bottom="20" left="30"/></padding>
+
+            <!-- ── BLOC MOYENNE GLOBALE ── -->
+            <HBox spacing="20" alignment="CENTER_LEFT"
+                  style="-fx-background-color: white; -fx-background-radius: 14px;
+                         -fx-padding: 20 25 20 25;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 3);">
+
+                <!-- Score cercle -->
+                <VBox alignment="CENTER" spacing="6" prefWidth="110">
+                    <StackPane>
+                        <Circle radius="48"
+                                style="-fx-fill: #F8FAFC; -fx-stroke: #E2E8F0; -fx-stroke-width: 2;"/>
+                        <VBox alignment="CENTER" spacing="0">
+                            <Label fx:id="moyenneGlobaleLabel" text="0.0"
+                                   style="-fx-font-size: 34px; -fx-font-weight: 900;"/>
+                            <Label text="/10"
+                                   style="-fx-font-size: 12px; -fx-text-fill: #94A3B8; -fx-font-weight: 600;"/>
+                        </VBox>
+                    </StackPane>
+                    <Label fx:id="moyenneMentionLabel" text="—"/>
+                </VBox>
+
+                <!-- Séparateur vertical -->
+                <Separator orientation="VERTICAL" style="-fx-background-color: #E2E8F0;"/>
+
+                <!-- Résumé rapide -->
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Évaluation globale du candidat"
+                           style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #1E3A5F;"/>
+                    <Label text="Basée sur 4 critères : techniques, communication, motivation et adéquation au poste."
+                           style="-fx-font-size: 12px; -fx-text-fill: #64748B; -fx-wrap-text: true;"
+                           wrapText="true"/>
+                </VBox>
+            </HBox>
+
+            <!-- ── BLOC NOTES DÉTAILLÉES ── -->
+            <VBox spacing="0"
+                  style="-fx-background-color: white; -fx-background-radius: 14px;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 3);">
+                <padding><Insets top="20" right="25" bottom="20" left="25"/></padding>
+
+                <Label text="📊  Notes par critère"
+                       style="-fx-font-size: 14px; -fx-font-weight: 800; -fx-text-fill: #1E3A5F; -fx-padding: 0 0 14 0;"/>
+
+                <!-- Technique -->
+                <VBox spacing="6" style="-fx-padding: 0 0 14 0;">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="💻  Compétences Techniques"
+                               style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #334155;"
+                               HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="noteTechLabel" text="—"/>
+                    </HBox>
+                    <HBox fx:id="barTech" spacing="3" alignment="CENTER_LEFT"/>
+                </VBox>
+
+                <Separator style="-fx-background-color: #F1F5F9;"/>
+
+                <!-- Communication -->
+                <VBox spacing="6" style="-fx-padding: 14 0 14 0;">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="💬  Compétences Communication"
+                               style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #334155;"
+                               HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="noteCommLabel" text="—"/>
+                    </HBox>
+                    <HBox fx:id="barComm" spacing="3" alignment="CENTER_LEFT"/>
+                </VBox>
+
+                <Separator style="-fx-background-color: #F1F5F9;"/>
+
+                <!-- Motivation -->
+                <VBox spacing="6" style="-fx-padding: 14 0 14 0;">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="🎯  Motivation"
+                               style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #334155;"
+                               HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="noteMotivLabel" text="—"/>
+                    </HBox>
+                    <HBox fx:id="barMotiv" spacing="3" alignment="CENTER_LEFT"/>
+                </VBox>
+
+                <Separator style="-fx-background-color: #F1F5F9;"/>
+
+                <!-- Adéquation -->
+                <VBox spacing="6" style="-fx-padding: 14 0 0 0;">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="✅  Adéquation au Poste"
+                               style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #334155;"
+                               HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="noteAdequLabel" text="—"/>
+                    </HBox>
+                    <HBox fx:id="barAdequ" spacing="3" alignment="CENTER_LEFT"/>
+                </VBox>
+            </VBox>
+
+            <!-- ── BLOC COMMENTAIRE ── -->
+            <VBox spacing="10"
+                  style="-fx-background-color: white; -fx-background-radius: 14px;
+                         -fx-padding: 20 25 20 25;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 3);">
+                <Label text="💬  Commentaire général"
+                       style="-fx-font-size: 14px; -fx-font-weight: 800; -fx-text-fill: #1E3A5F;"/>
+                <Label fx:id="commentaireLabel" wrapText="true"
+                       style="-fx-font-size: 13px; -fx-text-fill: #334155;
+                              -fx-line-spacing: 4;
+                              -fx-background-color: #F8FAFC; -fx-background-radius: 8px;
+                              -fx-padding: 12 15 12 15;"/>
+            </VBox>
+
+            <!-- ── BLOC COMPÉTENCES MANQUANTES ── -->
+            <VBox spacing="10"
+                  style="-fx-background-color: white; -fx-background-radius: 14px;
+                         -fx-padding: 20 25 20 25;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 3);">
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="⚠️" style="-fx-font-size: 15px;"/>
+                    <Label text="Compétences manquantes"
+                           style="-fx-font-size: 14px; -fx-font-weight: 800; -fx-text-fill: #1E3A5F;"/>
+                </HBox>
+                <Label fx:id="competencesLabel" wrapText="true"
+                       style="-fx-font-size: 13px; -fx-text-fill: #D97706;
+                              -fx-font-weight: 500;
+                              -fx-background-color: #FFFBEB; -fx-background-radius: 8px;
+                              -fx-padding: 10 14 10 14;
+                              -fx-border-color: #FDE68A; -fx-border-radius: 8px; -fx-border-width: 1;"/>
+            </VBox>
+
+            <!-- ── BLOC FORMATION (conditionnel) ── -->
+            <VBox fx:id="formationBox" spacing="10"
+                  style="-fx-background-color: #EFF6FF; -fx-background-radius: 14px;
+                         -fx-padding: 18 25 18 25;
+                         -fx-border-color: #BFDBFE; -fx-border-radius: 14px; -fx-border-width: 1.5;
+                         -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.08), 10, 0, 0, 3);">
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="🎓" style="-fx-font-size: 18px;"/>
+                    <Label text="Formation recommandée"
+                           style="-fx-font-size: 14px; -fx-font-weight: 800; -fx-text-fill: #1D4ED8;"/>
+                </HBox>
+                <Label fx:id="formationLabel" wrapText="true"
+                       style="-fx-font-size: 13px; -fx-text-fill: #1D4ED8; -fx-font-weight: 500;"/>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+    <!-- ═══ FOOTER ═══ -->
+    <HBox alignment="CENTER_RIGHT" spacing="12"
+          style="-fx-background-color: white;
+                 -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0;
+                 -fx-padding: 14 30 16 30;">
+        <Label fx:id="dateFeedbackLabel"
+               style="-fx-font-size: 11px; -fx-text-fill: #94A3B8; -fx-font-style: italic;"
+               HBox.hgrow="ALWAYS"/>
+        <Button text="Fermer" onAction="#fermer"
+                style="-fx-background-color: #1E3A5F;
+                       -fx-text-fill: white;
+                       -fx-font-size: 13px; -fx-font-weight: 700;
+                       -fx-background-radius: 10px;
+                       -fx-padding: 10 28 10 28;
+                       -fx-cursor: hand;
+                       -fx-effect: dropshadow(gaussian, rgba(30,58,95,0.3), 8, 0, 0, 3);"/>
+    </HBox>
+
+</VBox>

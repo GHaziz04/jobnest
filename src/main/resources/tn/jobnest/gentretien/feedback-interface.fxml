@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.jobnest.gentretien.controller.FeedbackListController"
+            stylesheets="@styles.css"
+            prefWidth="1400.0"
+            prefHeight="850.0">
+
+    <left>
+        <VBox prefWidth="260" styleClass="sidebar" spacing="10">
+            <padding><Insets top="30" right="20" bottom="30" left="25"/></padding>
+
+            <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
+                <StackPane>
+                    <Circle radius="18" fill="linear-gradient(to bottom right, #FF6B35, #FF8C5A)"/>
+                    <Text text="JN" fill="white"
+                          style="-fx-font-family: 'Segoe UI'; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                </StackPane>
+                <Label text="JobNest" styleClass="logo"/>
+            </HBox>
+
+            <VBox styleClass="menu-container" spacing="5" VBox.vgrow="ALWAYS">
+
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📊" style="-fx-font-size: 18px;"/>
+                        <Label text="Tableau de bord" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="💼" style="-fx-font-size: 18px;"/>
+                        <Label text="Offres d'emploi" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+
+                <Button styleClass="menu-item" onAction="#ouvrirCandidature">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📄" style="-fx-font-size: 18px;"/>
+                        <Label text="Candidatures" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+
+                <Button styleClass="menu-item" onAction="#retourEntretiens">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📅" style="-fx-font-size: 18px;"/>
+                        <Label text="Entretiens" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+
+                <!-- Feedbacks (ACTIF) -->
+                <Button styleClass="menu-item, menu-item-active">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📊" style="-fx-font-size: 18px;"/>
+                        <Label text="Feedbacks" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+
+
+
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="🎯" style="-fx-font-size: 18px;"/>
+                        <Label text="Matching" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+            </VBox>
+
+            <VBox styleClass="sidebar-footer" spacing="10">
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="⚙️" style="-fx-font-size: 18px;"/>
+                        <Label text="Paramètres" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="🚪" style="-fx-font-size: 18px;"/>
+                        <Label text="Déconnexion" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+            </VBox>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="20" style="-fx-background-color: #F5F7FB;">
+            <padding><Insets top="25" right="35" bottom="25" left="35"/></padding>
+
+            <Label text="📊 Gestion des Feedbacks" styleClass="page-title"/>
+            <Label text="Consultez, modifiez et analysez les feedbacks de vos entretiens" styleClass="page-subtitle"/>
+
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField"
+                           promptText="🔍 Rechercher par ID entretien, offre ou candidat..."
+                           prefWidth="500" HBox.hgrow="ALWAYS"/>
+                <ComboBox fx:id="comboNoteMin" prefWidth="220"/>
+                <Button text="📅 Retour Entretiens" onAction="#retourEntretiens"
+                        prefHeight="42" prefWidth="180"
+                        style="-fx-background-color: linear-gradient(from 0% 0% to 100% 0%, #3498DB, #2980B9);
+                               -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;
+                               -fx-background-radius: 12px; -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 10, 0, 0, 3);"/>
+            </HBox>
+
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <VBox styleClass="stat-card">
+                    <Label fx:id="totalFeedbacksCount" text="0" styleClass="stat-number"/>
+                    <Label text="Total Feedbacks" styleClass="stat-label"/>
+                </VBox>
+                <VBox styleClass="stat-card">
+                    <Label fx:id="moyenneGlobaleLabel" text="0.0" styleClass="stat-number"/>
+                    <Label text="Moyenne Globale" styleClass="stat-label"/>
+                </VBox>
+                <VBox styleClass="stat-card">
+                    <Label fx:id="excellentsCount" text="0" styleClass="stat-number"/>
+                    <Label text="Excellents (≥8)" styleClass="stat-label"/>
+                </VBox>
+            </HBox>
+
+            <Label text="📋 Liste des Feedbacks" styleClass="section-title"/>
+
+            <ScrollPane fitToWidth="true" prefHeight="600.0"
+                        style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;"
+                        VBox.vgrow="ALWAYS">
+                <VBox fx:id="feedbacksVBox" spacing="15" style="-fx-background-color: transparent;"/>
+            </ScrollPane>
+        </VBox>
+    </center>
+</BorderPane>

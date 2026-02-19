@@ -54,7 +54,7 @@
                 </Button>
 
                 <!-- Candidatures -->
-                <Button styleClass="menu-item">
+                <Button styleClass="menu-item" onAction="#ouvrirCandidature">
                     <graphic>
                         <HBox spacing="15" alignment="CENTER_LEFT">
                             <Text text="📄" style="-fx-font-size: 18px;"/>
@@ -69,6 +69,16 @@
                         <HBox spacing="15" alignment="CENTER_LEFT">
                             <Text text="📅" style="-fx-font-size: 18px;"/>
                             <Label text="Entretiens" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+
+                <!-- Feedbacks -->
+                <Button styleClass="menu-item" onAction="#ouvrirFeedbacks">
+                    <graphic>
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Text text="📊" style="-fx-font-size: 18px;"/>
+                            <Label text="Feedbacks" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                         </HBox>
                     </graphic>
                 </Button>
@@ -129,6 +139,17 @@
                         onAction="#ajouterEntretien"
                         styleClass="button-add"
                         prefHeight="42"/>
+                <Button text="📊 Voir Feedbacks"
+                        onAction="#ouvrirFeedbacks"
+                        prefHeight="42"
+                        prefWidth="160"
+                        style="-fx-background-color: linear-gradient(from 0% 0% to 100% 0%, #9B59B6, #8E44AD);
+                               -fx-text-fill: white;
+                               -fx-font-size: 14px;
+                               -fx-font-weight: bold;
+                               -fx-background-radius: 12px;
+                               -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian, rgba(155,89,182,0.3), 10, 0, 0, 3);"/>
             </HBox>
 
             <!-- Cartes statistiques -->

@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -15,6 +16,10 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import tn.jobnest.gentretien.model.Entretien;
 import tn.jobnest.gentretien.service.Entretienservice;
+import tn.jobnest.gentretien.service.FeedbackService;
+import tn.jobnest.gentretien.controller.GestionCandidaturesController;
+import tn.jobnest.gentretien.service.CandidatureService;
+import tn.jobnest.gentretien.model.CandidatureDTO;
 
 import java.awt.Desktop;
 import java.io.IOException;
@@ -47,13 +52,13 @@ public class Entretiencontroller {
 
     private final Entretienservice service = new Entretienservice();
     private List<Entretien> allEntretiens;
-    private final int currentRecruteurId = 1; // ID du recruteur connecté
+    private final int currentRecruteurId = 1;
 
     @FXML
     public void initialize() {
         comboType.setItems(FXCollections.observableArrayList("Tous les types", "présentiel", "visio"));
         comboType.setValue("Tous les types");
-        comboStatut.setItems(FXCollections.observableArrayList("Tous les statuts", "proposé", "confirmé", "réalisé", "annulé"));
+        comboStatut.setItems(FXCollections.observableArrayList("Tous les statuts", "proposé",  "réalisé", "annulé"));
         comboStatut.setValue("Tous les statuts");
 
         comboType.valueProperty().addListener((obs, old, newVal) -> filterAndDisplay());
@@ -66,6 +71,20 @@ public class Entretiencontroller {
     @FXML
     private void ajouterEntretien(ActionEvent event) {
         openForm(false, null);
+    }
+
+    @FXML
+    private void ouvrirFeedbacks(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/feedback-interface.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(loader.load());
+            scene.getStylesheets().add(getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
+            stage.setScene(scene);
+            stage.setTitle("JobNest - Gestion des Feedbacks");
+        } catch (IOException ex) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir l'interface des feedbacks : " + ex.getMessage());
+        }
     }
 
     private void rafraichirListe() {
@@ -84,7 +103,7 @@ public class Entretiencontroller {
     private void updateStats() {
         if (allEntretiens == null) return;
 
-        long planifies = allEntretiens.stream().filter(e -> "proposé".equals(e.getStatut()) || "confirmé".equals(e.getStatut())).count();
+        long planifies = allEntretiens.stream().filter(e -> "proposé".equals(e.getStatut()) ).count();
         long termines = allEntretiens.stream().filter(e -> "réalisé".equals(e.getStatut())).count();
 
         LocalDate today = LocalDate.now();
@@ -140,7 +159,7 @@ public class Entretiencontroller {
         card.getStyleClass().add("card");
         card.setPrefHeight(130);
 
-        // Avatar avec initiales du premier participant
+        // ---- Avatar ----
         String participantName = participants.isEmpty() ? "Candidat" : participants.get(0);
         String initials = participantName.chars()
                 .filter(Character::isUpperCase)
@@ -168,29 +187,23 @@ public class Entretiencontroller {
         avatarBox.setAlignment(javafx.geometry.Pos.CENTER);
         avatarBox.setPrefWidth(70);
 
-        // Détails de l'entretien
+        // ---- Détails ----
         VBox details = new VBox(8);
         details.setPrefWidth(400);
         details.setPadding(new Insets(5, 0, 5, 0));
 
-        // Nom de l'offre d'emploi
         Label offreLabel = new Label(titreOffre);
         offreLabel.getStyleClass().add("card-title");
         offreLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        // Participants
         Label participantsLabel;
         if (participants.size() > 1) {
-            String participantsText = "👥 " + String.join(", ", participants);
-            participantsLabel = new Label(participantsText);
+            participantsLabel = new Label("👥 " + String.join(", ", participants));
         } else {
-            String participantsText = "👤 " + (participants.isEmpty() ? "Aucun candidat" : participants.get(0));
-            participantsLabel = new Label(participantsText);
+            participantsLabel = new Label("👤 " + (participants.isEmpty() ? "Aucun candidat" : participants.get(0)));
         }
-        participantsLabel.getStyleClass().add("card-participants");
         participantsLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #2c3e50; -fx-font-weight: 500;");
 
-        // Date, heure et durée
         String dateStr = (e.getDateEntretien() != null)
                 ? e.getDateEntretien().toLocalDate().format(DateTimeFormatter.ofPattern("EEE dd MMM yyyy"))
                 : "Date non définie";
@@ -201,10 +214,8 @@ public class Entretiencontroller {
         String dureeTxt = (duree > 0) ? "Durée: " + duree + " min" : "Durée non définie";
 
         Label dateTimeLabel = new Label("📅 " + dateStr + " à " + heureStr + " (" + dureeTxt + ")");
-        dateTimeLabel.getStyleClass().add("card-datetime");
         dateTimeLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #7f8c8d;");
 
-        // Lieu ou lien Visio
         Label lieuVisioLabel;
         if ("présentiel".equals(e.getTypeEntretien())) {
             String lieu = (e.getLieu() != null && !e.getLieu().isEmpty()) ? e.getLieu() : "Lieu non défini";
@@ -215,47 +226,153 @@ public class Entretiencontroller {
             if (lien.length() > 30) lien = lien.substring(0, 27) + "...";
             lieuVisioLabel = new Label("🔗 " + lien);
         }
-        lieuVisioLabel.getStyleClass().add("card-location");
         lieuVisioLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #3498db; -fx-font-weight: 500;");
 
-        // Note du recruteur
+        // Badge statut coloré
+        Label statutBadge = buildStatutBadge(e.getStatut());
+
         Label noteLabel = null;
         if (e.getNoteRecruteur() != null && !e.getNoteRecruteur().isEmpty()) {
             noteLabel = new Label("📝 Note: " + e.getNoteRecruteur());
-            noteLabel.getStyleClass().add("card-note");
             noteLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #e67e22; -fx-font-style: italic; -fx-font-weight: 500;");
         }
 
-        details.getChildren().addAll(offreLabel, participantsLabel, dateTimeLabel, lieuVisioLabel);
+        details.getChildren().addAll(offreLabel, participantsLabel, dateTimeLabel, lieuVisioLabel, statutBadge);
         if (noteLabel != null) {
             details.getChildren().add(noteLabel);
         }
 
-        // Actions - Boutons agrandis
+        // ---- Actions ----
         VBox actionsContainer = new VBox(8);
         actionsContainer.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
         actionsContainer.setPrefWidth(420);
         actionsContainer.setPadding(new Insets(5, 0, 5, 0));
 
-        // Première rangée de boutons
+        // Rangée 1 : Modifier (ou Réorganiser si annulé, ou grisé si réalisé) + Ajouter Feedback
         HBox actionsRow1 = new HBox(10);
         actionsRow1.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
 
-        Button btnModifier = new Button("Modifier");
-        btnModifier.getStyleClass().add("button-primary");
-        btnModifier.setPrefWidth(110);
-        btnModifier.setPrefHeight(42);
-        btnModifier.setOnAction(ev -> openForm(true, e));
+        boolean estAnnule = "annulé".equals(e.getStatut());
+        boolean estRealise2 = "réalisé".equals(e.getStatut());
 
-        Button btnTermine = new Button("Terminé");
-        btnTermine.getStyleClass().add("button-success");
-        btnTermine.setPrefWidth(110);
-        btnTermine.setPrefHeight(42);
-        btnTermine.setOnAction(ev -> marquerTermine(e));
+        Button btnModifier;
+        if (estAnnule) {
+            // BOUTON RÉORGANISER — remplace Modifier pour les entretiens annulés
+            btnModifier = new Button("🔄 Réorganiser");
+            btnModifier.setStyle(
+                    "-fx-background-color: linear-gradient(135deg, #F97316, #EA580C);" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: 800;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-background-radius: 10px;" +
+                            "-fx-cursor: hand;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(249,115,22,0.4), 8, 0, 0, 3);"
+            );
+            btnModifier.setPrefWidth(145);
+            btnModifier.setPrefHeight(42);
+            btnModifier.setOnAction(ev -> reorganiserEntretien(e));
+            Tooltip tipReorg = new Tooltip(
+                    "🔄 Réorganiser cet entretien annulé\n" +
+                            "→ Choisissez une nouvelle date\n" +
+                            "→ Le statut repassera à 'proposé' automatiquement"
+            );
+            tipReorg.setStyle("-fx-font-size: 12px;");
+            Tooltip.install(btnModifier, tipReorg);
+        } else if (estRealise2) {
+            // BOUTON MODIFIER DÉSACTIVÉ — entretien réalisé, non modifiable
+            btnModifier = new Button("✏️ Modifier");
+            btnModifier.setPrefWidth(120);
+            btnModifier.setPrefHeight(42);
+            btnModifier.setDisable(true);
+            btnModifier.setStyle(
+                    "-fx-background-color: #E2E8F0;" +
+                            "-fx-text-fill: #94A3B8;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 10px;"
+            );
+            Tooltip tipLock = new Tooltip("🔒 Non modifiable\nUn entretien réalisé ne peut plus être modifié.");
+            tipLock.setStyle("-fx-font-size: 12px;");
+            Tooltip.install(btnModifier, tipLock);
+        } else {
+            btnModifier = new Button("Modifier");
+            btnModifier.getStyleClass().add("button-primary");
+            btnModifier.setPrefWidth(120);
+            btnModifier.setPrefHeight(42);
+            btnModifier.setOnAction(ev -> openForm(true, e));
+        }
 
-        actionsRow1.getChildren().addAll(btnModifier, btnTermine);
+        // BOUTON "Ajouter Feedback"
+        // Actif uniquement si statut == "réalisé" ET aucun feedback n'existe encore
+        Button btnFeedback = new Button("💬 Feedback");
+        btnFeedback.setPrefWidth(130);
+        btnFeedback.setPrefHeight(42);
 
-        // Deuxième rangée de boutons
+        boolean estRealise = "réalisé".equals(e.getStatut());
+        FeedbackService feedbackService = new FeedbackService();
+
+        if (estRealise) {
+            // Vérifier en BD si un feedback existe déjà pour cet entretien
+            boolean feedbackDejaExistant = false;
+            try {
+                feedbackDejaExistant = feedbackService.feedbackExists(e.getIdEntretien());
+            } catch (SQLException ex) {
+                System.err.println("Erreur vérification feedback #" + e.getIdEntretien() + " : " + ex.getMessage());
+            }
+
+            if (feedbackDejaExistant) {
+                // Feedback déjà créé — bouton grisé
+                btnFeedback.setText("✅ Feedback fait");
+                btnFeedback.setPrefWidth(140);
+                btnFeedback.setDisable(true);
+                btnFeedback.setStyle(
+                        "-fx-background-color: #D1FAE5;" +
+                                "-fx-text-fill: #059669;" +
+                                "-fx-font-weight: bold;" +
+                                "-fx-background-radius: 10px;"
+                );
+                Tooltip tipDeja = new Tooltip(
+                        "✅ Feedback déjà enregistré\n" +
+                                "Un seul feedback est autorisé par entretien."
+                );
+                tipDeja.setStyle("-fx-font-size: 12px;");
+                Tooltip.install(btnFeedback, tipDeja);
+            } else {
+                // Pas encore de feedback — bouton actif
+                btnFeedback.getStyleClass().add("button-success");
+                btnFeedback.setOnAction(ev -> ouvrirFeedbackPourEntretien(e));
+                Tooltip tip = new Tooltip("Ajouter un feedback pour cet entretien réalisé");
+                Tooltip.install(btnFeedback, tip);
+            }
+        } else {
+            // Bouton grisé avec tooltip explicatif
+            btnFeedback.setDisable(true);
+            btnFeedback.setStyle(
+                    "-fx-background-color: #BDC3C7; " +
+                            "-fx-text-fill: #7F8C8D; " +
+                            "-fx-font-weight: bold; " +
+                            "-fx-background-radius: 10px;"
+            );
+            String raison;
+            switch (e.getStatut() == null ? "" : e.getStatut()) {
+                case "proposé":
+                    raison = "L'entretien est encore en attente de confirmation par le candidat.";
+                    break;
+
+                case "annulé":
+                    raison = "L'entretien a été annulé, aucun feedback possible.";
+                    break;
+                default:
+                    raison = "Le feedback n'est disponible qu'une fois l'entretien réalisé.";
+            }
+            Tooltip tip = new Tooltip("⚠️ Feedback indisponible\n" + raison +
+                    "\n\nLe statut sera automatiquement mis à 'réalisé'\nlorsque le candidat rejoindra l'entretien.");
+            tip.setStyle("-fx-font-size: 12px;");
+            Tooltip.install(btnFeedback, tip);
+        }
+
+        actionsRow1.getChildren().addAll(btnModifier, btnFeedback);
+
+        // Rangée 2 : Bouton Map/Visio + Supprimer
         HBox actionsRow2 = new HBox(10);
         actionsRow2.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
 
@@ -263,46 +380,57 @@ public class Entretiencontroller {
         if ("présentiel".equals(e.getTypeEntretien())) {
             btnActionSpecifique = new Button("Consulter map");
             btnActionSpecifique.getStyleClass().add("button-map");
-            btnActionSpecifique.setPrefWidth(140);
+            btnActionSpecifique.setPrefWidth(150);
             btnActionSpecifique.setPrefHeight(42);
             btnActionSpecifique.setOnAction(ev -> consulterMap(e));
         } else {
-            // ===== VALIDATION : Rejoindre Meet seulement le jour de l'entretien =====
-            btnActionSpecifique = new Button("Rejoindre");
+            btnActionSpecifique = new Button("📹 Rejoindre");
             btnActionSpecifique.getStyleClass().add("button-visio");
-            btnActionSpecifique.setPrefWidth(120);
+            btnActionSpecifique.setPrefWidth(130);
             btnActionSpecifique.setPrefHeight(42);
             btnActionSpecifique.setOnAction(ev -> rejoindre(e));
 
-            // Désactiver si pas de lien
             if (e.getLienVisio() == null || e.getLienVisio().isBlank()) {
                 btnActionSpecifique.setDisable(true);
                 btnActionSpecifique.setText("❌ Lien indisponible");
-                btnActionSpecifique.setPrefWidth(150);
-            }
-            // ===== NOUVEAU : Désactiver si ce n'est pas le jour de l'entretien =====
-            else if (e.getDateEntretien() != null) {
+                btnActionSpecifique.setPrefWidth(160);
+            } else if (e.getDateEntretien() != null) {
                 LocalDate dateEntretien = e.getDateEntretien().toLocalDate();
                 LocalDate aujourdhui = LocalDate.now();
 
                 if (!dateEntretien.equals(aujourdhui)) {
                     btnActionSpecifique.setDisable(true);
                     if (dateEntretien.isAfter(aujourdhui)) {
-                        btnActionSpecifique.setText("Pas encore");
-                        btnActionSpecifique.setPrefWidth(130);
+                        btnActionSpecifique.setText("⏳ Pas encore");
+                        btnActionSpecifique.setPrefWidth(140);
                     } else {
-                        btnActionSpecifique.setText("Expiré");
-                        btnActionSpecifique.setPrefWidth(120);
+                        btnActionSpecifique.setText("⛔ Expiré");
+                        btnActionSpecifique.setPrefWidth(130);
                     }
                 }
             }
         }
 
         Button btnSupprimer = new Button("Supprimer");
-        btnSupprimer.getStyleClass().add("button-danger");
-        btnSupprimer.setPrefWidth(110);
+        btnSupprimer.setPrefWidth(120);
         btnSupprimer.setPrefHeight(42);
-        btnSupprimer.setOnAction(ev -> supprimerEntretien(e));
+
+        if (estRealise2) {
+            // Désactivé — un entretien réalisé ne peut pas être supprimé
+            btnSupprimer.setDisable(true);
+            btnSupprimer.setStyle(
+                    "-fx-background-color: #E2E8F0;" +
+                            "-fx-text-fill: #94A3B8;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 10px;"
+            );
+            Tooltip tipLockDel = new Tooltip("🔒 Non supprimable\nUn entretien réalisé ne peut pas être supprimé.");
+            tipLockDel.setStyle("-fx-font-size: 12px;");
+            Tooltip.install(btnSupprimer, tipLockDel);
+        } else {
+            btnSupprimer.getStyleClass().add("button-danger");
+            btnSupprimer.setOnAction(ev -> supprimerEntretien(e));
+        }
 
         actionsRow2.getChildren().addAll(btnActionSpecifique, btnSupprimer);
 
@@ -312,6 +440,49 @@ public class Entretiencontroller {
         card.getChildren().addAll(avatarBox, details, actionsContainer);
 
         return card;
+    }
+
+    /**
+     * Construit un badge coloré selon le statut de l'entretien.
+     */
+    private Label buildStatutBadge(String statut) {
+        String emoji;
+        String color;
+        String bgColor;
+
+        switch (statut == null ? "" : statut) {
+            case "proposé":
+                emoji = "🕐";
+                color = "#D97706";
+                bgColor = "#FEF3C7";
+                break;
+
+            case "réalisé":
+                emoji = "🏁";
+                color = "#059669";
+                bgColor = "#D1FAE5";
+                break;
+            case "annulé":
+                emoji = "❌";
+                color = "#DC2626";
+                bgColor = "#FEE2E2";
+                break;
+            default:
+                emoji = "❓";
+                color = "#6B7280";
+                bgColor = "#F3F4F6";
+        }
+
+        Label badge = new Label(emoji + " " + (statut != null ? statut : "inconnu"));
+        badge.setStyle(
+                "-fx-background-color: " + bgColor + ";" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-font-size: 11px;" +
+                        "-fx-font-weight: 700;" +
+                        "-fx-padding: 3 10 3 10;" +
+                        "-fx-background-radius: 20px;"
+        );
+        return badge;
     }
 
     private long calculateDuration(Entretien e) {
@@ -338,8 +509,43 @@ public class Entretiencontroller {
         }
     }
 
-    private void marquerTermine(Entretien e) {
-        // ===== OUVRIR LE FORMULAIRE DE FEEDBACK AVANT DE MARQUER COMME TERMINÉ =====
+    /**
+     * Ouvre le formulaire en mode RÉORGANISATION pour un entretien annulé.
+     * - Date vidée (le recruteur doit choisir une nouvelle date)
+     * - Lien visio vidé si visio (doit être regénéré pour la nouvelle date)
+     * - À l'enregistrement, le statut repassera automatiquement à "proposé"
+     */
+    private void reorganiserEntretien(Entretien e) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/entretien-form.fxml"));
+            Stage stage = new Stage();
+            stage.setScene(new Scene(loader.load()));
+            EntretienFormController ctrl = loader.getController();
+            ctrl.setEntretienPourReorganisation(e);
+            stage.setTitle("🔄 Réorganiser l'entretien #" + e.getIdEntretien());
+            stage.showAndWait();
+            rafraichirListe();
+        } catch (IOException ex) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir le formulaire de réorganisation : " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Ouvre le formulaire de feedback uniquement si l'entretien est "réalisé".
+     * Méthode déclenchée par le bouton "💬 Feedback" sur la carte.
+     */
+    private void ouvrirFeedbackPourEntretien(Entretien e) {
+        // Double-check au cas où le statut aurait changé entre le chargement et le clic
+        if (!"réalisé".equals(e.getStatut())) {
+            showAlert(Alert.AlertType.WARNING,
+                    "Action impossible",
+                    "Le feedback ne peut être ajouté que pour un entretien réalisé.\n\n" +
+                            "Statut actuel : " + e.getStatut() + "\n\n" +
+                            "Le statut sera automatiquement mis à 'réalisé' lorsque le candidat rejoindra l'entretien.");
+            return;
+        }
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/feedback-form.fxml"));
             Stage stage = new Stage();
@@ -348,24 +554,18 @@ public class Entretiencontroller {
             FeedbackFormController ctrl = loader.getController();
             ctrl.setEntretien(e);
 
-            stage.setTitle("Feedback - Entretien #" + e.getIdEntretien());
+            stage.setTitle("💬 Feedback — Entretien #" + e.getIdEntretien());
             stage.showAndWait();
 
-            // ===== APRÈS AVOIR FERMÉ LE FORMULAIRE DE FEEDBACK, MARQUER COMME RÉALISÉ =====
-            e.setStatut("réalisé");
-            service.update(e);
             rafraichirListe();
-            showAlert(Alert.AlertType.INFORMATION, "Succès", "Entretien marqué comme réalisé et feedback enregistré.");
 
         } catch (IOException ex) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le formulaire de feedback : " + ex.getMessage());
-        } catch (SQLException ex) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de mettre à jour : " + ex.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir le formulaire de feedback : " + ex.getMessage());
         }
     }
 
     private void rejoindre(Entretien e) {
-        // ===== VALIDATION : Vérifier que c'est bien aujourd'hui =====
         if (e.getDateEntretien() != null) {
             LocalDate dateEntretien = e.getDateEntretien().toLocalDate();
             LocalDate aujourdhui = LocalDate.now();
@@ -386,7 +586,6 @@ public class Entretiencontroller {
             }
         }
 
-        // Si la validation passe, ouvrir le lien
         if ("visio".equals(e.getTypeEntretien()) && e.getLienVisio() != null && !e.getLienVisio().isBlank()) {
             try {
                 Desktop.getDesktop().browse(new URI(e.getLienVisio()));
@@ -414,13 +613,11 @@ public class Entretiencontroller {
 
                 if (result.isPresent()) {
                     if (result.get() == btnCarte) {
-                        // Ouvrir la localisation sur Google Maps
                         String searchUrl = "https://www.google.com/maps/search/?api=1&query="
                                 + java.net.URLEncoder.encode(e.getLieu(), "UTF-8");
                         Desktop.getDesktop().browse(new URI(searchUrl));
 
                     } else if (result.get() == btnItineraire) {
-                        // Demander l'adresse de départ
                         TextInputDialog dialog = new TextInputDialog("Ma position");
                         dialog.setTitle("Point de départ");
                         dialog.setHeaderText("Calculer l'itinéraire");
@@ -469,5 +666,27 @@ public class Entretiencontroller {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void ouvrirCandidature(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/GestionCandidatures.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+
+            if (getClass().getResource("/tn/jobnest/gentretien/styles.css") != null) {
+                scene.getStylesheets().add(getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
+            }
+
+            stage.setScene(scene);
+            stage.setTitle("JobNest - Gestion des Candidatures");
+            stage.show();
+
+        } catch (IOException ex) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir l'interface des candidatures : " + ex.getMessage());
+        }
     }
 }
