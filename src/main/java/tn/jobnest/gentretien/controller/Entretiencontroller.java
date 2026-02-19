@@ -69,11 +69,6 @@ public class Entretiencontroller {
     }
 
     @FXML
-    private void ajouterEntretien(ActionEvent event) {
-        openForm(false, null);
-    }
-
-    @FXML
     private void ouvrirFeedbacks(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/feedback-interface.fxml"));
@@ -280,7 +275,7 @@ public class Entretiencontroller {
             Tooltip.install(btnModifier, tipReorg);
         } else if (estRealise2) {
             // BOUTON MODIFIER DÉSACTIVÉ — entretien réalisé, non modifiable
-            btnModifier = new Button("✏️ Modifier");
+            btnModifier = new Button("Modifier");
             btnModifier.setPrefWidth(120);
             btnModifier.setPrefHeight(42);
             btnModifier.setDisable(true);
@@ -378,7 +373,7 @@ public class Entretiencontroller {
 
         Button btnActionSpecifique;
         if ("présentiel".equals(e.getTypeEntretien())) {
-            btnActionSpecifique = new Button("Consulter map");
+            btnActionSpecifique = new Button(" Consulter map");
             btnActionSpecifique.getStyleClass().add("button-map");
             btnActionSpecifique.setPrefWidth(150);
             btnActionSpecifique.setPrefHeight(42);

@@ -13,104 +13,73 @@
             prefWidth="1400.0"
             prefHeight="850.0">
 
-    <!-- SIDEBAR MODERNE -->
+    <!-- SIDEBAR -->
     <left>
         <VBox prefWidth="260" styleClass="sidebar" spacing="10">
             <padding>
                 <Insets top="30" right="20" bottom="30" left="25"/>
             </padding>
 
-            <!-- LOGO SIMPLE ET ÉLÉGANT -->
             <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
                 <StackPane>
                     <Circle radius="18" fill="linear-gradient(to bottom right, #FF6B35, #FF8C5A)"/>
-                    <Text text="JN"
-                          fill="white"
+                    <Text text="JN" fill="white"
                           style="-fx-font-family: 'Segoe UI'; -fx-font-size: 16px; -fx-font-weight: bold;"/>
                 </StackPane>
                 <Label text="JobNest" styleClass="logo"/>
             </HBox>
 
-            <!-- Menu principal -->
             <VBox styleClass="menu-container" spacing="5" VBox.vgrow="ALWAYS">
-                <!-- Tableau de bord -->
                 <Button styleClass="menu-item">
-                    <graphic>
-                        <HBox spacing="15" alignment="CENTER_LEFT">
-                            <Text text="📊" style="-fx-font-size: 18px;"/>
-                            <Label text="Tableau de bord" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
-                        </HBox>
-                    </graphic>
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📊" style="-fx-font-size: 18px;"/>
+                        <Label text="Tableau de bord" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
                 </Button>
-
-                <!-- Offres d'emploi -->
                 <Button styleClass="menu-item">
-                    <graphic>
-                        <HBox spacing="15" alignment="CENTER_LEFT">
-                            <Text text="💼" style="-fx-font-size: 18px;"/>
-                            <Label text="Offres d'emploi" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
-                        </HBox>
-                    </graphic>
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="💼" style="-fx-font-size: 18px;"/>
+                        <Label text="Offres d'emploi" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
                 </Button>
-
-                <!-- Candidatures -->
                 <Button styleClass="menu-item" onAction="#ouvrirCandidature">
-                    <graphic>
-                        <HBox spacing="15" alignment="CENTER_LEFT">
-                            <Text text="📄" style="-fx-font-size: 18px;"/>
-                            <Label text="Candidatures" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
-                        </HBox>
-                    </graphic>
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📄" style="-fx-font-size: 18px;"/>
+                        <Label text="Candidatures" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
                 </Button>
-
-                <!-- Entretiens (ACTIF) -->
                 <Button styleClass="menu-item, menu-item-active">
-                    <graphic>
-                        <HBox spacing="15" alignment="CENTER_LEFT">
-                            <Text text="📅" style="-fx-font-size: 18px;"/>
-                            <Label text="Entretiens" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
-                        </HBox>
-                    </graphic>
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📅" style="-fx-font-size: 18px;"/>
+                        <Label text="Entretiens" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
                 </Button>
-
-                <!-- Feedbacks -->
                 <Button styleClass="menu-item" onAction="#ouvrirFeedbacks">
-                    <graphic>
-                        <HBox spacing="15" alignment="CENTER_LEFT">
-                            <Text text="📊" style="-fx-font-size: 18px;"/>
-                            <Label text="Feedbacks" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
-                        </HBox>
-                    </graphic>
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📊" style="-fx-font-size: 18px;"/>
+                        <Label text="Feedbacks" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
                 </Button>
-
-                <!-- Matching -->
                 <Button styleClass="menu-item">
-                    <graphic>
-                        <HBox spacing="15" alignment="CENTER_LEFT">
-                            <Text text="🎯" style="-fx-font-size: 18px;"/>
-                            <Label text="Matching" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
-                        </HBox>
-                    </graphic>
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="🎯" style="-fx-font-size: 18px;"/>
+                        <Label text="Matching" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
                 </Button>
             </VBox>
 
-            <!-- Footer sidebar -->
             <VBox styleClass="sidebar-footer" spacing="10">
                 <Button styleClass="menu-item">
-                    <graphic>
-                        <HBox spacing="15" alignment="CENTER_LEFT">
-                            <Text text="⚙️" style="-fx-font-size: 18px;"/>
-                            <Label text="Paramètres" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
-                        </HBox>
-                    </graphic>
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="⚙️" style="-fx-font-size: 18px;"/>
+                        <Label text="Paramètres" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
                 </Button>
                 <Button styleClass="menu-item">
-                    <graphic>
-                        <HBox spacing="15" alignment="CENTER_LEFT">
-                            <Text text="🚪" style="-fx-font-size: 18px;"/>
-                            <Label text="Déconnexion" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
-                        </HBox>
-                    </graphic>
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="🚪" style="-fx-font-size: 18px;"/>
+                        <Label text="Déconnexion" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
                 </Button>
             </VBox>
         </VBox>
@@ -123,11 +92,10 @@
                 <Insets top="25" right="35" bottom="25" left="35"/>
             </padding>
 
-            <!-- Header -->
             <Label text="Gestion des Entretiens" styleClass="page-title"/>
             <Label text="Planifiez et organisez vos entretiens en quelques clics" styleClass="page-subtitle"/>
 
-            <!-- Barre de recherche et filtres -->
+            <!-- Barre de recherche et filtres — SANS le bouton Nouvel Entretien -->
             <HBox spacing="15" alignment="CENTER_LEFT">
                 <TextField fx:id="searchField"
                            promptText="Rechercher par candidat ou poste..."
@@ -135,10 +103,6 @@
                            HBox.hgrow="ALWAYS"/>
                 <ComboBox fx:id="comboType" prefWidth="180"/>
                 <ComboBox fx:id="comboStatut" prefWidth="180"/>
-                <Button text="+ Nouvel entretien"
-                        onAction="#ajouterEntretien"
-                        styleClass="button-add"
-                        prefHeight="42"/>
                 <Button text="📊 Voir Feedbacks"
                         onAction="#ouvrirFeedbacks"
                         prefHeight="42"
@@ -168,10 +132,8 @@
                 </VBox>
             </HBox>
 
-            <!-- Section Prochains entretiens -->
             <Label text="Prochains entretiens" styleClass="section-title"/>
 
-            <!-- Liste des entretiens avec ScrollPane -->
             <ScrollPane fitToWidth="true"
                         prefHeight="600.0"
                         style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;"
