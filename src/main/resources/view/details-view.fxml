@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+
+<VBox prefWidth="550.0" spacing="0.0" style="-fx-background-color: #F7FAFC; -fx-background-radius: 20; -fx-overflow: hidden;"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.jobnest.gformation.Controller.DetailsController">
+
+    <VBox spacing="10.0" style="-fx-background-color: linear-gradient(to right, #2D3748, #4A5568); -fx-background-radius: 20 20 0 0;">
+        <padding><Insets bottom="25.0" left="30.0" right="30.0" top="25.0" /></padding>
+        <children>
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label fx:id="labStatut" style="-fx-background-color: #38A169; -fx-text-fill: white; -fx-padding: 5 12; -fx-background-radius: 15; -fx-font-size: 11; -fx-font-weight: bold;" text="STATUT" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="labNiveau" style="-fx-text-fill: #E2E8F0; -fx-font-size: 13;" text="Niveau" />
+            </HBox>
+            <Label fx:id="labTitre" style="-fx-font-size: 28; -fx-font-weight: 900; -fx-text-fill: white;" text="Titre de la Formation" wrapText="true" />
+        </children>
+    </VBox>
+
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+        <content>
+            <VBox spacing="25.0">
+                <padding><Insets bottom="30.0" left="30.0" right="30.0" top="30.0" /></padding>
+
+                <GridPane hgap="20.0" vgap="15.0">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="50" />
+                        <ColumnConstraints percentWidth="50" />
+                    </columnConstraints>
+                    <children>
+                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label text="FORMATEUR" style="-fx-text-fill: #A0AEC0; -fx-font-size: 10; -fx-font-weight: bold;" />
+                            <Label fx:id="labFormateur" style="-fx-font-size: 14; -fx-text-fill: #2D3748; -fx-font-weight: bold;" text="Nom Formateur" />
+                        </VBox>
+                        <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label text="PRIX" style="-fx-text-fill: #A0AEC0; -fx-font-size: 10; -fx-font-weight: bold;" />
+                            <Label fx:id="labPrix" style="-fx-font-size: 14; -fx-text-fill: #2B6CB0; -fx-font-weight: bold;" text="0.00 DT" />
+                        </VBox>
+                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <Label text="DURÉE" style="-fx-text-fill: #A0AEC0; -fx-font-size: 10; -fx-font-weight: bold;" />
+                            <Label fx:id="labDuree" style="-fx-font-size: 14; -fx-text-fill: #2D3748;" text="00h" />
+                        </VBox>
+                        <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <Label text="DISPONIBILITÉ" style="-fx-text-fill: #A0AEC0; -fx-font-size: 10; -fx-font-weight: bold;" />
+                            <Label fx:id="labPlaces" style="-fx-font-size: 14; -fx-text-fill: #2D3748;" text="0/0 Places" />
+                        </VBox>
+                    </children>
+                </GridPane>
+
+                <Separator style="-fx-opacity: 0.5;" />
+
+                <VBox spacing="10">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="À propos de cette formation" style="-fx-font-weight: bold; -fx-font-size: 16; -fx-text-fill: #2D3748;" />
+                    </HBox>
+                    <Label fx:id="labDescription" style="-fx-text-fill: #4A5568; -fx-line-spacing: 1.5;" wrapText="true" text="..." />
+                </VBox>
+
+                <HBox spacing="15" style="-fx-background-color: #EDF2F7; -fx-padding: 15; -fx-background-radius: 10;">
+                    <children>
+                        <VBox spacing="5" HBox.hgrow="ALWAYS">
+                            <Label fx:id="labDates" style="-fx-font-size: 13; -fx-text-fill: #2D3748; -fx-font-weight: bold;" text="Dates" />
+                            <Label fx:id="labLieu" style="-fx-font-size: 13; -fx-text-fill: #718096;" text="Lieu" />
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <VBox spacing="10">
+                    <Label text="Objectifs pédagogiques" style="-fx-font-weight: bold; -fx-font-size: 16; -fx-text-fill: #2D3748;" />
+                    <Label fx:id="labObjectifs" style="-fx-text-fill: #4A5568; -fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10; -fx-border-color: #E2E8F0; -fx-border-radius: 10;" wrapText="true" text="..." />
+                </VBox>
+            </VBox>
+        </content>
+    </ScrollPane>
+
+    <HBox alignment="CENTER_RIGHT" style="-fx-background-color: white; -fx-padding: 20;">
+        <Button onAction="#fermer" prefHeight="45.0" prefWidth="150.0"
+                style="-fx-background-color: #2D3748; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"
+                text="Fermer" />
+    </HBox>
+</VBox>

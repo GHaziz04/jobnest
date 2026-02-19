@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="800.0" prefWidth="1400.0" style="-fx-background-color: #F8FAFC;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.jobnest.gformation.Controller.AffichageController">
+    <children>
+        <VBox prefWidth="260.0" style="-fx-background-color: #2D3748;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                    <VBox.margin><Insets bottom="40.0" left="30.0" top="30.0" /></VBox.margin>
+                    <children>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <image><Image url="@../images/logo_jobnest.png" /></image>
+                        </ImageView>
+                        <VBox alignment="CENTER_LEFT" spacing="-2">
+                            <children>
+                                <Label text="JobNest" textFill="WHITE">
+                                    <font><Font name="System Bold" size="24.0" /></font>
+                                </Label>
+                                <Label text="Plateforme RH" textFill="#A0AEC0">
+                                    <font><Font size="12.0" /></font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <VBox spacing="10.0">
+                    <children>
+                        <Button fx:id="btnDashboard" alignment="BASELINE_LEFT" onAction="#afficherTableauDeBord" prefHeight="50.0" prefWidth="260.0" styleClass="sidebar-button" text="📊  Tableau de bord">
+                            <padding><Insets left="30.0" /></padding>
+                        </Button>
+                        <Button fx:id="btnSessions" alignment="BASELINE_LEFT" onAction="#afficherSessions" prefHeight="50.0" prefWidth="260.0" styleClass="sidebar-button-active" text="📖  Sessions Formation">
+                            <padding><Insets left="30.0" /></padding>
+                        </Button>
+                    </children>
+                </VBox>
+
+                <Region VBox.vgrow="ALWAYS" />
+
+                <Button prefHeight="60.0" prefWidth="260.0" style="-fx-background-color: transparent; -fx-text-fill: #FC8181; -fx-cursor: hand; -fx-font-weight: bold;" text="🚪 Déconnexion" />
+            </children>
+        </VBox>
+
+        <StackPane fx:id="mainContent" layoutX="260.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox fx:id="viewSessions" spacing="25.0">
+                    <padding><Insets bottom="20.0" left="40.0" right="40.0" top="30.0" /></padding>
+                    <children>
+
+                        <HBox alignment="CENTER_LEFT" spacing="20.0">
+                            <children>
+                                <ImageView fitHeight="45.0" pickOnBounds="true" preserveRatio="true">
+                                    <image><Image url="@../images/logo_jobnest.png" /></image>
+                                </ImageView>
+                                <Pane prefHeight="35.0" prefWidth="2.0" style="-fx-background-color: #CBD5E0; -fx-background-radius: 2;" />
+                                <Label style="-fx-font-size: 28px; -fx-font-weight: 800; -fx-text-fill: #1A202C;" text="Catalogue des Formations" />
+                            </children>
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+                            <children>
+                                <TextField fx:id="txtRecherche" prefHeight="45.0" prefWidth="400.0" promptText="🔍 Rechercher par titre ou formateur..." styleClass="search-field" />
+                                <ComboBox fx:id="comboTri" prefHeight="45.0" prefWidth="220.0" promptText="Trier par..." />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Button onAction="#ouvrirAjout" prefHeight="45.0" styleClass="button-orange" text="＋ Nouvelle Session">
+                                    <padding><Insets left="30.0" right="30.0" /></padding>
+                                </Button>
+                            </children>
+                        </HBox>
+
+                        <StackPane VBox.vgrow="ALWAYS">
+                            <children>
+                                <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                                    <content>
+                                        <FlowPane fx:id="cardsContainer" hgap="25.0" vgap="25.0" style="-fx-background-color: transparent;">
+                                            <padding><Insets bottom="10.0" left="5.0" right="5.0" top="10.0" /></padding>
+                                        </FlowPane>
+                                    </content>
+                                </ScrollPane>
+
+                                <VBox fx:id="paneAucunResultat" alignment="CENTER" spacing="10" visible="false">
+                                    <children>
+                                        <Label text="🚫" style="-fx-font-size: 50;" />
+                                        <Label text="Aucune formation trouvée pour cette recherche" textFill="#A0AEC0">
+                                            <font><Font name="System Bold" size="16.0" /></font>
+                                        </Label>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </StackPane>
+
+                        <HBox alignment="CENTER" prefHeight="70.0">
+                            <children>
+                                <Pagination fx:id="pagination" maxPageIndicatorCount="5" prefHeight="60.0" styleClass="modern-pagination" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </StackPane>
+    </children>
+</AnchorPane>

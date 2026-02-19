@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #F7FAFC;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.jobnest.gformation.Controller.DetailsModuleController">
+    <children>
+        <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+            <top>
+                <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="20.0" style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-padding: 0 30;">
+                    <children>
+                        <Button fx:id="btnRetour" mnemonicParsing="false" onAction="#handleRetour" style="-fx-background-color: #EDF2F7; -fx-cursor: hand; -fx-background-radius: 8;" text="←" textFill="#4A5568">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Button>
+                        <VBox alignment="CENTER_LEFT">
+                            <children>
+                                <Label fx:id="lblTitreModule" text="TITRE DU MODULE" textFill="#2D3748">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblNomRessource" text="Nom de la ressource actuelle" textFill="#718096">
+                                    <font>
+                                        <Font size="13.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+
+                        <Region HBox.hgrow="ALWAYS" />
+
+                        <Button mnemonicParsing="false" onAction="#handleGenererQuizIA"
+                                style="-fx-background-color: #EBF8FF; -fx-text-fill: #3182CE; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #BEE3F8; -fx-border-width: 1;"
+                                text="✨ Générer Quiz IA">
+                            <padding>
+                                <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
+                            </padding>
+                        </Button>
+
+                        <Label fx:id="lblIndex" text="CONTENU 1/1" textFill="#A0AEC0">
+                            <font>
+                                <Font name="System Italic" size="13.0" />
+                            </font>
+                            <HBox.margin>
+                                <Insets left="10.0" />
+                            </HBox.margin>
+                        </Label>
+                    </children>
+                </HBox>
+            </top>
+
+            <left>
+                <VBox prefWidth="300.0" style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-width: 0 1 0 0;">
+                    <children>
+                        <Label style="-fx-padding: 20 15 10 15;" text="PLAN DU MODULE" textFill="#A0AEC0">
+                            <font>
+                                <Font name="System Bold" size="11.0" />
+                            </font>
+                        </Label>
+                        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
+                            <content>
+                                <VBox fx:id="sidebarResources" spacing="5.0" style="-fx-padding: 5 10 10 10;">
+                                </VBox>
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </VBox>
+            </left>
+
+            <center>
+                <VBox spacing="0.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <HBox fx:id="timelineContainer" alignment="CENTER" prefHeight="4.0" spacing="2.0" style="-fx-background-color: #EDF2F7;" />
+
+                        <ScrollPane fitToWidth="true" style="-fx-background-color: white; -fx-background: white;" VBox.vgrow="ALWAYS">
+                            <content>
+                                <StackPane fx:id="viewerContainer" minHeight="500.0" style="-fx-padding: 40; -fx-background-color: white;">
+                                    <children>
+                                        <VBox alignment="CENTER" spacing="15.0">
+                                            <children>
+                                                <Label text="Veuillez sélectionner une ressource dans le plan." textFill="#A0AEC0">
+                                                    <font>
+                                                        <Font size="14.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </StackPane>
+                            </content>
+                        </ScrollPane>
+
+                        <HBox alignment="CENTER" prefHeight="80.0" spacing="50.0" style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0;">
+                            <children>
+                                <Button fx:id="btnPrecedent" mnemonicParsing="false" onAction="#handlePrecedent" prefHeight="40.0" prefWidth="160.0" style="-fx-background-color: #EDF2F7; -fx-background-radius: 20; -fx-cursor: hand;" text="Précédent" textFill="#4A5568">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Button>
+                                <Button fx:id="btnSuivant" mnemonicParsing="false" onAction="#handleSuivant" prefHeight="40.0" prefWidth="160.0" style="-fx-background-color: #3182CE; -fx-background-radius: 20; -fx-cursor: hand;" text="Suivant" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </center>
+
+        </BorderPane>
+    </children>
+</AnchorPane>

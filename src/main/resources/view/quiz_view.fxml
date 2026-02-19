@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.effect.DropShadow?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.jobnest.gformation.Controller.QuizController">
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="40.0" left="100.0" right="100.0" top="40.0" />
+            </padding>
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="20.0">
+                    <children>
+                        <Button fx:id="btnQuitter" onAction="#handleQuitter"
+                                style="-fx-background-color: #EDF2F7; -fx-background-radius: 8; -fx-cursor: hand; -fx-text-fill: #4A5568; -fx-font-weight: bold;"
+                                text="← Quitter" />
+                        <Label text="Évaluation par IA" textFill="#2D3748">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+
+                <VBox spacing="10.0">
+                    <children>
+                        <ProgressBar fx:id="quizProgress" maxWidth="Infinity" prefHeight="15.0" progress="0.0" style="-fx-accent: #3182CE;" />
+                        <HBox alignment="CENTER_RIGHT">
+                            <children>
+                                <Label fx:id="lblProgressPercent" text="0%" textFill="#718096" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <VBox spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-border-color: #E2E8F0; -fx-border-radius: 15; -fx-padding: 40;">
+                    <effect>
+                        <DropShadow blurType="THREE_PASS_BOX" color="#0000000d" height="20.0" radius="9.5" width="20.0" />
+                    </effect>
+                    <children>
+                        <Label fx:id="lblQuestionNum" text="QUESTION 1/..." textFill="#718096">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="lblQuestionTexte" text="Chargement de la question..." textFill="#2D3748" wrapText="true">
+                            <font>
+                                <Font name="System Semibold" size="20.0" />
+                            </font>
+                        </Label>
+
+                        <VBox fx:id="optionsContainer" spacing="12.0">
+                        </VBox>
+                    </children>
+                </VBox>
+
+                <HBox alignment="CENTER" spacing="20.0">
+                    <children>
+                        <Button fx:id="btnValider" onAction="#handleValider" prefHeight="50.0" prefWidth="250.0"
+                                style="-fx-background-color: #3182CE; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand; -fx-font-size: 16px;"
+                                text="Valider la réponse" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

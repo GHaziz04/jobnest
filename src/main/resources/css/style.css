@@ -1,0 +1,340 @@
+/* --- CONFIGURATION GÉNÉRALE --- */
+.root {
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* --- BOUTON ORANGE (Nouvelle Session & Voir Détails) --- */
+.button-orange {
+    -fx-background-color: #E28743;
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-transition: 0.2s;
+}
+
+.button-orange:hover {
+    -fx-background-color: #C05621; /* Orange plus foncé au survol */
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-effect: dropshadow(three-pass-box, rgba(226, 135, 67, 0.4), 10, 0, 0, 0);
+}
+
+/* --- SIDEBAR --- */
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #A0AEC0;
+    -fx-cursor: hand;
+    -fx-transition: 0.3s;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #3d4959;
+    -fx-text-fill: white;
+}
+
+/* Bouton actif dans la Sidebar (Sessions Formation) */
+.sidebar-button-active {
+    -fx-background-color: #E28743;
+    -fx-text-fill: white;
+    -fx-background-radius: 0 30 30 0;
+    -fx-font-weight: bold;
+}
+
+/* --- PAGINATION (Harmonisée en Orange) --- */
+.pagination {
+    -fx-padding: 10;
+}
+
+.pagination .toggle-button {
+    -fx-background-color: white;
+    -fx-text-fill: #2D3748;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}
+
+.pagination .toggle-button:hover {
+    -fx-background-color: #FFF5F0; /* Teinte pêche très légère */
+    -fx-border-color: #E28743;
+}
+
+.pagination .toggle-button:selected {
+    -fx-background-color: #E28743;
+    -fx-text-fill: white;
+    -fx-border-color: #E28743;
+}
+
+.pagination .button {
+    -fx-background-color: #EDF2F7;
+    -fx-text-fill: #2D3748;
+    -fx-background-radius: 8;
+}
+
+.pagination .button .left-arrow,
+.pagination .button .right-arrow {
+    -fx-background-color: #E28743; /* Flèches oranges */
+}
+
+/* --- CARTES DE FORMATION --- */
+.formation-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+}
+
+.formation-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 15, 0, 0, 8);
+    -fx-translate-y: -4;
+}
+
+/* ============================================================
+   NOUVEAUX STYLES POUR LA GESTION DES MODULES
+   ============================================================ */
+
+/* --- CARTES DE MODULE (Accordéon) --- */
+.module-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1;
+    -fx-transition: 0.3s;
+}
+
+.module-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(49, 130, 206, 0.15), 15, 0, 0, 5);
+    -fx-border-color: #CBD5E0;
+}
+
+/* --- BARRE DE PROGRESSION --- */
+.progress-bar {
+    -fx-background-color: #EDF2F7;
+    -fx-background-radius: 10;
+}
+
+.progress-bar .bar {
+    -fx-background-radius: 10;
+    -fx-padding: 0;
+}
+
+/* --- CHAMPS DE TEXTE (Effet Focus Bleu) --- */
+.text-input {
+    -fx-background-color: #F7FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8;
+}
+
+.text-input:focused {
+    -fx-background-color: white;
+    -fx-border-color: #3182CE;
+    -fx-effect: dropshadow(three-pass-box, rgba(66, 153, 225, 0.2), 8, 0, 0, 0);
+}
+
+/* --- BADGES DE TYPE (Cours, Vidéo, etc.) --- */
+.type-badge {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 2 10;
+    -fx-background-radius: 20;
+}
+
+/* --- BOUTON DE SAUVEGARDE DANS LE DROP-DOWN --- */
+.btn-save {
+    -fx-background-color: #48BB78;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.btn-save:hover {
+    -fx-background-color: #38A169;
+}/* --- CONFIGURATION GÉNÉRALE --- */
+.root {
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* --- BOUTON ORANGE (Nouvelle Session & Voir Détails) --- */
+.button-orange {
+    -fx-background-color: #E28743;
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-transition: 0.2s;
+}
+
+.button-orange:hover {
+    -fx-background-color: #C05621;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-effect: dropshadow(three-pass-box, rgba(226, 135, 67, 0.4), 10, 0, 0, 0);
+}
+
+/* --- SIDEBAR --- */
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #A0AEC0;
+    -fx-cursor: hand;
+    -fx-transition: 0.3s;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #3d4959;
+    -fx-text-fill: white;
+}
+
+.sidebar-button-active {
+    -fx-background-color: #E28743;
+    -fx-text-fill: white;
+    -fx-background-radius: 0 30 30 0;
+    -fx-font-weight: bold;
+}
+
+/* --- PAGINATION --- */
+.pagination {
+    -fx-padding: 10;
+}
+
+.pagination .toggle-button {
+    -fx-background-color: white;
+    -fx-text-fill: #2D3748;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}
+
+.pagination .toggle-button:hover {
+    -fx-background-color: #FFF5F0;
+    -fx-border-color: #E28743;
+}
+
+.pagination .toggle-button:selected {
+    -fx-background-color: #E28743;
+    -fx-text-fill: white;
+    -fx-border-color: #E28743;
+}
+
+.pagination .button {
+    -fx-background-color: #EDF2F7;
+    -fx-text-fill: #2D3748;
+    -fx-background-radius: 8;
+}
+
+.pagination .button .left-arrow,
+.pagination .button .right-arrow {
+    -fx-background-color: #E28743;
+}
+
+/* --- CARTES DE FORMATION --- */
+.formation-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+}
+
+.formation-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 15, 0, 0, 8);
+    -fx-translate-y: -4;
+}
+
+/* --- MODULES & PROGRESSION --- */
+.module-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1;
+    -fx-transition: 0.3s;
+}
+
+.module-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(49, 130, 206, 0.15), 15, 0, 0, 5);
+    -fx-border-color: #CBD5E0;
+}
+
+.progress-bar {
+    -fx-background-color: #EDF2F7;
+    -fx-background-radius: 10;
+}
+
+.progress-bar .bar {
+    -fx-background-radius: 10;
+    -fx-padding: 0;
+}
+
+/* --- CHAMPS DE SAISIE (Moderne) --- */
+.text-input, .combo-box, .date-picker {
+    -fx-background-color: #F7FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8;
+}
+
+.text-input:focused, .combo-box:focused, .date-picker:focused {
+    -fx-background-color: white;
+    -fx-border-color: #3182CE;
+    -fx-effect: dropshadow(three-pass-box, rgba(66, 153, 225, 0.2), 8, 0, 0, 0);
+}
+
+/* ============================================================
+   VALIDATION VISUELLE (VERT / ROUGE)
+   ============================================================ */
+
+.field-error {
+    -fx-border-color: #F56565 !important;
+    -fx-border-width: 2px !important;
+    -fx-background-color: #FFF5F5 !important;
+}
+
+.field-success {
+    -fx-border-color: #48BB78 !important;
+    -fx-border-width: 2px !important;
+    -fx-background-color: #F0FFF4 !important;
+}
+
+/* --- AUTRES --- */
+.btn-save {
+    -fx-background-color: #48BB78;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.btn-save:hover {
+    -fx-background-color: #38A169;
+}
+/* ============================================================
+   AJOUT : DESIGN DES BADGES DE STATUT (LIGNES SUPPLÉMENTAIRES)
+   ============================================================ */
+
+/* Classe de base pour l'aspect "Badge" */
+.statut-badge {
+    -fx-background-radius: 15;
+    -fx-padding: 5 12;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+}
+
+/* Design spécifique : OUVERT en VERT */
+.statut-ouvert {
+    -fx-background-color: #38A169 !important;
+    -fx-effect: dropshadow(three-pass-box, rgba(56, 161, 105, 0.4), 8, 0, 0, 0);
+}
+
+/* Design spécifique : TERMINÉ en ROUGE */
+.statut-termine {
+    -fx-background-color: #E53E3E !important;
+    -fx-effect: dropshadow(three-pass-box, rgba(229, 62, 62, 0.4), 8, 0, 0, 0);
+}
+
+/* Design spécifique : PROGRAMMÉE en BLEU */
+.statut-programme {
+    -fx-background-color: #3182CE !important;
+}

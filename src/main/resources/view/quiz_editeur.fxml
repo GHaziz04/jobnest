@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="750.0" prefWidth="1000.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.jobnest.gformation.Controller.QuizController">
+    <children>
+        <VBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="30.0" left="40.0" right="40.0" top="30.0" />
+            </padding>
+            <children>
+
+                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                    <children>
+                        <Button fx:id="btnQuitter" onAction="#handleQuitter" style="-fx-background-color: #EDF2F7; -fx-text-fill: #4A5568; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;" text="← Retour" />
+                        <VBox HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Éditeur de Quiz" textFill="#2D3748">
+                                    <font>
+                                        <Font name="System Bold" size="28.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Créez votre évaluation avec l'assistance de Gemini IA" textFill="#718096" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <Separator prefWidth="200.0" />
+
+                <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12;">
+                    <children>
+                        <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Titre du Quiz" textFill="#4A5568">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <TextField fx:id="txtTitreQuiz" prefHeight="40.0" promptText="Ex: Quiz de validation - Module 1" style="-fx-background-radius: 8;" />
+                            </children>
+                        </VBox>
+                        <VBox alignment="BOTTOM_CENTER" spacing="10.0">
+                            <children>
+                                <Button fx:id="btnGenererIA" onAction="#handleGenererIA" prefHeight="40.0" prefWidth="220.0" style="-fx-background-color: #6366F1; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;" text="✨ Générer par IA" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <VBox spacing="10.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <HBox alignment="CENTER_LEFT">
+                            <children>
+                                <Label text="Questions du Quiz" textFill="#2D3748">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                                <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Button onAction="#handleAjouterQuestionManuelle" style="-fx-background-color: transparent; -fx-text-fill: #3182CE; -fx-font-weight: bold; -fx-cursor: hand;" text="+ Ajouter manuellement" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </HBox>
+
+                        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-padding: 10;" VBox.vgrow="ALWAYS">
+                            <content>
+                                <VBox fx:id="questionsContainer" spacing="15.0">
+                                    <padding>
+                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                    </padding>
+                                </VBox>
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </VBox>
+
+                <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                    <children>
+                        <Button onAction="#handleQuitter" prefHeight="45.0" prefWidth="120.0" style="-fx-background-color: white; -fx-border-color: #CBD5E0; -fx-border-radius: 8; -fx-background-radius: 8;" text="Annuler" />
+                        <Button onAction="#handleSauvegarderTout" prefHeight="45.0" prefWidth="220.0" style="-fx-background-color: #1A202C; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;" text="Sauvegarder tout" />
+                    </children>
+                </HBox>
+
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

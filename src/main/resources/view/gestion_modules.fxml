@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="20.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.jobnest.gformation.Controller.GestionModulesController">
+    <padding>
+        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+    </padding>
+    <children>
+
+        <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: white; -fx-padding: 15 25; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 4);">
+            <children>
+                <Button mnemonicParsing="false" onAction="#handleRetour" style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-background-radius: 12; -fx-cursor: hand; -fx-font-weight: bold;" text="⬅ Retour">
+                    <padding>
+                        <Insets bottom="12.0" left="22.0" right="22.0" top="12.0" />
+                    </padding>
+                </Button>
+                <Separator orientation="VERTICAL" prefHeight="40.0" />
+                <VBox alignment="CENTER_LEFT">
+                    <Label fx:id="lblNomFormation" style="-fx-font-size: 24; -fx-font-weight: 800; -fx-text-fill: #1E293B;" text="Gestion des Modules" />
+                    <Label style="-fx-font-size: 13; -fx-text-fill: #64748B;" text="Organisez vos chapitres et ressources multimédias" />
+                </VBox>
+            </children>
+        </HBox>
+
+        <VBox spacing="12.0" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 10, 0, 0, 2);">
+            <children>
+                <HBox alignment="CENTER_LEFT">
+                    <children>
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14;" text="Taux de complétion des supports" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblPourcentage" style="-fx-font-weight: 900; -fx-text-fill: #38A169; -fx-font-size: 16;" text="0%" />
+                    </children>
+                </HBox>
+                <ProgressBar fx:id="progressFormation" maxWidth="Infinity" prefHeight="12.0" progress="0.0" style="-fx-accent: #38A169; -fx-background-radius: 20;" />
+            </children>
+        </VBox>
+
+        <HBox spacing="25.0" VBox.vgrow="ALWAYS">
+            <children>
+
+                <VBox spacing="15.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                            <children>
+                                <Label style="-fx-font-weight: 800; -fx-text-fill: #334155; -fx-font-size: 18;" text="Chapitres de la formation" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Button onAction="#handleOpenForm" style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-background-radius: 12; -fx-cursor: hand; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.25), 12, 0, 0, 6);" text="＋ Nouveau Module">
+                                    <padding>
+                                        <Insets bottom="12.0" left="25.0" right="25.0" top="12.0" />
+                                    </padding>
+                                </Button>
+                            </children>
+                        </HBox>
+
+                        <ScrollPane fx:id="scrollModules" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
+                            <content>
+                                <VBox fx:id="containerModules" spacing="18.0" style="-fx-padding: 10 5 10 5;" />
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </VBox>
+
+                <VBox fx:id="formContainer" managed="false" prefWidth="420.0" spacing="20.0" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 30, 0, 0, 10); -fx-border-color: #E2E8F0; -fx-border-radius: 25; -fx-border-width: 1;" visible="false">
+                    <children>
+                        <HBox alignment="CENTER_LEFT">
+                            <children>
+                                <VBox spacing="2">
+                                    <Label fx:id="lblFormTitre" style="-fx-font-weight: 900; -fx-font-size: 20; -fx-text-fill: #1E293B;" text="Éditeur de Contenu" />
+                                    <Label style="-fx-font-size: 12; -fx-text-fill: #94A3B8;" text="Module ou Ressource pédagogique" />
+                                </VBox>
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Button onAction="#handleCloseForm" style="-fx-background-color: #FEE2E2; -fx-text-fill: #EF4444; -fx-background-radius: 50; -fx-font-weight: bold; -fx-min-width: 32; -fx-min-height: 32;" text="✕" />
+                            </children>
+                        </HBox>
+
+                        <VBox spacing="8.0">
+                            <Label style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 13;" text="Titre de l'élément" />
+                            <TextField fx:id="txtTitre" prefHeight="45.0" promptText="Saisissez le titre ici..." style="-fx-background-radius: 10; -fx-border-color: #CBD5E1; -fx-border-radius: 10; -fx-padding: 0 15;" />
+                        </VBox>
+
+                        <HBox spacing="15">
+                            <children>
+                                <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                                    <Label style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 13;" text="Type de support" />
+                                    <ComboBox fx:id="comboType" maxWidth="Infinity" prefHeight="45.0" style="-fx-background-radius: 10; -fx-border-radius: 10;" />
+                                </VBox>
+                                <VBox spacing="8.0" prefWidth="90.0">
+                                    <Label style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 13;" text="Ordre" />
+                                    <TextField fx:id="txtOrdre" alignment="CENTER" prefHeight="45.0" promptText="1" style="-fx-background-radius: 10; -fx-border-radius: 10;" />
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <VBox spacing="8.0">
+                            <Label style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 13;" text="Description / Objectifs" />
+                            <TextArea fx:id="txtDescription" prefHeight="80.0" promptText="Brève description du module..." style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 5;" wrapText="true" />
+                        </VBox>
+
+                        <VBox spacing="12" style="-fx-background-color: #F8FAFC; -fx-padding: 18; -fx-background-radius: 15; -fx-border-color: #E2E8F0; -fx-border-radius: 15;">
+                            <children>
+                                <VBox fx:id="paneTextArea" spacing="8.0">
+                                    <Label style="-fx-font-weight: bold; -fx-text-fill: #334155;" text="Contenu textuel détaillé" />
+                                    <TextArea fx:id="txtContenuTexte" prefHeight="120.0" promptText="Rédigez le cours ici..." style="-fx-background-radius: 10;" wrapText="true" />
+                                </VBox>
+                                <VBox fx:id="paneFilePicker" managed="false" spacing="8.0" visible="false">
+                                    <Label style="-fx-font-weight: bold; -fx-text-fill: #334155;" text="Fichier multimédia" />
+                                    <HBox spacing="10.0">
+                                        <TextField fx:id="txtPath" editable="false" prefHeight="45.0" promptText="Sélectionnez un fichier..." style="-fx-background-radius: 10;" HBox.hgrow="ALWAYS" />
+                                        <Button onAction="#handleBrowse" prefHeight="45.0" prefWidth="50.0" style="-fx-background-color: white; -fx-border-color: #CBD5E1; -fx-border-radius: 10; -fx-cursor: hand;" text="📁" />
+                                    </HBox>
+                                </VBox>
+                            </children>
+                        </VBox>
+
+                        <Region VBox.vgrow="ALWAYS" />
+
+                        <VBox spacing="12.0">
+                            <Button fx:id="btnAjouter" maxWidth="Infinity" onAction="#handleAjouter" prefHeight="55.0" style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-weight: 800; -fx-font-size: 15; -fx-background-radius: 12; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.2), 10, 0, 0, 4);" text="💾 ENREGISTRER" />
+                            <Button maxWidth="Infinity" onAction="#handleCloseForm" style="-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-cursor: hand; -fx-font-weight: bold;" text="Annuler les modifications" />
+                        </VBox>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
+</VBox>

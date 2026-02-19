@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+
+<ScrollPane fitToWidth="true" prefHeight="650.0" prefWidth="550.0"
+            style="-fx-background-color: white; -fx-background: white;"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.jobnest.gformation.Controller.AjoutController">
+
+    <stylesheets>
+        <URL value="@../css/style.css" />
+    </stylesheets>
+
+    <content>
+        <VBox spacing="15.0" style="-fx-background-color: white;">
+            <padding>
+                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
+            <children>
+                <Label focusTraversable="false" text="Gestion de Session" textFill="#2D3748">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+
+                <Separator prefWidth="200.0" />
+
+                <Label style="-fx-font-weight: bold;" text="Informations Générales" textFill="#4A5568" />
+
+                <TextField fx:id="txtTitre" prefHeight="40.0" promptText="Titre de la formation" styleClass="text-input" />
+
+                <TextArea fx:id="txtDescription" prefHeight="80.0" promptText="Description courte (résumé pour la carte)..." styleClass="text-input" wrapText="true" />
+
+                <HBox spacing="10.0">
+                    <children>
+                        <TextField fx:id="txtPrix" prefHeight="40.0" promptText="Prix (DT)" styleClass="text-input" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="txtDuree" prefHeight="40.0" promptText="Durée (h)" styleClass="text-input" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="txtPlaces" prefHeight="40.0" promptText="Nb Places" styleClass="text-input" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+
+                <HBox spacing="10.0">
+                    <children>
+                        <ComboBox fx:id="comboNiveau" maxWidth="Infinity" prefHeight="40.0" promptText="Sélectionner Niveau" styleClass="combo-box" HBox.hgrow="ALWAYS" />
+                        <ComboBox fx:id="comboStatut" maxWidth="Infinity" prefHeight="40.0" promptText="Statut actuel" styleClass="combo-box" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+
+                <Separator prefWidth="200.0" />
+
+                <Label style="-fx-font-weight: bold;" text="Image de couverture" textFill="#4A5568" />
+                <HBox spacing="10.0">
+                    <children>
+                        <TextField fx:id="txtUrlImage" editable="false" prefHeight="40.0" promptText="Aucune image sélectionnée" style="-fx-background-color: #F7FAFC;" styleClass="text-input" HBox.hgrow="ALWAYS" />
+                        <Button mnemonicParsing="false" onAction="#choisirImage" prefHeight="40.0" prefWidth="100.0" style="-fx-background-color: #4A5568; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8; -fx-font-weight: bold;" text="Parcourir" />
+                    </children>
+                </HBox>
+
+                <Separator prefWidth="200.0" />
+
+                <Label style="-fx-font-weight: bold;" text="Logistique et Détails" textFill="#4A5568" />
+                <HBox spacing="10.0">
+                    <children>
+                        <DatePicker fx:id="dateDebut" maxWidth="Infinity" prefHeight="40.0" promptText="Date Début" styleClass="date-picker" HBox.hgrow="ALWAYS" />
+                        <DatePicker fx:id="dateFin" maxWidth="Infinity" prefHeight="40.0" promptText="Date Fin" styleClass="date-picker" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+
+                <TextField fx:id="txtLieu" prefHeight="40.0" promptText="Lieu (ex: Tunis, En ligne...)" styleClass="text-input" />
+
+                <TextArea fx:id="txtObjectifs" prefHeight="100.0" promptText="Objectifs détaillés de la formation..." styleClass="text-input" wrapText="true" />
+
+                <Region VBox.vgrow="ALWAYS" />
+
+                <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#annuler" prefHeight="40.0" prefWidth="110.0" style="-fx-background-color: #EDF2F7; -fx-text-fill: #4A5568; -fx-cursor: hand; -fx-background-radius: 8; -fx-font-weight: bold;" text="Annuler" />
+                        <Button mnemonicParsing="false" onAction="#enregistrer" prefHeight="40.0" prefWidth="150.0" styleClass="button-orange" text="Enregistrer" />
+                    </children>
+                    <padding> <Insets top="10.0" /> </padding>
+                </HBox>
+            </children>
+        </VBox>
+    </content>
+</ScrollPane>
