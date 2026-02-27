@@ -16,7 +16,6 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import tn.jobnest.gentretien.model.Entretien;
 import tn.jobnest.gentretien.service.Entretienservice;
-import tn.jobnest.gentretien.service.FeedbackService;
 
 import java.awt.Desktop;
 import java.io.IOException;
@@ -31,102 +30,107 @@ import java.util.stream.Collectors;
 
 public class Entretiencontroller {
 
-    @FXML private VBox entretiensVBox;
-    @FXML private TextField searchField;
-    @FXML private ComboBox<String> comboType;
-    @FXML private ComboBox<String> comboStatut;
-    @FXML private Label planifiesCount;
-    @FXML private Label terminesCount;
-    @FXML private Label semaineCount;
+    @FXML private VBox              entretiensVBox;
+    @FXML private TextField         searchField;
+    @FXML private ComboBox<String>  comboType;
+    @FXML private ComboBox<String>  comboStatut;
+    @FXML private Label             planifiesCount;
+    @FXML private Label             terminesCount;
+    @FXML private Label             semaineCount;
 
     private final Entretienservice service = new Entretienservice();
 
-    /** allEntretiens = TOUS → pour les stats globales */
     private List<Entretien> allEntretiens;
-    /** entretiensFiltres = uniquement proposé + confirmé → pour l'affichage */
     private List<Entretien> entretiensFiltres;
 
     private final int currentRecruteurId = 1;
 
+    // ────────────────────────────────────────────────────────────────
     @FXML
     public void initialize() {
         comboType.setItems(FXCollections.observableArrayList("Tous les types", "présentiel", "visio"));
         comboType.setValue("Tous les types");
 
-        // Seulement proposé et confirmé — réalisé/annulé sont dans l'Historique
         comboStatut.setItems(FXCollections.observableArrayList("Tous les statuts", "proposé", "confirmé"));
         comboStatut.setValue("Tous les statuts");
 
-        comboType.valueProperty().addListener((obs, old, nv) -> filterAndDisplay());
-        comboStatut.valueProperty().addListener((obs, old, nv) -> filterAndDisplay());
-        searchField.textProperty().addListener((obs, old, nv) -> filterAndDisplay());
+        comboType  .valueProperty().addListener((obs, o, n) -> filterAndDisplay());
+        comboStatut.valueProperty().addListener((obs, o, n) -> filterAndDisplay());
+        searchField.textProperty() .addListener((obs, o, n) -> filterAndDisplay());
 
         rafraichirListe();
     }
 
-    // ------------------------------------------------------------------ //
+    // ────────────────────────────────────────────────────────────────
     //  BOUTON ACTUALISER
-    // ------------------------------------------------------------------ //
+    // ────────────────────────────────────────────────────────────────
     @FXML
     private void actualiserListe(ActionEvent event) {
         rafraichirListe();
         showAlert(Alert.AlertType.INFORMATION, "Actualisation", "La liste des entretiens a été actualisée.");
     }
 
-    // ------------------------------------------------------------------ //
+    // ────────────────────────────────────────────────────────────────
     //  NAVIGATION SIDEBAR
-    // ------------------------------------------------------------------ //
+    // ────────────────────────────────────────────────────────────────
     @FXML
     private void ouvrirFeedbacks(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/feedback-interface.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/tn/jobnest/gentretien/feedback-interface.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(loader.load());
-            scene.getStylesheets().add(getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
+            scene.getStylesheets().add(
+                    getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
             stage.setScene(scene);
             stage.setTitle("JobNest - Gestion des Feedbacks");
         } catch (IOException ex) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir les feedbacks : " + ex.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir les feedbacks : " + ex.getMessage());
         }
     }
 
     @FXML
     private void ouvrirHistorique(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/historique-entretien.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/tn/jobnest/gentretien/historique-entretien.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
-            if (getClass().getResource("/tn/jobnest/gentretien/styles.css") != null)
-                scene.getStylesheets().add(getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
+            java.net.URL cssHist = getClass().getResource("/tn/jobnest/gentretien/styles.css");
+            if (cssHist != null) scene.getStylesheets().add(cssHist.toExternalForm());
             stage.setScene(scene);
             stage.setTitle("JobNest - Historique des Entretiens");
             stage.show();
         } catch (IOException ex) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir l'historique : " + ex.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir l'historique : " + ex.getMessage());
         }
     }
 
     @FXML
     private void ouvrirCandidature(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/GestionCandidatures.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/tn/jobnest/gentretien/GestionCandidatures.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
-            if (getClass().getResource("/tn/jobnest/gentretien/styles.css") != null)
-                scene.getStylesheets().add(getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
+            java.net.URL cssCand = getClass().getResource("/tn/jobnest/gentretien/styles.css");
+            if (cssCand != null) scene.getStylesheets().add(cssCand.toExternalForm());
             stage.setScene(scene);
             stage.setTitle("JobNest - Gestion des Candidatures");
             stage.show();
         } catch (IOException ex) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir les candidatures : " + ex.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir les candidatures : " + ex.getMessage());
         }
     }
 
-    // ------------------------------------------------------------------ //
+    // ────────────────────────────────────────────────────────────────
     //  CHARGEMENT DONNÉES
-    // ------------------------------------------------------------------ //
+    // ────────────────────────────────────────────────────────────────
     private void rafraichirListe() {
         try {
             List<Entretien> tous = service.afficher();
@@ -139,22 +143,25 @@ public class Entretiencontroller {
             updateStats();
             filterAndDisplay();
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur BD", "Impossible de charger les entretiens : " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur BD",
+                    "Impossible de charger les entretiens : " + e.getMessage());
         }
     }
 
-    // ------------------------------------------------------------------ //
-    //  STATS (sur TOUS les entretiens du recruteur)
-    // ------------------------------------------------------------------ //
+    // ────────────────────────────────────────────────────────────────
+    //  STATISTIQUES
+    // ────────────────────────────────────────────────────────────────
     private void updateStats() {
         if (allEntretiens == null) return;
         long planifies = allEntretiens.stream()
-                .filter(e -> "proposé".equals(e.getStatut()) || "confirmé".equals(e.getStatut())).count();
+                .filter(e -> "proposé".equals(e.getStatut()) || "confirmé".equals(e.getStatut()))
+                .count();
         long termines = allEntretiens.stream()
-                .filter(e -> "réalisé".equals(e.getStatut())).count();
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.minusDays(today.getDayOfWeek().getValue() - 1);
-        LocalDate endOfWeek = startOfWeek.plusDays(6);
+                .filter(e -> "réalisé".equals(e.getStatut()))
+                .count();
+        LocalDate today        = LocalDate.now();
+        LocalDate startOfWeek  = today.minusDays(today.getDayOfWeek().getValue() - 1);
+        LocalDate endOfWeek    = startOfWeek.plusDays(6);
         long cetteSemaine = allEntretiens.stream()
                 .filter(e -> e.getDateEntretien() != null)
                 .filter(e -> {
@@ -162,35 +169,37 @@ public class Entretiencontroller {
                     return !d.isBefore(startOfWeek) && !d.isAfter(endOfWeek);
                 }).count();
         planifiesCount.setText(String.valueOf(planifies));
-        terminesCount.setText(String.valueOf(termines));
-        semaineCount.setText(String.valueOf(cetteSemaine));
+        terminesCount .setText(String.valueOf(termines));
+        semaineCount  .setText(String.valueOf(cetteSemaine));
     }
 
-    // ------------------------------------------------------------------ //
+    // ────────────────────────────────────────────────────────────────
     //  FILTRE + AFFICHAGE
-    // ------------------------------------------------------------------ //
+    // ────────────────────────────────────────────────────────────────
     private void filterAndDisplay() {
         entretiensVBox.getChildren().clear();
         if (entretiensFiltres == null || entretiensFiltres.isEmpty()) {
-            Label empty = new Label("Aucun entretien en cours (proposé ou confirmé).");
-            empty.setStyle("-fx-font-size: 14px; -fx-text-fill: #94A3B8; -fx-padding: 30;");
-            entretiensVBox.getChildren().add(empty);
+            entretiensVBox.getChildren().add(emptyLabel("Aucun entretien en cours (proposé ou confirmé)."));
             return;
         }
-        String search = searchField.getText().trim().toLowerCase();
-        String selType = comboType.getValue();
+        String search    = searchField.getText().trim().toLowerCase();
+        String selType   = comboType.getValue();
         String selStatut = comboStatut.getValue();
         boolean auMoinsUn = false;
+
         for (Entretien e : entretiensFiltres) {
             try {
-                String titreOffre = service.getOffreTitre(e.getIdOffre()).toLowerCase();
-                List<String> participants = service.getParticipants(e.getIdEntretien());
-                String participantsStr = String.join(" ", participants).toLowerCase();
-                boolean matchSearch = search.isEmpty() || titreOffre.contains(search) || participantsStr.contains(search);
-                boolean matchType = "Tous les types".equals(selType) || selType.equals(e.getTypeEntretien());
+                String       titreOffre    = service.getOffreTitre(e.getIdOffre()).toLowerCase();
+                List<String> participants  = service.getParticipants(e.getIdEntretien());
+                String       participantsStr = String.join(" ", participants).toLowerCase();
+                boolean matchSearch = search.isEmpty()
+                        || titreOffre.contains(search)
+                        || participantsStr.contains(search);
+                boolean matchType   = "Tous les types".equals(selType)   || selType.equals(e.getTypeEntretien());
                 boolean matchStatut = "Tous les statuts".equals(selStatut) || selStatut.equals(e.getStatut());
                 if (matchSearch && matchType && matchStatut) {
-                    entretiensVBox.getChildren().add(createEntretienCard(e, participants, titreOffre));
+                    entretiensVBox.getChildren().add(
+                            createEntretienCard(e, participants, service.getOffreTitre(e.getIdOffre())));
                     auMoinsUn = true;
                 }
             } catch (SQLException ex) {
@@ -198,42 +207,39 @@ public class Entretiencontroller {
             }
         }
         if (!auMoinsUn) {
-            Label empty = new Label("Aucun résultat pour ces filtres.");
-            empty.setStyle("-fx-font-size: 14px; -fx-text-fill: #94A3B8; -fx-padding: 30;");
-            entretiensVBox.getChildren().add(empty);
+            entretiensVBox.getChildren().add(emptyLabel("Aucun résultat pour ces filtres."));
         }
     }
 
-    // ------------------------------------------------------------------ //
-    //  CRÉATION CARTE ENTRETIEN
-    // ------------------------------------------------------------------ //
+    private Label emptyLabel(String msg) {
+        Label l = new Label(msg);
+        l.setStyle("-fx-font-size: 14px; -fx-text-fill: #94A3B8; -fx-padding: 30;");
+        return l;
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  CARTE ENTRETIEN
+    // ────────────────────────────────────────────────────────────────
     private Node createEntretienCard(Entretien e, List<String> participants, String titreOffre) {
         HBox card = new HBox(15);
         card.getStyleClass().add("card");
         card.setPrefHeight(130);
 
-        // Avatar
+        // ── Avatar ──
         String participantName = participants.isEmpty() ? "Candidat" : participants.get(0);
-        String initials = participantName.chars().filter(Character::isUpperCase)
-                .mapToObj(c -> String.valueOf((char) c)).collect(Collectors.joining());
-        if (initials.isEmpty() && !participants.isEmpty()) {
-            String[] parts = participantName.split(" ");
-            initials = parts[0].substring(0, 1);
-            if (parts.length > 1) initials += parts[1].substring(0, 1);
-        } else if (initials.isEmpty()) initials = "C";
+        String initials = participants.isEmpty() ? "C"
+                : buildInitials(participantName);
 
         Circle avatar = new Circle(25);
         avatar.getStyleClass().add("avatar");
         Label avatarLabel = new Label(initials);
-        avatarLabel.getStyleClass().add("avatar-text");
         avatarLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;");
-        StackPane avatarStack = new StackPane();
-        avatarStack.getChildren().addAll(avatar, avatarLabel);
+        StackPane avatarStack = new StackPane(avatar, avatarLabel);
         VBox avatarBox = new VBox(avatarStack);
         avatarBox.setAlignment(javafx.geometry.Pos.CENTER);
         avatarBox.setPrefWidth(70);
 
-        // Détails
+        // ── Détails ──
         VBox details = new VBox(8);
         details.setPrefWidth(400);
         details.setPadding(new Insets(5, 0, 5, 0));
@@ -253,15 +259,15 @@ public class Entretiencontroller {
                 ? e.getHeureDebut().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")) : "--:--";
         long duree = calculateDuration(e);
         Label dateTimeLabel = new Label("📅 " + dateStr + " à " + heureStr
-                + (duree > 0 ? " (Durée: " + duree + " min)" : " (Durée non définie)"));
+                + (duree > 0 ? "  (Durée : " + duree + " min)" : "  (Durée non définie)"));
         dateTimeLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #7f8c8d;");
 
         Label lieuVisioLabel;
         if ("présentiel".equals(e.getTypeEntretien())) {
-            String lieu = e.getLieu() != null && !e.getLieu().isEmpty() ? e.getLieu() : "Lieu non défini";
+            String lieu = (e.getLieu() != null && !e.getLieu().isEmpty()) ? e.getLieu() : "Lieu non défini";
             lieuVisioLabel = new Label("📍 " + lieu);
         } else {
-            String lien = e.getLienVisio() != null && !e.getLienVisio().isEmpty() ? e.getLienVisio() : "Lien non défini";
+            String lien = (e.getLienVisio() != null && !e.getLienVisio().isEmpty()) ? e.getLienVisio() : "Lien non défini";
             if (lien.length() > 30) lien = lien.substring(0, 27) + "...";
             lieuVisioLabel = new Label("🔗 " + lien);
         }
@@ -269,13 +275,14 @@ public class Entretiencontroller {
 
         Label statutBadge = buildStatutBadge(e.getStatut());
         details.getChildren().addAll(offreLabel, participantsLabel, dateTimeLabel, lieuVisioLabel, statutBadge);
+
         if (e.getNoteRecruteur() != null && !e.getNoteRecruteur().isEmpty()) {
-            Label noteLabel = new Label("📝 Note: " + e.getNoteRecruteur());
+            Label noteLabel = new Label("📝 Note : " + e.getNoteRecruteur());
             noteLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #e67e22; -fx-font-style: italic;");
             details.getChildren().add(noteLabel);
         }
 
-        // Actions
+        // ── Actions ──
         VBox actionsContainer = new VBox(8);
         actionsContainer.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
         actionsContainer.setPrefWidth(420);
@@ -284,19 +291,17 @@ public class Entretiencontroller {
         HBox actionsRow1 = new HBox(10);
         actionsRow1.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
 
-        // Modifier — toujours actif (proposé/confirmé)
         Button btnModifier = new Button("✏️ Modifier");
         btnModifier.getStyleClass().add("button-primary");
         btnModifier.setPrefWidth(120);
         btnModifier.setPrefHeight(42);
         btnModifier.setOnAction(ev -> openForm(true, e));
 
-        // Feedback — toujours désactivé ici (pas encore réalisé)
         Button btnFeedback = new Button("💬 Feedback");
         btnFeedback.setPrefWidth(130);
         btnFeedback.setPrefHeight(42);
         btnFeedback.setDisable(true);
-        btnFeedback.setStyle("-fx-background-color: #BDC3C7; -fx-text-fill: #7F8C8D; -fx-font-weight: bold; -fx-background-radius: 10px;");
+        btnFeedback.setStyle("-fx-background-color:#BDC3C7;-fx-text-fill:#7F8C8D;-fx-font-weight:bold;-fx-background-radius:10px;");
         String raisonFeedback = "confirmé".equals(e.getStatut())
                 ? "L'entretien est confirmé mais pas encore réalisé."
                 : "L'entretien est en attente de confirmation.";
@@ -311,7 +316,7 @@ public class Entretiencontroller {
         if ("présentiel".equals(e.getTypeEntretien())) {
             btnActionSpecifique = new Button("🗺️ Consulter map");
             btnActionSpecifique.getStyleClass().add("button-map");
-            btnActionSpecifique.setPrefWidth(150);
+            btnActionSpecifique.setPrefWidth(155);
             btnActionSpecifique.setPrefHeight(42);
             btnActionSpecifique.setOnAction(ev -> consulterMap(e));
         } else {
@@ -326,7 +331,7 @@ public class Entretiencontroller {
                 btnActionSpecifique.setPrefWidth(160);
             } else if (e.getDateEntretien() != null) {
                 LocalDate dateE = e.getDateEntretien().toLocalDate();
-                LocalDate auj = LocalDate.now();
+                LocalDate auj   = LocalDate.now();
                 if (!dateE.equals(auj)) {
                     btnActionSpecifique.setDisable(true);
                     btnActionSpecifique.setText(dateE.isAfter(auj) ? "⏳ Pas encore" : "⛔ Expiré");
@@ -349,6 +354,21 @@ public class Entretiencontroller {
         return card;
     }
 
+    // ────────────────────────────────────────────────────────────────
+    //  INITIALES AVATAR
+    // ────────────────────────────────────────────────────────────────
+    private String buildInitials(String name) {
+        String[] parts = name.trim().split("\\s+");
+        if (parts.length == 0) return "?";
+        StringBuilder sb = new StringBuilder();
+        sb.append(Character.toUpperCase(parts[0].charAt(0)));
+        if (parts.length > 1) sb.append(Character.toUpperCase(parts[parts.length - 1].charAt(0)));
+        return sb.toString();
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  BADGE STATUT
+    // ────────────────────────────────────────────────────────────────
     private Label buildStatutBadge(String statut) {
         String emoji, color, bgColor;
         switch (statut == null ? "" : statut) {
@@ -357,19 +377,24 @@ public class Entretiencontroller {
             default:         emoji = "❓"; color = "#6B7280"; bgColor = "#F3F4F6";
         }
         Label badge = new Label(emoji + " " + (statut != null ? statut : "inconnu"));
-        badge.setStyle("-fx-background-color:" + bgColor + "; -fx-text-fill:" + color + ";"
-                + "-fx-font-size:11px; -fx-font-weight:700; -fx-padding:3 10 3 10; -fx-background-radius:20px;");
+        badge.setStyle("-fx-background-color:" + bgColor + ";-fx-text-fill:" + color + ";"
+                + "-fx-font-size:11px;-fx-font-weight:700;-fx-padding:3 10 3 10;-fx-background-radius:20px;");
         return badge;
     }
 
     private long calculateDuration(Entretien e) {
         if (e.getHeureDebut() == null || e.getHeureFin() == null) return 0;
-        return TimeUnit.MILLISECONDS.toMinutes(e.getHeureFin().getTime() - e.getHeureDebut().getTime());
+        return TimeUnit.MILLISECONDS.toMinutes(
+                e.getHeureFin().getTime() - e.getHeureDebut().getTime());
     }
 
+    // ────────────────────────────────────────────────────────────────
+    //  OUVRIR FORMULAIRE
+    // ────────────────────────────────────────────────────────────────
     private void openForm(boolean edition, Entretien ent) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/entretien-form.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/tn/jobnest/gentretien/entretien-form.fxml"));
             Stage stage = new Stage();
             stage.setScene(new Scene(loader.load()));
             EntretienFormController ctrl = loader.getController();
@@ -382,63 +407,87 @@ public class Entretiencontroller {
             stage.showAndWait();
             rafraichirListe();
         } catch (IOException ex) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le formulaire : " + ex.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir le formulaire : " + ex.getMessage());
         }
     }
 
+    // ────────────────────────────────────────────────────────────────
+    //  REJOINDRE VISIO
+    // ────────────────────────────────────────────────────────────────
     private void rejoindre(Entretien e) {
         if (e.getDateEntretien() != null) {
             LocalDate dateE = e.getDateEntretien().toLocalDate();
-            LocalDate auj = LocalDate.now();
+            LocalDate auj   = LocalDate.now();
             if (!dateE.equals(auj)) {
                 String msg = dateE.isAfter(auj)
-                        ? "Cet entretien est prévu pour le " + dateE.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ".\nVous ne pouvez rejoindre que le jour J."
-                        : "Cet entretien était prévu pour le " + dateE.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ".\nLa date est passée.";
+                        ? "Cet entretien est prévu pour le "
+                        + dateE.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                        + ".\nVous ne pouvez rejoindre que le jour J."
+                        : "Cet entretien était prévu pour le "
+                        + dateE.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                        + ".\nLa date est passée.";
                 showAlert(Alert.AlertType.WARNING, "Accès impossible", msg);
                 return;
             }
         }
-        if ("visio".equals(e.getTypeEntretien()) && e.getLienVisio() != null && !e.getLienVisio().isBlank()) {
-            try { Desktop.getDesktop().browse(new URI(e.getLienVisio())); }
-            catch (Exception ex) { showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le lien : " + ex.getMessage()); }
-        }
-    }
-
-    private void consulterMap(Entretien e) {
-        if (!"présentiel".equals(e.getTypeEntretien()) || e.getLieu() == null || e.getLieu().isBlank()) return;
-        try {
-            Alert choix = new Alert(Alert.AlertType.CONFIRMATION);
-            choix.setTitle("Consulter la carte");
-            choix.setHeaderText("Ouvrir Google Maps ?");
-            choix.setContentText("📍 Lieu : " + e.getLieu());
-            ButtonType btnCarte = new ButtonType("🗺️ Voir sur la carte");
-            ButtonType btnItineraire = new ButtonType("🧭 Calculer itinéraire");
-            ButtonType btnAnnuler = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
-            choix.getButtonTypes().setAll(btnCarte, btnItineraire, btnAnnuler);
-            Optional<ButtonType> result = choix.showAndWait();
-            if (result.isPresent()) {
-                if (result.get() == btnCarte) {
-                    Desktop.getDesktop().browse(new URI("https://www.google.com/maps/search/?api=1&query="
-                            + java.net.URLEncoder.encode(e.getLieu(), "UTF-8")));
-                } else if (result.get() == btnItineraire) {
-                    TextInputDialog dialog = new TextInputDialog("Ma position");
-                    dialog.setTitle("Point de départ");
-                    dialog.setHeaderText("Calculer l'itinéraire");
-                    dialog.setContentText("Votre adresse de départ :");
-                    Optional<String> depart = dialog.showAndWait();
-                    if (depart.isPresent() && !depart.get().trim().isEmpty()) {
-                        Desktop.getDesktop().browse(new URI(String.format(
-                                "https://www.google.com/maps/dir/?api=1&origin=%s&destination=%s&travelmode=driving",
-                                java.net.URLEncoder.encode(depart.get(), "UTF-8"),
-                                java.net.URLEncoder.encode(e.getLieu(), "UTF-8"))));
-                    }
-                }
+        if ("visio".equals(e.getTypeEntretien())
+                && e.getLienVisio() != null && !e.getLienVisio().isBlank()) {
+            try {
+                Desktop.getDesktop().browse(new URI(e.getLienVisio()));
+            } catch (Exception ex) {
+                showAlert(Alert.AlertType.ERROR, "Erreur",
+                        "Impossible d'ouvrir le lien : " + ex.getMessage());
             }
-        } catch (Exception ex) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir Google Maps : " + ex.getMessage());
         }
     }
 
+    // ════════════════════════════════════════════════════════════════
+    //  CONSULTER MAP — MapTiler intégré dans WebView JavaFX
+    // ════════════════════════════════════════════════════════════════
+    private void consulterMap(Entretien e) {
+        // Vérifications préalables
+        if (!"présentiel".equals(e.getTypeEntretien())) return;
+
+        if (e.getLieu() == null || e.getLieu().isBlank()) {
+            showAlert(Alert.AlertType.WARNING, "Adresse manquante",
+                    "Aucune adresse n'est définie pour cet entretien présentiel.");
+            return;
+        }
+
+        try {
+            // Récupérer le titre du poste pour l'en-tête de la fenêtre carte
+            String titrePoste = service.getOffreTitre(e.getIdOffre());
+
+            // Charger le FXML de la fenêtre carte
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/tn/jobnest/gentretien/map-view.fxml"));
+            Parent root = loader.load();
+
+            // Passer l'adresse et le titre au contrôleur de la carte
+            MapController mapCtrl = loader.getController();
+            mapCtrl.setAdresse(e.getLieu(), "📅 " + titrePoste);
+
+            // Créer et afficher la fenêtre
+            Stage mapStage = new Stage();
+            mapStage.setTitle("JobNest – Carte : " + e.getLieu());
+            mapStage.setScene(new Scene(root));
+            mapStage.setMinWidth(700);
+            mapStage.setMinHeight(500);
+            mapStage.setWidth(960);
+            mapStage.setHeight(680);
+            mapStage.centerOnScreen();
+            mapStage.show();
+
+        } catch (IOException | SQLException ex) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir la carte : " + ex.getMessage());
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  SUPPRIMER
+    // ────────────────────────────────────────────────────────────────
     private void supprimerEntretien(Entretien e) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmation");
@@ -449,13 +498,18 @@ public class Entretiencontroller {
             try {
                 service.delete(e.getIdEntretien());
                 rafraichirListe();
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Entretien supprimé avec succès.");
+                showAlert(Alert.AlertType.INFORMATION, "Succès",
+                        "Entretien supprimé avec succès.");
             } catch (SQLException ex) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de la suppression : " + ex.getMessage());
+                showAlert(Alert.AlertType.ERROR, "Erreur",
+                        "Échec de la suppression : " + ex.getMessage());
             }
         }
     }
 
+    // ────────────────────────────────────────────────────────────────
+    //  HELPER
+    // ────────────────────────────────────────────────────────────────
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -463,4 +517,5 @@ public class Entretiencontroller {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
 }

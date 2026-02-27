@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JobNest - Carte</title>
+
+    <!-- MapTiler SDK -->
+    <script src="https://cdn.maptiler.com/maptiler-sdk-js/v2.0.1/maptiler-sdk.umd.min.js"></script>
+    <link  href="https://cdn.maptiler.com/maptiler-sdk-js/v2.0.1/maptiler-sdk.css" rel="stylesheet"/>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #F5F7FB;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ===== BARRE DE RECHERCHE ===== */
+        #search-bar {
+            display: flex;
+            gap: 8px;
+            padding: 10px 14px;
+            background: white;
+            border-bottom: 1.5px solid #E2E8F0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            z-index: 10;
+        }
+
+        #search-input {
+            flex: 1;
+            padding: 9px 14px;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+            color: #1E3A5F;
+        }
+        #search-input:focus { border-color: #2563EB; }
+
+        .btn {
+            padding: 9px 18px;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+        .btn:hover  { opacity: 0.88; }
+        .btn:active { transform: scale(0.97); }
+
+        #btn-search     { background: linear-gradient(135deg,#2563EB,#1D4ED8); color: white; }
+        #btn-itineraire { background: linear-gradient(135deg,#10B981,#059669); color: white; }
+
+        /* ===== CARTE ===== */
+        #map-wrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        #map {
+            flex: 1;
+            width: 100%;
+            min-height: 0;
+        }
+
+        /* ===== OVERLAY LOADER ===== */
+        #overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(245,247,251,0.90);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        #overlay.hidden { display: none; }
+
+        .loader-box {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+            padding: 22px 32px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E3A5F;
+        }
+        .spinner {
+            width: 24px; height: 24px;
+            border: 3px solid #E2E8F0;
+            border-top-color: #2563EB;
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+            flex-shrink: 0;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== TOAST ===== */
+        #toast {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1E3A5F;
+            color: white;
+            padding: 10px 22px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: transform 0.35s ease;
+            pointer-events: none;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ===== POPUP MAPLIBRE ===== */
+        .maplibregl-popup-content {
+            border-radius: 12px !important;
+            padding: 14px 18px !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+            font-family: 'Segoe UI', sans-serif !important;
+            min-width: 210px;
+            max-width: 290px;
+        }
+        .popup-title   { font-weight:700; font-size:14px; color:#1E3A5F; margin-bottom:6px; }
+        .popup-adresse { font-size:12px; color:#475569; line-height:1.55; }
+        .popup-badge   {
+            display:inline-block; margin-top:8px;
+            background:#DBEAFE; color:#1D4ED8;
+            font-size:11px; font-weight:700;
+            padding:3px 12px; border-radius:20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- BARRE DE RECHERCHE -->
+<div id="search-bar">
+    <input type="text" id="search-input" placeholder="📍 Saisir ou modifier l'adresse..."/>
+    <button class="btn" id="btn-search"     onclick="rechercherAdresse()">🔍 Chercher</button>
+    <button class="btn" id="btn-itineraire" onclick="calculerItineraire()">🧭 Itinéraire</button>
+</div>
+
+<!-- CARTE + OVERLAYS -->
+<div id="map-wrapper">
+    <div id="map"></div>
+
+    <div id="overlay">
+        <div class="loader-box">
+            <div class="spinner"></div>
+            <span id="overlay-msg">Chargement de la carte…</span>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+</div>
+
+<script>
+    // ================================================================
+    //  ⚠️  REMPLACEZ par votre vraie clé MapTiler
+    //      Inscription GRATUITE sur https://cloud.maptiler.com/
+    // ================================================================
+    var MAPTILER_KEY = "mmseNzFKg5PXIW5W5YLS";
+
+    maptilersdk.config.apiKey = MAPTILER_KEY;
+
+    var map           = null;
+    var currentMarker = null;
+    var currentAdresse= "Tunis, Tunisie";
+    var currentLng    = 10.1658;
+    var currentLat    = 36.8189;
+    var mapReady      = false;
+    var pendingAdresse= null;
+    var toastTimer    = null;
+
+    // ── INITIALISATION ──────────────────────────────────────────────
+    function initMap(lat, lng) {
+        map = new maptilersdk.Map({
+            container : 'map',
+            style     : maptilersdk.MapStyle.STREETS,
+            center    : [lng, lat],
+            zoom      : 13
+        });
+
+        map.on('load', function() {
+            hideOverlay();
+            mapReady = true;
+            if (pendingAdresse) {
+                geocoderEtCentrer(pendingAdresse);
+                pendingAdresse = null;
+            }
+        });
+
+        map.on('error', function(e) {
+            hideOverlay();
+            showToast('Erreur de chargement de la carte');
+            console.error('Erreur MapTiler:', e);
+        });
+    }
+
+    // ── MARQUEUR ────────────────────────────────────────────────────
+    function placerMarqueur(lat, lng, adresse) {
+        if (currentMarker) {
+            currentMarker.remove();
+            currentMarker = null;
+        }
+
+        var el = document.createElement('div');
+        el.style.cssText = 'width:44px;height:44px;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;';
+        el.innerHTML =
+            '<div style="' +
+            'width:36px;height:36px;' +
+            'background:linear-gradient(135deg,#1E3A5F,#2563EB);' +
+            'border-radius:50% 50% 50% 0;' +
+            'transform:rotate(-45deg);' +
+            'border:3px solid white;' +
+            'box-shadow:0 4px 14px rgba(0,0,0,0.35);' +
+            'display:flex;align-items:center;justify-content:center;' +
+            '">' +
+            '<span style="transform:rotate(45deg);font-size:16px;line-height:1;">📍</span>' +
+            '</div>';
+
+        var popup = new maptilersdk.Popup({ offset: 30, closeButton: true })
+            .setHTML(
+                '<div class="popup-title">📅 Lieu de l\'entretien</div>' +
+                '<div class="popup-adresse">' + escapeHtml(adresse) + '</div>' +
+                '<div class="popup-badge">JobNest</div>'
+            );
+
+        currentMarker = new maptilersdk.Marker({ element: el, anchor: 'bottom' })
+            .setLngLat([lng, lat])
+            .setPopup(popup)
+            .addTo(map);
+
+        currentMarker.togglePopup();
+    }
+
+    // ── GÉOCODAGE ───────────────────────────────────────────────────
+    function geocoderEtCentrer(adresse) {
+        showOverlay('Géolocalisation de l\'adresse…');
+
+        maptilersdk.geocoding.forward(adresse, { language: ['fr'], limit: 1 })
+            .then(function(results) {
+                hideOverlay();
+                if (results && results.features && results.features.length > 0) {
+                    var feat = results.features[0];
+                    var lng  = feat.center[0];
+                    var lat  = feat.center[1];
+
+                    currentLat    = lat;
+                    currentLng    = lng;
+                    currentAdresse= adresse;
+
+                    map.flyTo({ center: [lng, lat], zoom: 15, speed: 1.4 });
+                    placerMarqueur(lat, lng, adresse);
+                    showToast('Adresse trouvée !');
+                } else {
+                    showToast('Adresse introuvable. Essayez une autre formulation.');
+                }
+            })
+            .catch(function(err) {
+                hideOverlay();
+                showToast('Erreur de géocodage : ' + err.message);
+                console.error('Géocodage error:', err);
+            });
+    }
+
+    // ── BOUTON RECHERCHER ───────────────────────────────────────────
+    function rechercherAdresse() {
+        var val = document.getElementById('search-input').value.trim();
+        if (!val) return;
+        if (!mapReady) { showToast('Carte en cours de chargement…'); return; }
+        geocoderEtCentrer(val);
+    }
+
+    // ── BOUTON ITINÉRAIRE ───────────────────────────────────────────
+    function calculerItineraire() {
+        var dest = encodeURIComponent(currentAdresse);
+        var url  = 'https://www.google.com/maps/dir/?api=1&destination=' + dest + '&travelmode=driving';
+        window.open(url, '_blank');
+    }
+
+    // ================================================================
+    //  FONCTION APPELÉE DEPUIS JAVA (JavaFX WebEngine)
+    //  Exemple Java : webEngine.executeScript("afficherAdresse('123 Rue ..., Tunis')")
+    // ================================================================
+    function afficherAdresse(adresse) {
+        document.getElementById('search-input').value = adresse;
+        currentAdresse = adresse;
+
+        if (mapReady) {
+            geocoderEtCentrer(adresse);
+        } else {
+            pendingAdresse = adresse;
+        }
+    }
+
+    // ── HELPERS ─────────────────────────────────────────────────────
+    function showOverlay(msg) {
+        document.getElementById('overlay-msg').textContent = msg;
+        document.getElementById('overlay').classList.remove('hidden');
+    }
+    function hideOverlay() {
+        document.getElementById('overlay').classList.add('hidden');
+    }
+
+    function showToast(msg) {
+        var t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function() { t.classList.remove('show'); }, 3200);
+    }
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g,  '&amp;')
+            .replace(/</g,  '&lt;')
+            .replace(/>/g,  '&gt;')
+            .replace(/"/g,  '&quot;')
+            .replace(/'/g,  '&#039;');
+    }
+
+    // ── DÉMARRAGE ────────────────────────────────────────────────────
+    window.addEventListener('load', function() {
+        initMap(currentLat, currentLng);
+
+        document.getElementById('search-input')
+            .addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') rechercherAdresse();
+            });
+    });
+</script>
+</body>
+</html>
