@@ -153,11 +153,7 @@ public class Entretienservice implements Icrud<Entretien> {
     }
 
     /**
-     * 🆕 NOUVELLE MÉTHODE - Vérifie s'il existe un chevauchement d'horaires
-     *
-     * @param entretien L'entretien à vérifier
-     * @return true si un chevauchement est détecté, false sinon
-     * @throws SQLException en cas d'erreur de base de données
+     * Vérifie s'il existe un chevauchement d'horaires
      */
     public boolean hasTimeConflict(Entretien entretien) throws SQLException {
         String sql = "SELECT COUNT(*) FROM entretien " +

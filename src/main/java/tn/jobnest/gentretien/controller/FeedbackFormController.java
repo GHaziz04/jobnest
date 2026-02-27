@@ -1,12 +1,18 @@
 package tn.jobnest.gentretien.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import tn.jobnest.gentretien.model.Entretien;
 import tn.jobnest.gentretien.model.Feedback;
 import tn.jobnest.gentretien.service.FeedbackService;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
@@ -73,6 +79,16 @@ public class FeedbackFormController {
                 showAlert(Alert.AlertType.ERROR, "Erreur",
                         "Impossible de charger le feedback : " + e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Méthode pour forcer le chargement d'un feedback existant (pour modification)
+     */
+    public void setFeedbackExistant(Feedback feedback) {
+        this.feedbackExistant = feedback;
+        if (feedback != null) {
+            chargerFeedback(feedback);
         }
     }
 
@@ -164,5 +180,32 @@ public class FeedbackFormController {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+    @FXML
+    private void ouvrirCandidature(ActionEvent event) {
+        try {
+            // Chargez le fichier FXML de l'interface des candidatures
+            // Assurez-vous que le chemin vers le FXML est correct
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/GestionCandidatures.fxml"));
+            Parent root = loader.load();
+
+            // Récupérer le Stage (la fenêtre) actuel
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Scene scene = new Scene(root);
+
+            // Optionnel : Ajouter votre fichier CSS
+            if (getClass().getResource("/tn/jobnest/gentretien/styles.css") != null) {
+                scene.getStylesheets().add(getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
+            }
+
+            stage.setScene(scene);
+            stage.setTitle("JobNest - Gestion des Candidatures");
+            stage.show();
+
+        } catch (IOException ex) {
+            // Utilisation de votre méthode showAlert existante
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir l'interface des candidatures : " + ex.getMessage());
+        }
     }
 }

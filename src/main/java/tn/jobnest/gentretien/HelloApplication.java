@@ -25,8 +25,8 @@ public class HelloApplication extends Application {
         stage.setMinHeight(700);
 
         // Taille par défaut
-        stage.setWidth(1400);
-        stage.setHeight(850);
+        stage.setWidth(1200);
+        stage.setHeight(700);
 
         // Centrer la fenêtre sur l'écran
         stage.centerOnScreen();
