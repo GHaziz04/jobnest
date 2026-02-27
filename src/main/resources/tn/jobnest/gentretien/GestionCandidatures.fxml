@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.jobnest.gentretien.controller.GestionCandidaturesController"
+            stylesheets="@styles.css"
+            prefWidth="1400.0"
+            prefHeight="850.0">
+
+    <!-- SIDEBAR -->
+    <left>
+        <VBox prefWidth="260" styleClass="sidebar" spacing="10">
+            <padding><Insets top="30" right="20" bottom="30" left="25"/></padding>
+
+            <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
+                <StackPane>
+                    <Circle radius="18" fill="#F97316"/>
+                    <Text text="JN" fill="white"
+                          style="-fx-font-family: 'Segoe UI'; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                </StackPane>
+                <Label text="JobNest" styleClass="logo"/>
+            </HBox>
+
+            <VBox styleClass="menu-container" spacing="5" VBox.vgrow="ALWAYS">
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📊" style="-fx-font-size: 18px;"/>
+                        <Label text="Tableau de bord" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="💼" style="-fx-font-size: 18px;"/>
+                        <Label text="Offres d'emploi" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <!-- ACTIF -->
+                <Button styleClass="menu-item, menu-item-active">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📄" style="-fx-font-size: 18px;"/>
+                        <Label text="Candidatures" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item" onAction="#ouvrirEntretiens">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📅" style="-fx-font-size: 18px;"/>
+                        <Label text="Entretiens" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item" onAction="#ouvrirFeedbacks">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📊" style="-fx-font-size: 18px;"/>
+                        <Label text="Feedbacks" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="🎯" style="-fx-font-size: 18px;"/>
+                        <Label text="Matching" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+            </VBox>
+
+            <VBox styleClass="sidebar-footer" spacing="10">
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="⚙️" style="-fx-font-size: 18px;"/>
+                        <Label text="Paramètres" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="🚪" style="-fx-font-size: 18px;"/>
+                        <Label text="Déconnexion" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- CONTENU PRINCIPAL -->
+    <center>
+        <VBox spacing="20" style="-fx-background-color: #F5F7FB;">
+            <padding><Insets top="25" right="35" bottom="25" left="35"/></padding>
+
+            <Label text="Tableau des Candidatures" styleClass="page-title"/>
+            <Label text="Candidatures en attente — à traiter et planifier" styleClass="page-subtitle"/>
+
+            <!-- Barre outils -->
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField"
+                           promptText="Rechercher par candidat ou offre..."
+                           prefWidth="320" HBox.hgrow="ALWAYS"/>
+
+                <!-- Bouton Actualiser -->
+                <Button text="🔄 Actualiser" onAction="#rafraichirListe"
+                        prefHeight="42"
+                        style="-fx-background-color:white; -fx-text-fill:#1E3A5F;
+                               -fx-font-weight:bold; -fx-font-size:13px; -fx-padding:10 18;
+                               -fx-background-radius:12; -fx-border-color:#E2E8F0;
+                               -fx-border-radius:12; -fx-border-width:1.5; -fx-cursor:hand;"/>
+
+                <!-- Bouton Historique des candidatures -->
+                <Button text="🗂️ Historique" onAction="#ouvrirHistoriqueCandidatures"
+                        prefHeight="42" prefWidth="150"
+                        style="-fx-background-color:linear-gradient(135deg,#1E3A5F,#2563EB);
+                               -fx-text-fill:white; -fx-font-weight:bold; -fx-font-size:13px;
+                               -fx-background-radius:12; -fx-cursor:hand;
+                               -fx-effect:dropshadow(gaussian,rgba(30,58,95,0.35),10,0,0,3);"/>
+            </HBox>
+
+            <!-- Stats — recalculées sur les en_attente uniquement -->
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <VBox styleClass="stat-card">
+                    <Label fx:id="totalCandidaturesLabel" text="0" styleClass="stat-number"/>
+                    <Label text="En attente" styleClass="stat-label"/>
+                </VBox>
+                <VBox styleClass="stat-card">
+                    <Label fx:id="boostedLabel" text="0"
+                           style="-fx-font-size:36px; -fx-font-weight:bold; -fx-text-fill:#7C3AED;"/>
+                    <Label text="Profils Boostés" styleClass="stat-label"/>
+                </VBox>
+                <VBox styleClass="stat-card">
+                    <Label fx:id="enAttenteLabel" text="0"
+                           style="-fx-font-size:36px; -fx-font-weight:bold; -fx-text-fill:#F97316;"/>
+                    <Label text="Sans entretien" styleClass="stat-label"/>
+                </VBox>
+            </HBox>
+
+            <Label text="Candidatures en attente de traitement" styleClass="section-title"/>
+
+            <ScrollPane fitToWidth="true" prefHeight="600.0"
+                        style="-fx-background:transparent; -fx-background-color:transparent; -fx-border-color:transparent;"
+                        VBox.vgrow="ALWAYS">
+                <VBox fx:id="vboxCandidatures" spacing="12" style="-fx-background-color:transparent;"/>
+            </ScrollPane>
+        </VBox>
+    </center>
+</BorderPane>
