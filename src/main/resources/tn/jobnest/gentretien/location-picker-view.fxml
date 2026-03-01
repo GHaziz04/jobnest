@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.WebView?>
+
+<!--
+  ═══════════════════════════════════════════════════════════
+  location-picker-view.fxml
+  Fenêtre de sélection du lieu sur la carte Leaflet
+  Ouverte en showAndWait depuis EntretienFormController
+  ═══════════════════════════════════════════════════════════
+-->
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.jobnest.gentretien.controller.LocationPickerController"
+            prefWidth="860"
+            prefHeight="620"
+            minWidth="640"
+            minHeight="480"
+            style="-fx-background-color: #0F2444;">
+
+    <!-- HEADER -->
+    <top>
+        <VBox style="-fx-background-color: #0F2444;" spacing="0">
+            <Region prefHeight="3"
+                    style="-fx-background-color: linear-gradient(to right,#1A6BFF,#00C37A);"/>
+            <HBox alignment="CENTER_LEFT" spacing="14"
+                  style="-fx-padding: 13 22 11 22;">
+
+                <!-- Icône carte SVG -->
+                <StackPane style="-fx-background-color: rgba(26,107,255,0.25);
+                                  -fx-background-radius: 10px;
+                                  -fx-padding: 8;">
+                    <Label style="-fx-font-size:0;">
+                        <graphic>
+                            <javafx.scene.image.ImageView fitWidth="20" fitHeight="20"/>
+                        </graphic>
+                    </Label>
+                    <!-- SVG inline impossible en FXML, on utilise un label texte -->
+                    <Label text="[ MAP ]"
+                           style="-fx-font-size: 11px; -fx-font-weight: 800;
+                                  -fx-text-fill: #1A6BFF;"/>
+                </StackPane>
+
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label text="Choisir le lieu de l'entretien"
+                           style="-fx-font-size: 15px; -fx-font-weight: 800; -fx-text-fill: white;"/>
+                    <Label fx:id="labelInstruction"
+                           text="Cliquez sur la carte ou recherchez une adresse, puis validez"
+                           style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.6);"/>
+                </VBox>
+
+                <!-- Bouton Annuler -->
+                <Button fx:id="btnAnnuler"
+                        text="Annuler"
+                        onAction="#annuler"
+                        style="-fx-background-color: rgba(255,59,92,0.2);
+                               -fx-text-fill: #FF6B8A;
+                               -fx-font-size: 12px; -fx-font-weight: 700;
+                               -fx-background-radius: 10px; -fx-cursor: hand;
+                               -fx-padding: 7 18 7 18;
+                               -fx-border-color: rgba(255,59,92,0.35);
+                               -fx-border-radius: 10px; -fx-border-width: 1;"/>
+            </HBox>
+            <Region prefHeight="3"
+                    style="-fx-background-color: linear-gradient(to right,#F97316,#2563EB);"/>
+        </VBox>
+    </top>
+
+    <!-- WEBVIEW — remplit tout l'espace disponible -->
+    <center>
+        <StackPane style="-fx-background-color:#F0F4FF;">
+            <WebView fx:id="webView"
+                     minWidth="0"
+                     minHeight="0"
+                     maxWidth="1.7976931348623157E308"
+                     maxHeight="1.7976931348623157E308"/>
+        </StackPane>
+    </center>
+
+</BorderPane>

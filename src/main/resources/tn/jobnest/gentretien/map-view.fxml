@@ -1,51 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
 
-<VBox xmlns="http://javafx.com/javafx/17"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="tn.jobnest.gentretien.controller.MapController"
-      spacing="0"
-      prefWidth="960"
-      prefHeight="680"
-      style="-fx-background-color: white;">
+<!--
+  ═══════════════════════════════════════════════════════════
+  map-view.fxml — Layout BorderPane pour affichage correct
+  Le WebView dans BorderPane.center s'étire TOUJOURS correctement
+  ═══════════════════════════════════════════════════════════
+-->
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.jobnest.gentretien.controller.MapController"
+            prefWidth="960"
+            prefHeight="680"
+            minWidth="700"
+            minHeight="500"
+            style="-fx-background-color: #0F2444;">
 
-    <!-- ═══ HEADER ═══ -->
-    <VBox style="-fx-background-color: #1E3A5F; -fx-padding: 16 24 14 24;" spacing="4">
-        <HBox alignment="CENTER_LEFT" spacing="12">
-            <Label text="🗺️" style="-fx-font-size: 24px;"/>
-            <VBox spacing="3" HBox.hgrow="ALWAYS">
-                <Label fx:id="labelTitre"
-                       text="Localisation de l'entretien"
-                       style="-fx-font-size: 17px; -fx-font-weight: 800; -fx-text-fill: white;"/>
-                <Label fx:id="labelAdresse"
-                       text="📍 Chargement..."
-                       style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.72);"/>
-            </VBox>
-            <Button fx:id="btnFermer"
-                    text="✕  Fermer"
-                    onAction="#fermer"
-                    style="-fx-background-color: rgba(255,255,255,0.18);
-                           -fx-text-fill: white;
-                           -fx-font-size: 13px;
-                           -fx-font-weight: 700;
-                           -fx-background-radius: 10px;
-                           -fx-cursor: hand;
-                           -fx-padding: 7 18 7 18;
-                           -fx-border-color: rgba(255,255,255,0.3);
-                           -fx-border-radius: 10px;
-                           -fx-border-width: 1;"/>
-        </HBox>
-    </VBox>
+    <!-- HEADER fixe en haut -->
+    <top>
+        <VBox style="-fx-background-color: #0F2444;" spacing="0">
+            <Region prefHeight="3"
+                    style="-fx-background-color: linear-gradient(to right,#1A6BFF,#00C37A);"/>
+            <HBox alignment="CENTER_LEFT" spacing="12"
+                  style="-fx-padding: 13 22 11 22;">
+                <Label text="🗺️" style="-fx-font-size: 22px;"/>
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label fx:id="labelTitre"
+                           text="Localisation de l'entretien"
+                           style="-fx-font-size: 15px; -fx-font-weight: 800; -fx-text-fill: white;"/>
+                    <Label fx:id="labelAdresse"
+                           text="📍 Chargement..."
+                           style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.6);"/>
+                </VBox>
+                <Button fx:id="btnFermer"
+                        text="✕  Fermer"
+                        onAction="#fermer"
+                        style="-fx-background-color:rgba(255,255,255,0.15);
+                               -fx-text-fill:white; -fx-font-size:12px;
+                               -fx-font-weight:700; -fx-background-radius:10px;
+                               -fx-cursor:hand; -fx-padding:7 18 7 18;
+                               -fx-border-color:rgba(255,255,255,0.28);
+                               -fx-border-radius:10px; -fx-border-width:1;"/>
+            </HBox>
+            <Region prefHeight="3"
+                    style="-fx-background-color: linear-gradient(to right,#F97316,#2563EB);"/>
+        </VBox>
+    </top>
 
-    <!-- BANDE ACCENT -->
-    <Region prefHeight="3"
-            style="-fx-background-color: linear-gradient(to right, #F97316, #2563EB);"/>
+    <!-- WebView remplit tout l'espace restant -->
+    <center>
+        <StackPane style="-fx-background-color:#F0F4FF;">
+            <WebView fx:id="webView"
+                     minWidth="0"
+                     minHeight="0"
+                     maxWidth="1.7976931348623157E308"
+                     maxHeight="1.7976931348623157E308"/>
+        </StackPane>
+    </center>
 
-    <!-- ═══ WEBVIEW (carte MapTiler) ═══ -->
-    <WebView fx:id="webView" VBox.vgrow="ALWAYS"/>
-
-</VBox>
+</BorderPane>
