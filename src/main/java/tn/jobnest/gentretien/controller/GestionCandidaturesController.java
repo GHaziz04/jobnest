@@ -30,9 +30,9 @@ public class GestionCandidaturesController {
     private final CandidatureService service = new CandidatureService();
     private final int CURRENT_RECRUTEUR_ID = 1;
 
-    // UNIQUEMENT les en_attente
     private List<CandidatureDTO> candidaturesEnAttente;
 
+    // ─────────────────────────────────────────────────────────────────────────
     @FXML
     public void initialize() {
         chargerDonnees();
@@ -41,10 +41,10 @@ public class GestionCandidaturesController {
         }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
     private void chargerDonnees() {
         List<CandidatureDTO> toutes = service.getCandidaturesPourRecruteur(CURRENT_RECRUTEUR_ID);
 
-        // On garde UNIQUEMENT les en_attente
         candidaturesEnAttente = toutes.stream()
                 .filter(c -> "en_attente".equalsIgnoreCase(c.getStatut())
                         || "en attente".equalsIgnoreCase(c.getStatut()))
@@ -59,12 +59,14 @@ public class GestionCandidaturesController {
         chargerDonnees();
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
     private void mettreAJourStats(List<CandidatureDTO> liste) {
         totalCandidaturesLabel.setText(String.valueOf(liste.size()));
         boostedLabel.setText(String.valueOf(liste.stream().filter(CandidatureDTO::isBoosted).count()));
         enAttenteLabel.setText(String.valueOf(liste.size()));
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
     private void filtrerCandidatures(String query) {
         if (query == null || query.isEmpty()) {
             afficherCandidatures(candidaturesEnAttente);
@@ -78,6 +80,7 @@ public class GestionCandidaturesController {
         afficherCandidatures(filtrees);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
     private void afficherCandidatures(List<CandidatureDTO> liste) {
         vboxCandidatures.getChildren().clear();
         if (liste.isEmpty()) {
@@ -99,21 +102,30 @@ public class GestionCandidaturesController {
         }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    //  CARTE CANDIDATURE — avatar coloré + badges identiques à Historique
+    // ─────────────────────────────────────────────────────────────────────────
     private VBox creerItemCandidature(CandidatureDTO dto) {
-        VBox card = new VBox(14);
-        card.setStyle("-fx-padding: 20 24 20 24;"
-                + "-fx-background-color: white;"
-                + "-fx-background-radius: 16;"
-                + "-fx-effect: dropshadow(gaussian, rgba(30,58,95,0.09), 14, 0, 0, 5);"
-                + (dto.isBoosted()
-                ? "-fx-border-color: #7C3AED; -fx-border-width: 0 0 0 6; -fx-border-radius: 0 16 16 0;"
-                : "-fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 16;"));
 
-        // Ligne du haut : avatar + infos + badge
+        // Vérifier si ce candidat a déjà un entretien planifié pour cette offre
+        boolean hasEntretien = service.candidatADejaUnEntretienPourOffre(
+                dto.getIdCandidat(), dto.getIdOffre());
+
+        VBox card = new VBox(14);
+        card.setStyle(
+                "-fx-padding: 20 24 20 24;"
+                        + "-fx-background-color: white;"
+                        + "-fx-background-radius: 16;"
+                        + "-fx-effect: dropshadow(gaussian, rgba(30,58,95,0.09), 14, 0, 0, 5);"
+                        + (dto.isBoosted()
+                        ? "-fx-border-color: #7C3AED; -fx-border-width: 0 0 0 6; -fx-border-radius: 0 16 16 0;"
+                        : "-fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 16;"));
+
+        // ── Ligne du haut ─────────────────────────────────────────────────
         HBox topRow = new HBox(18);
         topRow.setAlignment(Pos.CENTER_LEFT);
 
-        // Avatar
+        // ── Avatar coloré (bleu = entretien planifié / orange = sans entretien)
         String nomComplet = dto.getNomComplet();
         String[] parts = nomComplet.split(" ");
         String initials = parts.length >= 2
@@ -122,35 +134,46 @@ public class GestionCandidaturesController {
         initials = initials.toUpperCase();
 
         StackPane avatarStack = new StackPane();
-        Label avatarLabel = new Label(initials);
-        avatarLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: 800; -fx-text-fill: white;");
         Region avatarBg = new Region();
         avatarBg.setPrefSize(58, 58);
-        avatarBg.setStyle("-fx-background-color: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);"
-                + "-fx-background-radius: 50;"
-                + "-fx-effect: dropshadow(gaussian, rgba(37,99,235,0.4), 10, 0, 0, 3);");
+        avatarBg.setStyle(
+                "-fx-background-color: " + (hasEntretien
+                        ? "linear-gradient(from 0% 0% to 100% 100%, #2563EB, #1E40AF)"
+                        : "linear-gradient(from 0% 0% to 100% 100%, #F97316, #EA580C)") + ";"
+                        + "-fx-background-radius: 50;"
+                        + "-fx-effect: dropshadow(gaussian, "
+                        + (hasEntretien ? "rgba(37,99,235,0.4)" : "rgba(249,115,22,0.4)")
+                        + ", 10, 0, 0, 3);");
+        Label avatarLabel = new Label(initials);
+        avatarLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: 800; -fx-text-fill: white;");
         avatarStack.getChildren().addAll(avatarBg, avatarLabel);
         avatarStack.setPrefSize(58, 58);
         avatarStack.setMaxSize(58, 58);
         avatarStack.setMinSize(58, 58);
 
+        // Badge ⚡ boost sur l'avatar
         if (dto.isBoosted()) {
             Label boostBadge = new Label("⚡");
-            boostBadge.setStyle("-fx-font-size: 11px; -fx-background-color: #7C3AED;"
-                    + "-fx-background-radius: 50; -fx-padding: 2 4; -fx-text-fill: white;");
-            boostBadge.setTranslateX(20);
-            boostBadge.setTranslateY(-20);
+            boostBadge.setStyle(
+                    "-fx-font-size: 11px; -fx-background-color: #7C3AED;"
+                            + "-fx-background-radius: 50; -fx-padding: 2 4; -fx-text-fill: white;");
+            boostBadge.setTranslateX(22);
+            boostBadge.setTranslateY(-22);
             avatarStack.getChildren().add(boostBadge);
         }
 
-        // Infos
+        // ── Bloc infos candidat ───────────────────────────────────────────
         VBox infoBlock = new VBox(6);
         HBox.setHgrow(infoBlock, Priority.ALWAYS);
+
         Label lblNom = new Label(dto.getNomComplet());
         lblNom.setStyle("-fx-font-weight: 800; -fx-font-size: 17px; -fx-text-fill: #1E3A5F;");
-        Label lblTitrePro = new Label(dto.getTitrePro() != null && !dto.getTitrePro().isEmpty()
-                ? dto.getTitrePro() : "Candidat");
+
+        Label lblTitrePro = new Label(
+                dto.getTitrePro() != null && !dto.getTitrePro().isEmpty()
+                        ? dto.getTitrePro() : "Candidat");
         lblTitrePro.setStyle("-fx-text-fill: #64748B; -fx-font-size: 13px; -fx-font-weight: 500;");
+
         HBox offreRow = new HBox(6);
         offreRow.setAlignment(Pos.CENTER_LEFT);
         Label lblOffreLabel = new Label("Postulé pour :");
@@ -160,22 +183,39 @@ public class GestionCandidaturesController {
         offreRow.getChildren().addAll(lblOffreLabel, lblOffreNom);
         infoBlock.getChildren().addAll(lblNom, lblTitrePro, offreRow);
 
-        // Badge statut
+        // ── Badges (statut EN ATTENTE + badge entretien) ──────────────────
+        // Identiques à HistoriqueCandidaturesController
+        VBox badgesBlock = new VBox(6);
+        badgesBlock.setAlignment(Pos.CENTER_RIGHT);
+
         Label lblStatut = new Label("⏳  EN ATTENTE");
-        lblStatut.setStyle("-fx-background-color: #FEF3C7; -fx-text-fill: #B45309;"
-                + "-fx-padding: 8 18; -fx-background-radius: 24;"
-                + "-fx-font-weight: 800; -fx-font-size: 13px;");
+        lblStatut.setStyle(
+                "-fx-background-color: #FEF3C7; -fx-text-fill: #B45309;"
+                        + "-fx-padding: 7 16; -fx-background-radius: 20;"
+                        + "-fx-font-weight: 800; -fx-font-size: 12px;");
 
-        topRow.getChildren().addAll(avatarStack, infoBlock, lblStatut);
+        Label lblEntretien = hasEntretien
+                ? new Label("📅 Entretien planifié")
+                : new Label("⏳ Sans entretien");
+        lblEntretien.setStyle(hasEntretien
+                ? "-fx-background-color:#DBEAFE; -fx-text-fill:#1D4ED8;"
+                + "-fx-padding:7 16; -fx-background-radius:20;"
+                + "-fx-font-weight:700; -fx-font-size:12px;"
+                : "-fx-background-color:#FEF9C3; -fx-text-fill:#D97706;"
+                + "-fx-padding:7 16; -fx-background-radius:20;"
+                + "-fx-font-weight:700; -fx-font-size:12px;");
 
-        // Séparateur
+        badgesBlock.getChildren().addAll(lblStatut, lblEntretien);
+        topRow.getChildren().addAll(avatarStack, infoBlock, badgesBlock);
+
+        // ── Séparateur ────────────────────────────────────────────────────
         Separator separator = new Separator();
 
-        // Boutons
+        // ── Boutons d'actions ─────────────────────────────────────────────
         HBox actionsRow = new HBox(12);
         actionsRow.setAlignment(Pos.CENTER_RIGHT);
 
-        // ── Bouton Traiter ──────────────────────────────────────────────────
+        // Bouton Traiter
         Button btnTraiter = new Button("✓   Marquer comme Traité");
         btnTraiter.setPrefHeight(44);
         btnTraiter.setMinWidth(210);
@@ -194,7 +234,7 @@ public class GestionCandidaturesController {
             }
         });
 
-        // ── Bouton Détails ──────────────────────────────────────────────────
+        // Bouton Détails
         Button btnDetails = new Button("📄   Voir Détails");
         btnDetails.setPrefHeight(44);
         btnDetails.setMinWidth(150);
@@ -211,9 +251,7 @@ public class GestionCandidaturesController {
                         + "-fx-border-width: 1.5;");
         btnDetails.setOnAction(e -> ouvrirDetails(dto, e));
 
-        // ── Bouton Supprimer (annuler) ──────────────────────────────────────
-        // La candidature reste en base mais son statut passe à "annulé"
-        // Elle disparaît de l'interface car on n'affiche que les "en_attente"
+        // Bouton Supprimer → statut "annulé" en base, disparaît de l'interface
         Button btnSupprimer = new Button("🗑   Supprimer");
         btnSupprimer.setPrefHeight(44);
         btnSupprimer.setMinWidth(140);
@@ -228,8 +266,6 @@ public class GestionCandidaturesController {
                         + "-fx-border-color: #FECACA;"
                         + "-fx-border-radius: 10;"
                         + "-fx-border-width: 1.5;");
-
-        // Effet hover : rouge plus foncé au survol
         btnSupprimer.setOnMouseEntered(e -> btnSupprimer.setStyle(
                 "-fx-background-color: #DC2626;"
                         + "-fx-text-fill: white;"
@@ -253,8 +289,6 @@ public class GestionCandidaturesController {
                         + "-fx-border-color: #FECACA;"
                         + "-fx-border-radius: 10;"
                         + "-fx-border-width: 1.5;"));
-
-        // Confirmation avant suppression
         btnSupprimer.setOnAction(e -> {
             Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
             confirmation.setTitle("Confirmer la suppression");
@@ -262,32 +296,30 @@ public class GestionCandidaturesController {
             confirmation.setContentText(
                     "La candidature sera marquée comme « annulé » et ne sera plus affichée.\n"
                             + "Elle restera enregistrée dans la base de données.");
-
-            // Personnaliser les boutons de la boîte de dialogue
             ButtonType btnOui = new ButtonType("Oui, supprimer", ButtonBar.ButtonData.OK_DONE);
             ButtonType btnNon = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
             confirmation.getButtonTypes().setAll(btnOui, btnNon);
-
             Optional<ButtonType> result = confirmation.showAndWait();
             if (result.isPresent() && result.get() == btnOui) {
-                // Changer le statut → "annulé" en base
                 if (service.modifierStatut(dto.getIdCandidature(), "annulé")) {
-                    rafraichirListe(); // la carte disparaît car plus "en_attente"
+                    rafraichirListe();
                 } else {
                     showError("Erreur lors de la suppression de la candidature.");
                 }
             }
         });
 
-        // Ordre des boutons : Traiter | Détails | Supprimer
+        // Ordre : Traiter | Détails | Supprimer
         actionsRow.getChildren().addAll(btnTraiter, btnDetails, btnSupprimer);
         card.getChildren().addAll(topRow, separator, actionsRow);
         return card;
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
     private void ouvrirDetails(CandidatureDTO dto, ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/candidature-details.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/tn/jobnest/gentretien/candidature-details.fxml"));
             Parent root = loader.load();
             CandidatureDetailsController controller = loader.getController();
             controller.chargerDonnees(dto);
@@ -301,19 +333,25 @@ public class GestionCandidaturesController {
         }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    //  NAVIGATION SIDEBAR
+    // ─────────────────────────────────────────────────────────────────────────
     @FXML
     private void ouvrirHistoriqueCandidatures(ActionEvent event) {
-        naviguer(event, "/tn/jobnest/gentretien/HistoriqueCandidatures.fxml", "JobNest - Historique des Candidatures");
+        naviguer(event, "/tn/jobnest/gentretien/HistoriqueCandidatures.fxml",
+                "JobNest - Historique des Candidatures");
     }
 
     @FXML
     private void ouvrirEntretiens(ActionEvent event) {
-        naviguer(event, "/tn/jobnest/gentretien/entretien-view.fxml", "JobNest - Gestion des Entretiens");
+        naviguer(event, "/tn/jobnest/gentretien/entretien-view.fxml",
+                "JobNest - Gestion des Entretiens");
     }
 
     @FXML
     private void ouvrirFeedbacks(ActionEvent event) {
-        naviguer(event, "/tn/jobnest/gentretien/feedback-interface.fxml", "JobNest - Gestion des Feedbacks");
+        naviguer(event, "/tn/jobnest/gentretien/feedback-interface.fxml",
+                "JobNest - Gestion des Feedbacks");
     }
 
     private void naviguer(ActionEvent event, String fxml, String titre) {
@@ -323,7 +361,8 @@ public class GestionCandidaturesController {
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             if (getClass().getResource("/tn/jobnest/gentretien/styles.css") != null)
-                scene.getStylesheets().add(getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
+                scene.getStylesheets().add(
+                        getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
             stage.setScene(scene);
             stage.setTitle(titre);
         } catch (IOException e) {
@@ -331,6 +370,7 @@ public class GestionCandidaturesController {
         }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("JobNest");
