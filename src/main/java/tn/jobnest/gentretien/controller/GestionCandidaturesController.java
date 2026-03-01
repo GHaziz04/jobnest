@@ -1,6 +1,5 @@
 package tn.jobnest.gentretien.controller;
 
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,7 +29,7 @@ public class GestionCandidaturesController {
     private final CandidatureService service = new CandidatureService();
     private final int CURRENT_RECRUTEUR_ID = 1;
 
-    /** Uniquement les candidatures "en_attente" */
+    // UNIQUEMENT les en_attente
     private List<CandidatureDTO> candidaturesEnAttente;
 
     @FXML
@@ -41,13 +40,10 @@ public class GestionCandidaturesController {
         }
     }
 
-    // ------------------------------------------------------------------ //
-    //  CHARGEMENT — uniquement en_attente
-    // ------------------------------------------------------------------ //
     private void chargerDonnees() {
         List<CandidatureDTO> toutes = service.getCandidaturesPourRecruteur(CURRENT_RECRUTEUR_ID);
 
-        // On garde UNIQUEMENT les en_attente pour l'affichage
+        // On garde UNIQUEMENT les en_attente
         candidaturesEnAttente = toutes.stream()
                 .filter(c -> "en_attente".equalsIgnoreCase(c.getStatut())
                         || "en attente".equalsIgnoreCase(c.getStatut()))
@@ -62,21 +58,12 @@ public class GestionCandidaturesController {
         chargerDonnees();
     }
 
-    // ------------------------------------------------------------------ //
-    //  STATS (sur les en_attente uniquement)
-    // ------------------------------------------------------------------ //
     private void mettreAJourStats(List<CandidatureDTO> liste) {
-        // Total en attente
         totalCandidaturesLabel.setText(String.valueOf(liste.size()));
-        // Profils boostés parmi les en attente
         boostedLabel.setText(String.valueOf(liste.stream().filter(CandidatureDTO::isBoosted).count()));
-        // Sans entretien planifié (approximation : tous pour l'instant, à affiner si besoin)
         enAttenteLabel.setText(String.valueOf(liste.size()));
     }
 
-    // ------------------------------------------------------------------ //
-    //  FILTRE PAR RECHERCHE TEXTE
-    // ------------------------------------------------------------------ //
     private void filtrerCandidatures(String query) {
         if (query == null || query.isEmpty()) {
             afficherCandidatures(candidaturesEnAttente);
@@ -90,9 +77,6 @@ public class GestionCandidaturesController {
         afficherCandidatures(filtrees);
     }
 
-    // ------------------------------------------------------------------ //
-    //  AFFICHAGE
-    // ------------------------------------------------------------------ //
     private void afficherCandidatures(List<CandidatureDTO> liste) {
         vboxCandidatures.getChildren().clear();
         if (liste.isEmpty()) {
@@ -114,21 +98,21 @@ public class GestionCandidaturesController {
         }
     }
 
-    // ------------------------------------------------------------------ //
-    //  CRÉATION CARTE CANDIDATURE
-    // ------------------------------------------------------------------ //
-    private HBox creerItemCandidature(CandidatureDTO dto) {
-        HBox row = new HBox(16);
-        row.setAlignment(Pos.CENTER_LEFT);
-        row.setStyle("-fx-padding: 18 22 18 22;"
+    private VBox creerItemCandidature(CandidatureDTO dto) {
+        VBox card = new VBox(14);
+        card.setStyle("-fx-padding: 20 24 20 24;"
                 + "-fx-background-color: white;"
-                + "-fx-background-radius: 14;"
-                + "-fx-effect: dropshadow(gaussian, rgba(30,58,95,0.07), 12, 0, 0, 4);"
+                + "-fx-background-radius: 16;"
+                + "-fx-effect: dropshadow(gaussian, rgba(30,58,95,0.09), 14, 0, 0, 5);"
                 + (dto.isBoosted()
-                ? "-fx-border-color: #7C3AED; -fx-border-width: 0 0 0 5; -fx-border-radius: 0 14 14 0;"
-                : "-fx-border-color: #EFF3FB; -fx-border-width: 1; -fx-border-radius: 14;"));
+                ? "-fx-border-color: #7C3AED; -fx-border-width: 0 0 0 6; -fx-border-radius: 0 16 16 0;"
+                : "-fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 16;"));
 
-        // Avatar initiales
+        // Ligne du haut : avatar + infos + badge
+        HBox topRow = new HBox(18);
+        topRow.setAlignment(Pos.CENTER_LEFT);
+
+        // Avatar
         String nomComplet = dto.getNomComplet();
         String[] parts = nomComplet.split(" ");
         String initials = parts.length >= 2
@@ -138,94 +122,100 @@ public class GestionCandidaturesController {
 
         StackPane avatarStack = new StackPane();
         Label avatarLabel = new Label(initials);
-        avatarLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: 800; -fx-text-fill: white;");
+        avatarLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: 800; -fx-text-fill: white;");
         Region avatarBg = new Region();
-        avatarBg.setPrefSize(48, 48);
+        avatarBg.setPrefSize(58, 58);
         avatarBg.setStyle("-fx-background-color: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);"
                 + "-fx-background-radius: 50;"
-                + "-fx-effect: dropshadow(gaussian, rgba(37,99,235,0.4), 8, 0, 0, 2);");
+                + "-fx-effect: dropshadow(gaussian, rgba(37,99,235,0.4), 10, 0, 0, 3);");
         avatarStack.getChildren().addAll(avatarBg, avatarLabel);
-        avatarStack.setPrefSize(48, 48);
-        avatarStack.setMaxSize(48, 48);
-        avatarStack.setMinSize(48, 48);
+        avatarStack.setPrefSize(58, 58);
+        avatarStack.setMaxSize(58, 58);
+        avatarStack.setMinSize(58, 58);
 
         if (dto.isBoosted()) {
             Label boostBadge = new Label("⚡");
-            boostBadge.setStyle("-fx-font-size: 10px; -fx-background-color: #7C3AED;"
-                    + "-fx-background-radius: 50; -fx-padding: 1 3; -fx-text-fill: white;");
-            boostBadge.setTranslateX(16);
-            boostBadge.setTranslateY(-16);
+            boostBadge.setStyle("-fx-font-size: 11px; -fx-background-color: #7C3AED;"
+                    + "-fx-background-radius: 50; -fx-padding: 2 4; -fx-text-fill: white;");
+            boostBadge.setTranslateX(20);
+            boostBadge.setTranslateY(-20);
             avatarStack.getChildren().add(boostBadge);
         }
 
-        // Infos candidat
-        VBox colCandidat = new VBox(4);
-        colCandidat.setPrefWidth(210);
+        // Infos
+        VBox infoBlock = new VBox(6);
+        HBox.setHgrow(infoBlock, Priority.ALWAYS);
         Label lblNom = new Label(dto.getNomComplet());
-        lblNom.setStyle("-fx-font-weight: 800; -fx-font-size: 15px; -fx-text-fill: #1E3A5F;");
+        lblNom.setStyle("-fx-font-weight: 800; -fx-font-size: 17px; -fx-text-fill: #1E3A5F;");
         Label lblTitrePro = new Label(dto.getTitrePro() != null && !dto.getTitrePro().isEmpty()
                 ? dto.getTitrePro() : "Candidat");
-        lblTitrePro.setStyle("-fx-text-fill: #64748B; -fx-font-size: 12px; -fx-font-weight: 500;");
-        colCandidat.getChildren().addAll(lblNom, lblTitrePro);
-
-        // Infos offre
-        VBox colOffre = new VBox(4);
-        colOffre.setPrefWidth(210);
-        Label lblOffreTitre = new Label("POSTULÉ POUR");
-        lblOffreTitre.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 10px; -fx-font-weight: 700; -fx-padding: 0 0 1 0;");
+        lblTitrePro.setStyle("-fx-text-fill: #64748B; -fx-font-size: 13px; -fx-font-weight: 500;");
+        HBox offreRow = new HBox(6);
+        offreRow.setAlignment(Pos.CENTER_LEFT);
+        Label lblOffreLabel = new Label("Postulé pour :");
+        lblOffreLabel.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 12px; -fx-font-weight: 600;");
         Label lblOffreNom = new Label(dto.getTitreOffre());
         lblOffreNom.setStyle("-fx-font-weight: 700; -fx-text-fill: #2563EB; -fx-font-size: 13px;");
-        colOffre.getChildren().addAll(lblOffreTitre, lblOffreNom);
+        offreRow.getChildren().addAll(lblOffreLabel, lblOffreNom);
+        infoBlock.getChildren().addAll(lblNom, lblTitrePro, offreRow);
 
-        // Badge statut — toujours "en attente" dans cette vue
-        Label lblStatut = new Label("⏳ EN ATTENTE");
-        lblStatut.setStyle("-fx-background-color: #FEF3C7; -fx-text-fill: #D97706;"
-                + "-fx-padding: 5 14; -fx-background-radius: 20;"
-                + "-fx-font-weight: 700; -fx-font-size: 11px;");
+        // Badge statut
+        Label lblStatut = new Label("⏳  EN ATTENTE");
+        lblStatut.setStyle("-fx-background-color: #FEF3C7; -fx-text-fill: #B45309;"
+                + "-fx-padding: 8 18; -fx-background-radius: 24;"
+                + "-fx-font-weight: 800; -fx-font-size: 13px;");
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+        topRow.getChildren().addAll(avatarStack, infoBlock, lblStatut);
 
-        // Actions
-        HBox actions = new HBox(8);
-        actions.setAlignment(Pos.CENTER_RIGHT);
+        // Séparateur
+        Separator separator = new Separator();
 
-        // Bouton Traiter
-        Button btnTraiter = new Button("✓ Traiter");
-        btnTraiter.setStyle("-fx-background-color: #2563EB; -fx-text-fill: white;"
-                + "-fx-font-weight: 700; -fx-font-size: 12px;"
-                + "-fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 7 14;"
-                + "-fx-effect: dropshadow(gaussian, rgba(37,99,235,0.3), 8, 0, 0, 2);");
+        // Boutons
+        HBox actionsRow = new HBox(12);
+        actionsRow.setAlignment(Pos.CENTER_RIGHT);
+
+        // Bouton Traiter — marque la candidature comme traité SEULEMENT
+        Button btnTraiter = new Button("✓   Marquer comme Traité");
+        btnTraiter.setPrefHeight(44);
+        btnTraiter.setMinWidth(210);
+        btnTraiter.setStyle(
+                "-fx-background-color: #2563EB;"
+                        + "-fx-text-fill: white;"
+                        + "-fx-font-weight: 800;"
+                        + "-fx-font-size: 14px;"
+                        + "-fx-background-radius: 10;"
+                        + "-fx-cursor: hand;"
+                        + "-fx-padding: 10 22;"
+                        + "-fx-effect: dropshadow(gaussian, rgba(37,99,235,0.35), 10, 0, 0, 3);");
+        // Change SEULEMENT le statut candidature → "traité". Aucun entretien créé.
         btnTraiter.setOnAction(e -> {
-            if (service.modifierStatut(dto.getIdCandidature(), "Traité")) {
-                rafraichirListe();
+            if (service.modifierStatut(dto.getIdCandidature(), "traité")) {
+                rafraichirListe(); // la carte disparaît car plus en_attente
             }
         });
 
         // Bouton Détails
-        Button btnDetails = new Button("📄 Détails");
-        btnDetails.setStyle("-fx-background-color: #F1F5F9; -fx-text-fill: #475569;"
-                + "-fx-font-weight: 700; -fx-font-size: 12px;"
-                + "-fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 7 14;"
-                + "-fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;");
+        Button btnDetails = new Button("📄   Voir Détails");
+        btnDetails.setPrefHeight(44);
+        btnDetails.setMinWidth(150);
+        btnDetails.setStyle(
+                "-fx-background-color: #F1F5F9;"
+                        + "-fx-text-fill: #1E3A5F;"
+                        + "-fx-font-weight: 800;"
+                        + "-fx-font-size: 14px;"
+                        + "-fx-background-radius: 10;"
+                        + "-fx-cursor: hand;"
+                        + "-fx-padding: 10 22;"
+                        + "-fx-border-color: #CBD5E1;"
+                        + "-fx-border-radius: 10;"
+                        + "-fx-border-width: 1.5;");
         btnDetails.setOnAction(e -> ouvrirDetails(dto, e));
 
-        // Bouton Planifier entretien
-        Button btnEntretien = new Button("📅 Entretien");
-        btnEntretien.setStyle("-fx-background-color: #1E3A5F; -fx-text-fill: white;"
-                + "-fx-font-weight: 700; -fx-font-size: 12px;"
-                + "-fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 7 14;"
-                + "-fx-effect: dropshadow(gaussian, rgba(30,58,95,0.3), 8, 0, 0, 2);");
-        btnEntretien.setOnAction(e -> planifierEntretien(dto, e));
-
-        actions.getChildren().addAll(btnTraiter, btnDetails, btnEntretien);
-        row.getChildren().addAll(avatarStack, colCandidat, colOffre, lblStatut, spacer, actions);
-        return row;
+        actionsRow.getChildren().addAll(btnTraiter, btnDetails);
+        card.getChildren().addAll(topRow, separator, actionsRow);
+        return card;
     }
 
-    // ------------------------------------------------------------------ //
-    //  ACTIONS
-    // ------------------------------------------------------------------ //
     private void ouvrirDetails(CandidatureDTO dto, ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/candidature-details.fxml"));
@@ -242,29 +232,6 @@ public class GestionCandidaturesController {
         }
     }
 
-    private void planifierEntretien(CandidatureDTO dto, ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/jobnest/gentretien/entretien-form.fxml"));
-            Parent root = loader.load();
-            switchScene(event, root);
-        } catch (IOException e) {
-            showError("Impossible d'ouvrir le formulaire d'entretien : " + e.getMessage());
-        }
-    }
-
-    private void switchScene(ActionEvent event, Parent root) {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        if (getClass().getResource("/tn/jobnest/gentretien/styles.css") != null)
-            scene.getStylesheets().add(getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
-        stage.setScene(scene);
-    }
-
-    // ------------------------------------------------------------------ //
-    //  NAVIGATION SIDEBAR + BOUTON HISTORIQUE
-    // ------------------------------------------------------------------ //
-
-    /** Ouvre l'historique des candidatures (traitées) */
     @FXML
     private void ouvrirHistoriqueCandidatures(ActionEvent event) {
         naviguer(event, "/tn/jobnest/gentretien/HistoriqueCandidatures.fxml", "JobNest - Historique des Candidatures");

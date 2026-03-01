@@ -107,12 +107,12 @@
                                -fx-border-radius:12; -fx-border-width:1.5; -fx-cursor:hand;"/>
 
                 <!-- Bouton Historique des candidatures -->
-                <Button text="🗂️ Historique" onAction="#ouvrirHistoriqueCandidatures"
+                <Button text="Historique" onAction="#ouvrirHistoriqueCandidatures"
                         prefHeight="42" prefWidth="150"
-                        style="-fx-background-color:linear-gradient(135deg,#1E3A5F,#2563EB);
-                               -fx-text-fill:white; -fx-font-weight:bold; -fx-font-size:13px;
-                               -fx-background-radius:12; -fx-cursor:hand;
-                               -fx-effect:dropshadow(gaussian,rgba(30,58,95,0.35),10,0,0,3);"/>
+                        style="-fx-background-color:#1E3A5FFF; -fx-text-fill:#FFFFFFFF;
+                               -fx-font-weight:bold; -fx-font-size:13px; -fx-padding:10 18;
+                               -fx-background-radius:12; -fx-border-color:#1E3A5FFF;
+                               -fx-border-radius:12; -fx-border-width:1.5; -fx-cursor:hand;"/>
             </HBox>
 
             <!-- Stats — recalculées sur les en_attente uniquement -->

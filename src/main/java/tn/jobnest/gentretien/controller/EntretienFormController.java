@@ -43,7 +43,17 @@ public class EntretienFormController {
     private Entretien          entretien;
     private boolean            isReorganisation = false;
     private final Entretienservice service = new Entretienservice();
+    private int idCandidatALier = -1;
+    private int idOffreLiee     = -1;
 
+    /**
+     * Appelé depuis HistoriqueCandidaturesController pour transmettre
+     * le candidat et l'offre concernés.
+     */
+    public void setContextCandidature(int idCandidat, int idOffre) {
+        this.idCandidatALier = idCandidat;
+        this.idOffreLiee     = idOffre;
+    }
     // ─────────────────────────────────────────────────────────────────
     @FXML
     private void initialize() {
@@ -277,6 +287,7 @@ public class EntretienFormController {
     // ─────────────────────────────────────────────────────────────────
     @FXML
     private void save() {
+
         if (dateEntretien.getValue() == null) {
             showAlert(Alert.AlertType.WARNING, "Champ obligatoire",
                     "Veuillez sélectionner une date d'entretien.");
