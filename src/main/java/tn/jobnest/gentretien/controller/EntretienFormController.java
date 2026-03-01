@@ -27,6 +27,7 @@ import java.util.Optional;
 
 public class EntretienFormController {
 
+    // ── Champs FXML ──────────────────────────────────────────────────────────
     @FXML private DatePicker        dateEntretien;
     @FXML private TextField         heureDebut;
     @FXML private TextField         heureFin;
@@ -36,25 +37,53 @@ public class EntretienFormController {
     @FXML private ComboBox<String>  statut;
     @FXML private TextField         noteRecruteur;
     @FXML private Button            btnGenererMeet;
-
-    /* ── Bouton "Choisir sur la carte" ajouté dans le FXML ── */
     @FXML private Button            btnChoisirSurCarte;
 
-    private Entretien          entretien;
-    private boolean            isReorganisation = false;
-    private final Entretienservice service = new Entretienservice();
-    private int idCandidatALier = -1;
-    private int idOffreLiee     = -1;
+    // ── Labels d'info dynamiques (affichés en haut du formulaire) ────────────
+    @FXML private Label             lblInfoCandidat;   // ex: "Candidat : Jean Dupont"
+    @FXML private Label             lblInfoOffre;      // ex: "Offre : Développeur Java"
 
+    // ── État interne ─────────────────────────────────────────────────────────
+    private Entretien               entretien;
+    private boolean                 isReorganisation  = false;
+    private final Entretienservice  service           = new Entretienservice();
+
+    // ── Contexte dynamique transmis depuis HistoriqueCandidaturesController ──
+    private int    idCandidatALier   = -1;   // id_user du candidat
+    private int    idOffreLiee       = -1;   // id_offre concernée
+    private String nomCandidat       = "";   // affiché dans le formulaire
+    private String titreOffreLiee    = "";   // affiché dans le formulaire
+    private static final int ID_RECRUTEUR_COURANT = 1;
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  MÉTHODE PRINCIPALE : injecter le contexte depuis HistoriqueCandidatures
+    // ─────────────────────────────────────────────────────────────────────────
     /**
-     * Appelé depuis HistoriqueCandidaturesController pour transmettre
-     * le candidat et l'offre concernés.
+     * Appelée par HistoriqueCandidaturesController AVANT d'afficher la fenêtre.
+     * Permet de pré-remplir les informations candidat + offre dans le formulaire.
+     *
+     * @param idCandidat   id_user du candidat (sera inséré dans participant_entretien)
+     * @param idOffre      id_offre (sera stocké dans entretien.id_offre)
+     * @param nomCandidat  Nom complet affiché en en-tête du formulaire
+     * @param titreOffre   Titre de l'offre affiché en en-tête du formulaire
      */
-    public void setContextCandidature(int idCandidat, int idOffre) {
+    public void setContextCandidature(int idCandidat, int idOffre,
+                                      String nomCandidat, String titreOffre) {
         this.idCandidatALier = idCandidat;
         this.idOffreLiee     = idOffre;
+        this.nomCandidat     = nomCandidat != null ? nomCandidat : "";
+        this.titreOffreLiee  = titreOffre  != null ? titreOffre  : "";
+
+        // Mettre à jour les labels d'info si déjà initialisés
+        if (lblInfoCandidat != null)
+            lblInfoCandidat.setText("Candidat : " + this.nomCandidat);
+        if (lblInfoOffre != null)
+            lblInfoOffre.setText("Offre : " + this.titreOffreLiee);
     }
-    // ─────────────────────────────────────────────────────────────────
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  INITIALIZE
+    // ─────────────────────────────────────────────────────────────────────────
     @FXML
     private void initialize() {
         typeEntretien.getItems().addAll("présentiel", "visio");
@@ -64,20 +93,20 @@ public class EntretienFormController {
         statut.setDisable(true);
 
         Tooltip tooltipStatut = new Tooltip(
-                "Le statut est géré automatiquement.\n"
-                        + "• 'proposé' : à la création\n"
-                        + "• 'confirmé' : confirmé par le candidat\n"
-                        + "• 'réalisé' : après que le candidat a rejoint l'entretien\n"
-                        + "• 'annulé'  : si la date est passée sans action du candidat"
+                "Le statut est géré automatiquement.\n" +
+                        "• 'proposé' : à la création\n" +
+                        "• 'confirmé' : confirmé par le candidat\n" +
+                        "• 'réalisé' : après que le candidat a rejoint l'entretien\n" +
+                        "• 'annulé'  : si la date est passée sans action du candidat"
         );
         tooltipStatut.setStyle("-fx-font-size: 12px;");
         Tooltip.install(statut, tooltipStatut);
 
-        /* ── Listener type d'entretien ── */
+        // Listener type d'entretien
         typeEntretien.valueProperty().addListener((obs, oldVal, newVal) -> {
             boolean isPresential = "présentiel".equals(newVal);
             lieu.setDisable(!isPresential);
-            btnChoisirSurCarte.setDisable(!isPresential);
+            if (btnChoisirSurCarte != null) btnChoisirSurCarte.setDisable(!isPresential);
             if (!isPresential) {
                 lieu.clear();
                 lienVisio.setDisable(false);
@@ -87,33 +116,22 @@ public class EntretienFormController {
             }
         });
 
-        /* ── Tooltip sur le champ lieu ── */
-        Tooltip tipLieu = new Tooltip(
-                "Cliquez sur le bouton \"Choisir sur la carte\"\n"
-                        + "pour sélectionner le lieu visuellement."
-        );
-        tipLieu.setStyle("-fx-font-size: 12px;");
-        Tooltip.install(lieu, tipLieu);
+        // Mettre à jour les labels si le contexte a été injecté avant initialize()
+        if (lblInfoCandidat != null && !nomCandidat.isEmpty())
+            lblInfoCandidat.setText("Candidat : " + nomCandidat);
+        if (lblInfoOffre != null && !titreOffreLiee.isEmpty())
+            lblInfoOffre.setText("Offre : " + titreOffreLiee);
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    /**
-     * ═══════════════════════════════════════════════════════════════
-     *  NOUVELLE MÉTHODE — Ouvrir le Location Picker
-     *
-     *  Déclenchée par le bouton "Choisir sur la carte" dans le FXML.
-     *  Ouvre la fenêtre location-picker-view.fxml en mode modal (showAndWait).
-     *  Quand l'utilisateur valide, l'adresse est injectée dans le champ lieu.
-     * ═══════════════════════════════════════════════════════════════
-     */
+    // ─────────────────────────────────────────────────────────────────────────
+    //  OUVRIR LE LOCATION PICKER
+    // ─────────────────────────────────────────────────────────────────────────
     @FXML
     private void ouvrirLocationPicker() {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/tn/jobnest/gentretien/location-picker-view.fxml")
-            );
+                    getClass().getResource("/tn/jobnest/gentretien/location-picker-view.fxml"));
             Parent root = loader.load();
-
             LocationPickerController pickerCtrl = loader.getController();
 
             Stage pickerStage = new Stage();
@@ -124,40 +142,32 @@ public class EntretienFormController {
             pickerStage.setWidth(860);
             pickerStage.setHeight(620);
             pickerStage.centerOnScreen();
-
-            /* Modal — bloque le formulaire pendant la sélection */
             pickerStage.initModality(Modality.APPLICATION_MODAL);
             pickerStage.initOwner(lieu.getScene().getWindow());
-
-            /* Attendre que l'utilisateur ferme la fenêtre */
             pickerStage.showAndWait();
 
-            /* Récupérer l'adresse choisie */
             String adresseChoisie = pickerCtrl.getAdresseChoisie();
-
             if (adresseChoisie != null && !adresseChoisie.isEmpty()) {
                 lieu.setText(adresseChoisie);
                 lieu.requestFocus();
-                /* Feedback visuel */
-                lieu.setStyle(lieu.getStyle()
-                        + "; -fx-border-color: #00C37A; -fx-border-width: 1.5;");
-                /* Remettre le style normal après 2 secondes */
+                lieu.setStyle(lieu.getStyle() + "; -fx-border-color: #00C37A; -fx-border-width: 1.5;");
                 javafx.animation.PauseTransition pause =
                         new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2));
                 pause.setOnFinished(e -> lieu.setStyle(
-                        "-fx-font-size: 13px; -fx-border-color: #E2E8F0;"
-                                + " -fx-border-radius: 10; -fx-background-radius: 10;"
-                                + " -fx-border-width: 1.5; -fx-padding: 9 12;"));
+                        "-fx-font-size: 13px; -fx-border-color: #E2E8F0;" +
+                                " -fx-border-radius: 10; -fx-background-radius: 10;" +
+                                " -fx-border-width: 1.5; -fx-padding: 9 12;"));
                 pause.play();
             }
-
         } catch (IOException ex) {
             showAlert(Alert.AlertType.ERROR, "Erreur",
                     "Impossible d'ouvrir le sélecteur de lieu : " + ex.getMessage());
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
+    //  SET ENTRETIEN (mode édition/modification)
+    // ─────────────────────────────────────────────────────────────────────────
     public void setEntretien(Entretien e) {
         this.entretien = e;
         this.isReorganisation = false;
@@ -171,19 +181,18 @@ public class EntretienFormController {
             typeEntretien.setValue(e.getTypeEntretien());
             lieu.setText(e.getLieu());
             lienVisio.setText(e.getLienVisio());
-
             String currentStatut = e.getStatut();
-            if (currentStatut != null && !statut.getItems().contains(currentStatut)) {
+            if (currentStatut != null && !statut.getItems().contains(currentStatut))
                 statut.getItems().add(currentStatut);
-            }
             statut.setValue(currentStatut);
             statut.setDisable(true);
-
             noteRecruteur.setText(e.getNoteRecruteur());
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
+    //  SET ENTRETIEN POUR RÉORGANISATION
+    // ─────────────────────────────────────────────────────────────────────────
     public void setEntretienPourReorganisation(Entretien e) {
         this.entretien = e;
         this.isReorganisation = true;
@@ -210,12 +219,13 @@ public class EntretienFormController {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
+    //  GÉNÉRER LIEN MEET
+    // ─────────────────────────────────────────────────────────────────────────
     @FXML
     private void genererLienMeet() {
         if (dateEntretien.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Champ requis",
-                    "Veuillez sélectionner une date."); return;
+            showAlert(Alert.AlertType.WARNING, "Champ requis", "Veuillez sélectionner une date."); return;
         }
         if (dateEntretien.getValue().isBefore(LocalDate.now())) {
             showAlert(Alert.AlertType.WARNING, "Date invalide",
@@ -237,8 +247,6 @@ public class EntretienFormController {
             LocalDateTime dateTimeDebut = LocalDateTime.of(dateEntretien.getValue(), debut);
             LocalDateTime dateTimeFin   = LocalDateTime.of(dateEntretien.getValue(), fin);
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-            showAlert(Alert.AlertType.INFORMATION, "Génération en cours",
-                    "Veuillez patienter pendant la génération du lien Google Meet...");
             String meetLink = GoogleMeetService.creerMeetingLink(
                     "Entretien JobNest", "Entretien d'embauche planifié via JobNest",
                     dateTimeDebut.format(fmt), dateTimeFin.format(fmt));
@@ -249,13 +257,14 @@ public class EntretienFormController {
             showAlert(Alert.AlertType.ERROR, "Format invalide",
                     "Format d'heure invalide. Utilisez HH:mm (ex: 14:30)");
         } catch (Exception ex) {
-            ex.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erreur",
                     "Impossible de générer le lien Meet : " + ex.getMessage());
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
+    //  VALIDER ADRESSE SUR GOOGLE MAPS
+    // ─────────────────────────────────────────────────────────────────────────
     @FXML
     private void validerAdresse() {
         String adresse = lieu.getText().trim();
@@ -269,25 +278,25 @@ public class EntretienFormController {
             Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
             confirmation.setTitle("Valider l'adresse");
             confirmation.setHeaderText("Vérifier l'adresse sur Google Maps");
-            confirmation.setContentText("Adresse : " + adresse
-                    + "\n\nVoulez-vous ouvrir Google Maps pour vérifier ?");
+            confirmation.setContentText("Adresse : " + adresse + "\n\nVoulez-vous ouvrir Google Maps pour vérifier ?");
             ButtonType btnOui = new ButtonType("Oui, vérifier");
             ButtonType btnNon = new ButtonType("Non, continuer");
             confirmation.getButtonTypes().setAll(btnOui, btnNon);
             Optional<ButtonType> result = confirmation.showAndWait();
-            if (result.isPresent() && result.get() == btnOui) {
+            if (result.isPresent() && result.get() == btnOui)
                 Desktop.getDesktop().browse(new URI(searchUrl));
-            }
         } catch (Exception ex) {
             showAlert(Alert.AlertType.ERROR, "Erreur",
                     "Impossible d'ouvrir Google Maps : " + ex.getMessage());
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
+    //  SAUVEGARDER L'ENTRETIEN
+    // ─────────────────────────────────────────────────────────────────────────
     @FXML
     private void save() {
-
+        // ── Validations ──────────────────────────────────────────────────────
         if (dateEntretien.getValue() == null) {
             showAlert(Alert.AlertType.WARNING, "Champ obligatoire",
                     "Veuillez sélectionner une date d'entretien.");
@@ -301,25 +310,22 @@ public class EntretienFormController {
         String hDebutStr = heureDebut.getText().trim();
         String hFinStr   = heureFin.getText().trim();
         if (hDebutStr.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Champ obligatoire",
-                    "Veuillez renseigner l'heure de début.");
+            showAlert(Alert.AlertType.WARNING, "Champ obligatoire", "Veuillez renseigner l'heure de début.");
             heureDebut.requestFocus(); return;
         }
         if (hFinStr.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Champ obligatoire",
-                    "Veuillez renseigner l'heure de fin.");
+            showAlert(Alert.AlertType.WARNING, "Champ obligatoire", "Veuillez renseigner l'heure de fin.");
             heureFin.requestFocus(); return;
         }
         if (typeEntretien.getValue() == null || typeEntretien.getValue().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Champ obligatoire",
-                    "Veuillez sélectionner un type d'entretien.");
+            showAlert(Alert.AlertType.WARNING, "Champ obligatoire", "Veuillez sélectionner un type d'entretien.");
             typeEntretien.requestFocus(); return;
         }
         if ("présentiel".equals(typeEntretien.getValue())) {
             if (lieu.getText() == null || lieu.getText().trim().isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "Champ obligatoire",
-                        "Veuillez renseigner le lieu.\n"
-                                + "Utilisez le bouton \"Choisir sur la carte\" pour sélectionner un lieu.");
+                        "Veuillez renseigner le lieu.\n" +
+                                "Utilisez le bouton \"Choisir sur la carte\" pour sélectionner un lieu.");
                 lieu.requestFocus(); return;
             }
         } else if ("visio".equals(typeEntretien.getValue())) {
@@ -329,6 +335,7 @@ public class EntretienFormController {
                 lienVisio.requestFocus(); return;
             }
         }
+
         LocalTime debut, fin;
         try {
             debut = LocalTime.parse(hDebutStr);
@@ -342,7 +349,8 @@ public class EntretienFormController {
                     "L'heure de fin doit être strictement après l'heure de début.");
             heureFin.requestFocus(); return;
         }
-        /* Vérification conflits */
+
+        // ── Vérification conflits horaires ───────────────────────────────────
         try {
             List<Entretien> tousEntretiens = service.afficher();
             for (Entretien e : tousEntretiens) {
@@ -352,54 +360,68 @@ public class EntretienFormController {
                     if (e.getHeureDebut() != null && e.getHeureFin() != null) {
                         LocalTime autreDebut = e.getHeureDebut().toLocalTime();
                         LocalTime autreFin   = e.getHeureFin().toLocalTime();
-                        boolean conflit = false;
-                        if ((debut.isAfter(autreDebut) || debut.equals(autreDebut)) && debut.isBefore(autreFin)) conflit = true;
-                        if (fin.isAfter(autreDebut) && (fin.isBefore(autreFin) || fin.equals(autreFin))) conflit = true;
-                        if ((debut.isBefore(autreDebut) || debut.equals(autreDebut))
-                                && (fin.isAfter(autreFin) || fin.equals(autreFin))) conflit = true;
+                        boolean conflit =
+                                (debut.isAfter(autreDebut) || debut.equals(autreDebut)) && debut.isBefore(autreFin) ||
+                                        fin.isAfter(autreDebut) && (fin.isBefore(autreFin) || fin.equals(autreFin)) ||
+                                        (debut.isBefore(autreDebut) || debut.equals(autreDebut)) && (fin.isAfter(autreFin) || fin.equals(autreFin));
                         if (conflit) {
                             String titreOffre = service.getOffreTitre(e.getIdOffre());
                             showAlert(Alert.AlertType.ERROR, "Conflit d'horaire",
-                                    "Un entretien existe déjà à cette date et heure :\n\n"
-                                            + "Offre : " + titreOffre + "\n"
-                                            + "Date : " + e.getDateEntretien().toLocalDate()
-                                            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n"
-                                            + "Horaire : " + autreDebut.format(DateTimeFormatter.ofPattern("HH:mm"))
-                                            + " - " + autreFin.format(DateTimeFormatter.ofPattern("HH:mm"))
-                                            + "\n\nVeuillez choisir une autre date ou un autre horaire.");
+                                    "Un entretien existe déjà à cette date et heure :\n\n" +
+                                            "Offre : " + titreOffre + "\n" +
+                                            "Date : " + e.getDateEntretien().toLocalDate()
+                                            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
+                                            "Horaire : " + autreDebut.format(DateTimeFormatter.ofPattern("HH:mm")) +
+                                            " - " + autreFin.format(DateTimeFormatter.ofPattern("HH:mm")) +
+                                            "\n\nVeuillez choisir une autre date ou un autre horaire.");
                             return;
                         }
                     }
                 }
             }
         } catch (SQLException ex) {
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Impossible de vérifier les conflits : " + ex.getMessage()); return;
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de vérifier les conflits : " + ex.getMessage()); return;
         }
-        /* Enregistrement */
+
+        // ── Construction de l'objet Entretien ────────────────────────────────
         if (entretien == null) entretien = new Entretien();
         entretien.setDateEntretien(java.sql.Date.valueOf(dateEntretien.getValue()));
         entretien.setHeureDebut(Time.valueOf(debut));
         entretien.setHeureFin(Time.valueOf(fin));
         entretien.setTypeEntretien(typeEntretien.getValue());
-        entretien.setLieu(lieu.getText().trim());
-        entretien.setLienVisio(lienVisio.getText().trim());
-        entretien.setNoteRecruteur(noteRecruteur.getText().trim());
+        entretien.setLieu(lieu.getText() != null ? lieu.getText().trim() : "");
+        entretien.setLienVisio(lienVisio.getText() != null ? lienVisio.getText().trim() : "");
+        entretien.setNoteRecruteur(noteRecruteur.getText() != null ? noteRecruteur.getText().trim() : "");
         entretien.setDateCreation(new Timestamp(System.currentTimeMillis()));
-        entretien.setIdRecruteur(1);
-        entretien.setIdOffre(10);
+        entretien.setIdRecruteur(ID_RECRUTEUR_COURANT);
+
+        // Utiliser l'id_offre dynamique si fourni, sinon conserver celui de l'entretien existant
+        if (idOffreLiee > 0) {
+            entretien.setIdOffre(idOffreLiee);
+        } else if (entretien.getIdOffre() == 0) {
+            entretien.setIdOffre(10); // fallback pour compatibilité
+        }
+
         if (entretien.getIdEntretien() == 0 || isReorganisation) {
             entretien.setStatut("proposé");
         }
+
+        // ── Enregistrement ───────────────────────────────────────────────────
         try {
             if (entretien.getIdEntretien() == 0) {
-                service.ajouter(entretien);
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Entretien créé avec succès !");
+                // Nouveau entretien → on récupère l'id généré
+                int idNouvelEntretien = service.ajouterEtRetournerId(entretien);
+                if (idNouvelEntretien > 0 && idCandidatALier > 0) {
+                    // Lier le candidat à cet entretien
+                    service.ajouterParticipant(idNouvelEntretien, idCandidatALier);
+                }
+                showAlert(Alert.AlertType.INFORMATION, "Succès",
+                        "Entretien créé avec succès !\n" +
+                                (idCandidatALier > 0 ? "Candidat « " + nomCandidat + " » ajouté comme participant." : ""));
             } else if (isReorganisation) {
                 service.update(entretien);
                 showAlert(Alert.AlertType.INFORMATION, "Réorganisation réussie",
-                        "L'entretien a été réorganisé avec succès !\n"
-                                + "Le statut est repassé à 'proposé'.");
+                        "L'entretien a été réorganisé avec succès !\nLe statut est repassé à 'proposé'.");
             } else {
                 service.update(entretien);
                 showAlert(Alert.AlertType.INFORMATION, "Succès", "Entretien modifié avec succès !");
@@ -413,7 +435,9 @@ public class EntretienFormController {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
+    //  HELPER
+    // ─────────────────────────────────────────────────────────────────────────
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
