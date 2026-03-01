@@ -62,7 +62,7 @@
                 <!-- ACTIF -->
                 <Button styleClass="menu-item, menu-item-active">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
-                        <Text text="🗂️" style="-fx-font-size: 18px;"/>
+                        <Text text="📄" style="-fx-font-size: 18px;"/>
                         <Label text="Historique Candidatures" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
@@ -113,7 +113,7 @@
                 <!-- Actualiser -->
                 <Button text="🔄 Actualiser" onAction="#rafraichirListe"
                         prefHeight="42"
-                        style="-fx-background-color:linear-gradient(135deg,#10B981,#059669);
+                        style="-fx-background-color:#1E3A5F; -fx-text-fill:#FFFF;
                                -fx-text-fill:white; -fx-font-weight:bold; -fx-font-size:13px;
                                -fx-background-radius:12; -fx-cursor:hand; -fx-padding:10 18;
                                -fx-effect:dropshadow(gaussian,rgba(16,185,129,0.35),10,0,0,3);"/>
@@ -121,7 +121,7 @@
                 <!-- Retour candidatures -->
                 <Button text="← Retour" onAction="#ouvrirCandidatures"
                         prefHeight="42"
-                        style="-fx-background-color:white; -fx-text-fill:#1E3A5F;
+                        style="-fx-background-color:#1E3A5F; -fx-text-fill:#FFFF;
                                -fx-font-weight:bold; -fx-font-size:13px; -fx-padding:10 18;
                                -fx-background-radius:12; -fx-border-color:#E2E8F0;
                                -fx-border-radius:12; -fx-border-width:1.5; -fx-cursor:hand;"/>
@@ -155,23 +155,10 @@
                 </VBox>
 
                 <!-- Légende -->
-                <VBox spacing="5" style="-fx-padding: 0 0 0 10;">
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <Region prefWidth="14" prefHeight="14"
-                                style="-fx-background-color:#2563EB; -fx-background-radius:3px;"/>
-                        <Label text="Bordure bleue = entretien planifié"
-                               style="-fx-font-size:11px; -fx-text-fill:#64748B;"/>
-                    </HBox>
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <Region prefWidth="14" prefHeight="14"
-                                style="-fx-background-color:#F97316; -fx-background-radius:3px;"/>
-                        <Label text="Bordure orange = sans entretien"
-                               style="-fx-font-size:11px; -fx-text-fill:#64748B;"/>
-                    </HBox>
-                </VBox>
+
             </HBox>
 
-            <Label text="🗂️ Candidatures traitées" styleClass="section-title"/>
+            <Label text="Candidatures traitées" styleClass="section-title"/>
 
             <ScrollPane fitToWidth="true" prefHeight="530.0"
                         style="-fx-background:transparent; -fx-background-color:transparent; -fx-border-color:transparent;"

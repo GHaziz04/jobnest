@@ -117,13 +117,13 @@
                     <TextField fx:id="lieu"
                                promptText="Cliquez sur le bouton carte pour choisir le lieu..."
                                HBox.hgrow="ALWAYS"
-                               style="-fx-font-size: 13px; -fx-border-color: #E2E8F0;
+                               style="-fx-font-size: 13px; -fx-border-color: #1e3a8a;
                                       -fx-border-radius: 10; -fx-background-radius: 10;
                                       -fx-border-width: 1.5; -fx-padding: 9 12;"/>
                     <Button text="Vérifier"
                             onAction="#validerAdresse"
                             prefHeight="38" prefWidth="85"
-                            style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569;
+                            style="-fx-background-color: #2563eb; -fx-text-fill: #ffffff;
                                    -fx-font-size: 11.5px; -fx-font-weight: 700;
                                    -fx-background-radius: 10; -fx-cursor: hand;
                                    -fx-border-color: #E2E8F0; -fx-border-radius: 10;
@@ -217,16 +217,16 @@
     </ScrollPane>
 
     <!-- FOOTER — BOUTON ENREGISTRER -->
-    <VBox style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+    <VBox style="-fx-background-color: #ffffff; -fx-border-color: #1e3a8a;
                  -fx-border-width: 1 0 0 0; -fx-padding: 16 35 20 35;"
           spacing="10">
         <Label text="* Champs obligatoires"
-               style="-fx-font-size: 11px; -fx-text-fill: #94A3B8; -fx-font-style: italic;"/>
+               style="-fx-font-size: 11px; -fx-text-fill: #1e3a8a; -fx-font-style: italic;"/>
         <Button text="✅ Enregistrer l'entretien"
                 onAction="#save"
                 prefHeight="48" prefWidth="470"
-                style="-fx-background-color: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-                       -fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: 800;
+                style="-fx-background-color: linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%);
+                       -fx-text-fill: #1e3a8a; -fx-font-size: 15px; -fx-font-weight: 800;
                        -fx-background-radius: 12px; -fx-cursor: hand;
                        -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.45), 14, 0, 0, 5);"/>
     </VBox>
