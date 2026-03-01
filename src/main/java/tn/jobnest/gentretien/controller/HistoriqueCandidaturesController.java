@@ -19,6 +19,7 @@ import tn.jobnest.gentretien.service.CandidatureService;
 import tn.jobnest.gentretien.service.Entretienservice;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -140,9 +141,9 @@ public class HistoriqueCandidaturesController {
                         "-fx-border-radius: 0 14 14 0;"
         );
 
-        // ── Avatar ────────────────────────────────────────────────────────────
-        String nom     = dto.getNomComplet();
-        String[] parts = nom.split(" ");
+        // ── Avatar ─────────────────────────────────────────────────────────
+        String nom      = dto.getNomComplet();
+        String[] parts  = nom.split(" ");
         String initials = parts.length >= 2
                 ? String.valueOf(parts[0].charAt(0)) + String.valueOf(parts[1].charAt(0))
                 : nom.substring(0, Math.min(2, nom.length()));
@@ -151,10 +152,11 @@ public class HistoriqueCandidaturesController {
         StackPane avatarStack = new StackPane();
         Region avatarBg = new Region();
         avatarBg.setPrefSize(48, 48);
+        // ✅ Gradient JavaFX valide (from/to, pas de degrés)
         avatarBg.setStyle(
                 "-fx-background-color: " + (hasEntretien
-                        ? "linear-gradient(135deg, #2563EB 0%, #1E40AF 100%)"
-                        : "linear-gradient(135deg, #F97316 0%, #EA580C 100%)") + ";" +
+                        ? "linear-gradient(from 0% 0% to 100% 100%, #2563EB, #1E40AF)"
+                        : "linear-gradient(from 0% 0% to 100% 100%, #F97316, #EA580C)") + ";" +
                         "-fx-background-radius: 50;" +
                         "-fx-effect: dropshadow(gaussian, rgba(37,99,235,0.3), 6, 0, 0, 2);"
         );
@@ -176,16 +178,17 @@ public class HistoriqueCandidaturesController {
             avatarStack.getChildren().add(boostBadge);
         }
 
-        // ── Candidat ─────────────────────────────────────────────────────────
+        // ── Candidat ───────────────────────────────────────────────────────
         VBox colCandidat = new VBox(4);
         colCandidat.setPrefWidth(200);
         Label lblNom = new Label(dto.getNomComplet());
         lblNom.setStyle("-fx-font-weight: 800; -fx-font-size: 15px; -fx-text-fill: #1E3A5F;");
-        Label lblPro = new Label(dto.getTitrePro() != null && !dto.getTitrePro().isEmpty() ? dto.getTitrePro() : "Candidat");
+        Label lblPro = new Label(dto.getTitrePro() != null && !dto.getTitrePro().isEmpty()
+                ? dto.getTitrePro() : "Candidat");
         lblPro.setStyle("-fx-text-fill: #64748B; -fx-font-size: 12px;");
         colCandidat.getChildren().addAll(lblNom, lblPro);
 
-        // ── Offre ─────────────────────────────────────────────────────────────
+        // ── Offre ──────────────────────────────────────────────────────────
         VBox colOffre = new VBox(4);
         colOffre.setPrefWidth(200);
         Label offreKey = new Label("POSTULÉ POUR");
@@ -194,7 +197,7 @@ public class HistoriqueCandidaturesController {
         offreVal.setStyle("-fx-font-weight: 700; -fx-text-fill: #2563EB; -fx-font-size: 13px;");
         colOffre.getChildren().addAll(offreKey, offreVal);
 
-        // ── Badges ───────────────────────────────────────────────────────────
+        // ── Badges ─────────────────────────────────────────────────────────
         Label lblStatut = new Label("✅ TRAITÉ");
         lblStatut.setStyle(
                 "-fx-background-color: #DCFCE7; -fx-text-fill: #15803D;" +
@@ -213,7 +216,7 @@ public class HistoriqueCandidaturesController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // ── Actions ───────────────────────────────────────────────────────────
+        // ── Actions ────────────────────────────────────────────────────────
         HBox actions = new HBox(8);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
@@ -256,42 +259,64 @@ public class HistoriqueCandidaturesController {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  PLANIFIER ENTRETIEN — utilise le nouveau dialog stylisé
+    //  PLANIFIER ENTRETIEN
+    //  ✅ LOGIQUE FILTRE DATE :
+    //     On ne garde que les entretiens dont la date est >= aujourd'hui.
+    //     Si la liste filtrée est vide → on crée directement sans dialog.
     // ─────────────────────────────────────────────────────────────────────────
     private void planifierEntretien(CandidatureDTO dto) {
-        // Sécurité
+        // Sécurité : vérifier qu'il n'a pas déjà un entretien
         if (candidatureService.candidatADejaUnEntretienPourOffre(dto.getIdCandidat(), dto.getIdOffre())) {
             showError("Ce candidat a déjà un entretien planifié pour cette offre.");
             return;
         }
 
-        // Récupérer les entretiens existants pour cette offre
-        List<Entretien> entretiensPourOffre = candidatureService.getEntretiensPourOffre(dto.getIdOffre());
+        // Récupérer tous les entretiens existants pour cette offre
+        List<Entretien> tousEntretiensPourOffre = candidatureService.getEntretiensPourOffre(dto.getIdOffre());
 
-        // Récupérer la fenêtre courante pour l'attacher en owner
+        // ✅ FILTRE : garder uniquement les entretiens :
+        //    - dont la date n'est PAS dépassée (date_entretien >= aujourd'hui)
+        //    - ET dont le statut n'est PAS "annulé"
+        LocalDate today = LocalDate.now();
+        List<Entretien> entretiensValides = tousEntretiensPourOffre.stream()
+                .filter(e -> {
+                    // Exclure si date dépassée
+                    if (e.getDateEntretien() == null) return false;
+                    if (e.getDateEntretien().toLocalDate().isBefore(today)) return false;
+                    // Exclure si statut annulé
+                    if ("annulé".equalsIgnoreCase(e.getStatut())) return false;
+                    return true;
+                })
+                .collect(Collectors.toList());
+
+        // Récupérer la fenêtre courante
         Stage ownerStage = null;
         if (vboxHistorique.getScene() != null && vboxHistorique.getScene().getWindow() instanceof Stage)
             ownerStage = (Stage) vboxHistorique.getScene().getWindow();
 
-        // Ouvrir le dialog stylisé JobNest v3
-        PlanifierEntretienDialog.DialogResult result = PlanifierEntretienDialog.show(
-                entretiensPourOffre,
-                dto.getNomComplet(),
-                dto.getTitreOffre(),
-                ownerStage
-        );
+        if (entretiensValides.isEmpty()) {
+            // ✅ Tous les entretiens sont passés (ou aucun) → créer directement, sans dialog
+            ouvrirFormulaireNouvelEntretien(dto);
+        } else {
+            // Des entretiens valides (non dépassés) existent → proposer le choix via dialog
+            PlanifierEntretienDialog.DialogResult result = PlanifierEntretienDialog.show(
+                    entretiensValides,          // ← on passe UNIQUEMENT les entretiens valides
+                    dto.getNomComplet(),
+                    dto.getTitreOffre(),
+                    ownerStage
+            );
 
-        // Traiter le résultat
-        switch (result.action) {
-            case REJOINDRE_EXISTANT:
-                rejoindreEntretienExistant(dto, result.entretienChoisi);
-                break;
-            case CREER_NOUVEAU:
-                ouvrirFormulaireNouvelEntretien(dto);
-                break;
-            case ANNULER:
-            default:
-                break;
+            switch (result.action) {
+                case REJOINDRE_EXISTANT:
+                    rejoindreEntretienExistant(dto, result.entretienChoisi);
+                    break;
+                case CREER_NOUVEAU:
+                    ouvrirFormulaireNouvelEntretien(dto);
+                    break;
+                case ANNULER:
+                default:
+                    break;
+            }
         }
     }
 
@@ -328,7 +353,8 @@ public class HistoriqueCandidaturesController {
             stage.setTitle("Planifier un entretien — " + dto.getNomComplet() + " / " + dto.getTitreOffre());
             Scene scene = new Scene(root);
             if (getClass().getResource("/tn/jobnest/gentretien/styles.css") != null)
-                scene.getStylesheets().add(getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
+                scene.getStylesheets().add(
+                        getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
             stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setOnHidden(ev -> chargerDonnees());
@@ -377,10 +403,13 @@ public class HistoriqueCandidaturesController {
             Stage  stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene  scene = new Scene(root);
             if (getClass().getResource("/tn/jobnest/gentretien/styles.css") != null)
-                scene.getStylesheets().add(getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
+                scene.getStylesheets().add(
+                        getClass().getResource("/tn/jobnest/gentretien/styles.css").toExternalForm());
             stage.setScene(scene);
             stage.setTitle(titre);
-        } catch (IOException e) { showError("Erreur de navigation : " + e.getMessage()); }
+        } catch (IOException e) {
+            showError("Erreur de navigation : " + e.getMessage());
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────

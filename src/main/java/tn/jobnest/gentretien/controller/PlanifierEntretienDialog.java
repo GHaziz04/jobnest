@@ -16,19 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * ╔══════════════════════════════════════════════════════════════════╗
- * ║   JOBNEST — Dialog "Planifier un entretien"  v3-fix             ║
- * ║                                                                  ║
- * ║   CORRECTIONS :                                                  ║
- * ║   1. Suppression de dialog.show() avant showAndWait()           ║
- * ║      → corrige "Stage already visible"                          ║
- * ║   2. linear-gradient(135deg,...) remplacé par la syntaxe JavaFX ║
- * ║      → from 0% 0% to 100% 100%  (ou 100% 0% pour horizontal)   ║
- * ║      → les pourcentages dans les stops (ex: #1E3A5F 0%) sont    ║
- * ║        aussi supprimés (non supportés en inline JavaFX CSS)     ║
- * ╚══════════════════════════════════════════════════════════════════╝
- */
+
 public class PlanifierEntretienDialog {
 
     // ─── Résultat ─────────────────────────────────────────────────────────

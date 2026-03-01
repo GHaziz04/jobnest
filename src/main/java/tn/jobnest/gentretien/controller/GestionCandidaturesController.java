@@ -16,6 +16,7 @@ import tn.jobnest.gentretien.service.CandidatureService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class GestionCandidaturesController {
@@ -174,7 +175,7 @@ public class GestionCandidaturesController {
         HBox actionsRow = new HBox(12);
         actionsRow.setAlignment(Pos.CENTER_RIGHT);
 
-        // Bouton Traiter — marque la candidature comme traité SEULEMENT
+        // ── Bouton Traiter ──────────────────────────────────────────────────
         Button btnTraiter = new Button("✓   Marquer comme Traité");
         btnTraiter.setPrefHeight(44);
         btnTraiter.setMinWidth(210);
@@ -187,14 +188,13 @@ public class GestionCandidaturesController {
                         + "-fx-cursor: hand;"
                         + "-fx-padding: 10 22;"
                         + "-fx-effect: dropshadow(gaussian, rgba(37,99,235,0.35), 10, 0, 0, 3);");
-        // Change SEULEMENT le statut candidature → "traité". Aucun entretien créé.
         btnTraiter.setOnAction(e -> {
             if (service.modifierStatut(dto.getIdCandidature(), "traité")) {
-                rafraichirListe(); // la carte disparaît car plus en_attente
+                rafraichirListe();
             }
         });
 
-        // Bouton Détails
+        // ── Bouton Détails ──────────────────────────────────────────────────
         Button btnDetails = new Button("📄   Voir Détails");
         btnDetails.setPrefHeight(44);
         btnDetails.setMinWidth(150);
@@ -211,7 +211,76 @@ public class GestionCandidaturesController {
                         + "-fx-border-width: 1.5;");
         btnDetails.setOnAction(e -> ouvrirDetails(dto, e));
 
-        actionsRow.getChildren().addAll(btnTraiter, btnDetails);
+        // ── Bouton Supprimer (annuler) ──────────────────────────────────────
+        // La candidature reste en base mais son statut passe à "annulé"
+        // Elle disparaît de l'interface car on n'affiche que les "en_attente"
+        Button btnSupprimer = new Button("🗑   Supprimer");
+        btnSupprimer.setPrefHeight(44);
+        btnSupprimer.setMinWidth(140);
+        btnSupprimer.setStyle(
+                "-fx-background-color: #FEF2F2;"
+                        + "-fx-text-fill: #DC2626;"
+                        + "-fx-font-weight: 800;"
+                        + "-fx-font-size: 14px;"
+                        + "-fx-background-radius: 10;"
+                        + "-fx-cursor: hand;"
+                        + "-fx-padding: 10 22;"
+                        + "-fx-border-color: #FECACA;"
+                        + "-fx-border-radius: 10;"
+                        + "-fx-border-width: 1.5;");
+
+        // Effet hover : rouge plus foncé au survol
+        btnSupprimer.setOnMouseEntered(e -> btnSupprimer.setStyle(
+                "-fx-background-color: #DC2626;"
+                        + "-fx-text-fill: white;"
+                        + "-fx-font-weight: 800;"
+                        + "-fx-font-size: 14px;"
+                        + "-fx-background-radius: 10;"
+                        + "-fx-cursor: hand;"
+                        + "-fx-padding: 10 22;"
+                        + "-fx-border-color: #DC2626;"
+                        + "-fx-border-radius: 10;"
+                        + "-fx-border-width: 1.5;"
+                        + "-fx-effect: dropshadow(gaussian, rgba(220,38,38,0.35), 10, 0, 0, 3);"));
+        btnSupprimer.setOnMouseExited(e -> btnSupprimer.setStyle(
+                "-fx-background-color: #FEF2F2;"
+                        + "-fx-text-fill: #DC2626;"
+                        + "-fx-font-weight: 800;"
+                        + "-fx-font-size: 14px;"
+                        + "-fx-background-radius: 10;"
+                        + "-fx-cursor: hand;"
+                        + "-fx-padding: 10 22;"
+                        + "-fx-border-color: #FECACA;"
+                        + "-fx-border-radius: 10;"
+                        + "-fx-border-width: 1.5;"));
+
+        // Confirmation avant suppression
+        btnSupprimer.setOnAction(e -> {
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmation.setTitle("Confirmer la suppression");
+            confirmation.setHeaderText("Supprimer la candidature de " + dto.getNomComplet() + " ?");
+            confirmation.setContentText(
+                    "La candidature sera marquée comme « annulé » et ne sera plus affichée.\n"
+                            + "Elle restera enregistrée dans la base de données.");
+
+            // Personnaliser les boutons de la boîte de dialogue
+            ButtonType btnOui = new ButtonType("Oui, supprimer", ButtonBar.ButtonData.OK_DONE);
+            ButtonType btnNon = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+            confirmation.getButtonTypes().setAll(btnOui, btnNon);
+
+            Optional<ButtonType> result = confirmation.showAndWait();
+            if (result.isPresent() && result.get() == btnOui) {
+                // Changer le statut → "annulé" en base
+                if (service.modifierStatut(dto.getIdCandidature(), "annulé")) {
+                    rafraichirListe(); // la carte disparaît car plus "en_attente"
+                } else {
+                    showError("Erreur lors de la suppression de la candidature.");
+                }
+            }
+        });
+
+        // Ordre des boutons : Traiter | Détails | Supprimer
+        actionsRow.getChildren().addAll(btnTraiter, btnDetails, btnSupprimer);
         card.getChildren().addAll(topRow, separator, actionsRow);
         return card;
     }
