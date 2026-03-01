@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tn.jobnest.gentretien.model.Entretien;
@@ -38,35 +40,32 @@ public class EntretienFormController {
     @FXML private TextField         noteRecruteur;
     @FXML private Button            btnGenererMeet;
     @FXML private Button            btnChoisirSurCarte;
+    @FXML private Button            btnOuvrirMeet;   // ← NOUVEAU : bouton "Rejoindre le Meet"
+
+    // ── Sections conditionnelles ─────────────────────────────────────────────
+    @FXML private VBox              sectionLieu;      // ← section lieu (présentiel)
+    @FXML private VBox              sectionVisio;     // ← section visio
+    @FXML private HBox              hintTypeSection;  // ← message "choisissez un type"
 
     // ── Labels d'info dynamiques (affichés en haut du formulaire) ────────────
-    @FXML private Label             lblInfoCandidat;   // ex: "Candidat : Jean Dupont"
-    @FXML private Label             lblInfoOffre;      // ex: "Offre : Développeur Java"
+    @FXML private Label             lblInfoCandidat;
+    @FXML private Label             lblInfoOffre;
 
     // ── État interne ─────────────────────────────────────────────────────────
     private Entretien               entretien;
     private boolean                 isReorganisation  = false;
     private final Entretienservice  service           = new Entretienservice();
 
-    // ── Contexte dynamique transmis depuis HistoriqueCandidaturesController ──
-    private int    idCandidatALier   = -1;   // id_user du candidat
-    private int    idOffreLiee       = -1;   // id_offre concernée
-    private String nomCandidat       = "";   // affiché dans le formulaire
-    private String titreOffreLiee    = "";   // affiché dans le formulaire
+    // ── Contexte dynamique ───────────────────────────────────────────────────
+    private int    idCandidatALier   = -1;
+    private int    idOffreLiee       = -1;
+    private String nomCandidat       = "";
+    private String titreOffreLiee    = "";
     private static final int ID_RECRUTEUR_COURANT = 1;
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  MÉTHODE PRINCIPALE : injecter le contexte depuis HistoriqueCandidatures
+    //  INJECTER LE CONTEXTE CANDIDATURE
     // ─────────────────────────────────────────────────────────────────────────
-    /**
-     * Appelée par HistoriqueCandidaturesController AVANT d'afficher la fenêtre.
-     * Permet de pré-remplir les informations candidat + offre dans le formulaire.
-     *
-     * @param idCandidat   id_user du candidat (sera inséré dans participant_entretien)
-     * @param idOffre      id_offre (sera stocké dans entretien.id_offre)
-     * @param nomCandidat  Nom complet affiché en en-tête du formulaire
-     * @param titreOffre   Titre de l'offre affiché en en-tête du formulaire
-     */
     public void setContextCandidature(int idCandidat, int idOffre,
                                       String nomCandidat, String titreOffre) {
         this.idCandidatALier = idCandidat;
@@ -74,7 +73,6 @@ public class EntretienFormController {
         this.nomCandidat     = nomCandidat != null ? nomCandidat : "";
         this.titreOffreLiee  = titreOffre  != null ? titreOffre  : "";
 
-        // Mettre à jour les labels d'info si déjà initialisés
         if (lblInfoCandidat != null)
             lblInfoCandidat.setText("Candidat : " + this.nomCandidat);
         if (lblInfoOffre != null)
@@ -94,33 +92,93 @@ public class EntretienFormController {
 
         Tooltip tooltipStatut = new Tooltip(
                 "Le statut est géré automatiquement.\n" +
-                        "• 'proposé' : à la création\n" +
+                        "• 'proposé'  : à la création\n" +
                         "• 'confirmé' : confirmé par le candidat\n" +
-                        "• 'réalisé' : après que le candidat a rejoint l'entretien\n" +
-                        "• 'annulé'  : si la date est passée sans action du candidat"
+                        "• 'réalisé'  : après que le candidat a rejoint\n" +
+                        "• 'annulé'   : si la date est passée sans action"
         );
         tooltipStatut.setStyle("-fx-font-size: 12px;");
         Tooltip.install(statut, tooltipStatut);
 
-        // Listener type d'entretien
+        // ── État initial : tout désactivé jusqu'au choix du type ─────────────
+        sectionLieu.setDisable(true);
+        sectionLieu.setOpacity(0.4);
+        sectionVisio.setDisable(true);
+        sectionVisio.setOpacity(0.4);
+        hintTypeSection.setVisible(true);
+        hintTypeSection.setManaged(true);
+
+        // ── Listener sur le type d'entretien ─────────────────────────────────
         typeEntretien.valueProperty().addListener((obs, oldVal, newVal) -> {
             boolean isPresential = "présentiel".equals(newVal);
-            lieu.setDisable(!isPresential);
-            if (btnChoisirSurCarte != null) btnChoisirSurCarte.setDisable(!isPresential);
-            if (!isPresential) {
-                lieu.clear();
-                lienVisio.setDisable(false);
-            } else {
-                lienVisio.setDisable(true);
+            boolean isVisio      = "visio".equals(newVal);
+
+            // Masquer le hint une fois un type sélectionné
+            hintTypeSection.setVisible(false);
+            hintTypeSection.setManaged(false);
+
+            // Section LIEU
+            sectionLieu.setDisable(!isPresential);
+            sectionLieu.setOpacity(isPresential ? 1.0 : 0.4);
+            if (!isPresential) lieu.clear();
+
+            // Section VISIO
+            sectionVisio.setDisable(!isVisio);
+            sectionVisio.setOpacity(isVisio ? 1.0 : 0.4);
+            if (!isVisio) {
                 lienVisio.clear();
+                // Masquer le bouton "Rejoindre"
+                if (btnOuvrirMeet != null) {
+                    btnOuvrirMeet.setVisible(false);
+                    btnOuvrirMeet.setManaged(false);
+                }
             }
         });
 
-        // Mettre à jour les labels si le contexte a été injecté avant initialize()
+        // ── Afficher le bouton "Rejoindre" dès qu'un lien est généré ─────────
+        lienVisio.textProperty().addListener((obs, oldVal, newVal) -> {
+            boolean hasLink = newVal != null && newVal.startsWith("http");
+            if (btnOuvrirMeet != null) {
+                btnOuvrirMeet.setVisible(hasLink);
+                btnOuvrirMeet.setManaged(hasLink);
+            }
+        });
+
+        // Labels d'info
         if (lblInfoCandidat != null && !nomCandidat.isEmpty())
             lblInfoCandidat.setText("Candidat : " + nomCandidat);
         if (lblInfoOffre != null && !titreOffreLiee.isEmpty())
             lblInfoOffre.setText("Offre : " + titreOffreLiee);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  OUVRIR LE LIEN MEET DANS LE NAVIGATEUR  ← NOUVEAU
+    // ─────────────────────────────────────────────────────────────────────────
+    @FXML
+    private void ouvrirLienMeet() {
+        String lien = lienVisio.getText().trim();
+        if (lien.isEmpty() || !lien.startsWith("http")) {
+            showAlert(Alert.AlertType.WARNING, "Lien invalide",
+                    "Aucun lien Meet valide n'est disponible.\nVeuillez d'abord générer le lien.");
+            return;
+        }
+        try {
+            Desktop.getDesktop().browse(new URI(lien));
+        } catch (Exception ex) {
+            // Fallback : afficher le lien
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Lien Meet");
+            alert.setHeaderText("Ouvrez ce lien dans votre navigateur :");
+            alert.setContentText(lien);
+
+            // Permettre la copie
+            javafx.scene.control.TextField tfLink = new javafx.scene.control.TextField(lien);
+            tfLink.setEditable(false);
+            tfLink.setStyle("-fx-font-size: 11px;");
+            alert.getDialogPane().setExpandableContent(tfLink);
+            alert.getDialogPane().setExpanded(true);
+            alert.showAndWait();
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -166,10 +224,10 @@ public class EntretienFormController {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  SET ENTRETIEN (mode édition/modification)
+    //  SET ENTRETIEN (mode édition)
     // ─────────────────────────────────────────────────────────────────────────
     public void setEntretien(Entretien e) {
-        this.entretien = e;
+        this.entretien        = e;
         this.isReorganisation = false;
         if (e != null) {
             dateEntretien.setValue(e.getDateEntretien() != null
@@ -178,7 +236,7 @@ public class EntretienFormController {
                     ? e.getHeureDebut().toLocalTime().toString() : "");
             heureFin.setText(e.getHeureFin() != null
                     ? e.getHeureFin().toLocalTime().toString() : "");
-            typeEntretien.setValue(e.getTypeEntretien());
+            typeEntretien.setValue(e.getTypeEntretien()); // déclenche le listener automatiquement
             lieu.setText(e.getLieu());
             lienVisio.setText(e.getLienVisio());
             String currentStatut = e.getStatut();
@@ -194,7 +252,7 @@ public class EntretienFormController {
     //  SET ENTRETIEN POUR RÉORGANISATION
     // ─────────────────────────────────────────────────────────────────────────
     public void setEntretienPourReorganisation(Entretien e) {
-        this.entretien = e;
+        this.entretien        = e;
         this.isReorganisation = true;
         if (e != null) {
             dateEntretien.setValue(null);
@@ -203,14 +261,14 @@ public class EntretienFormController {
                     ? e.getHeureDebut().toLocalTime().toString() : "");
             heureFin.setText(e.getHeureFin() != null
                     ? e.getHeureFin().toLocalTime().toString() : "");
-            typeEntretien.setValue(e.getTypeEntretien());
+            typeEntretien.setValue(e.getTypeEntretien()); // déclenche le listener
             if ("présentiel".equals(e.getTypeEntretien())) {
                 lieu.setText(e.getLieu());
                 lienVisio.clear();
             } else {
                 lieu.clear();
                 lienVisio.clear();
-                lienVisio.setPromptText("Generez un nouveau lien Meet pour la nouvelle date");
+                lienVisio.setPromptText("Générez un nouveau lien Meet pour la nouvelle date");
             }
             if (!statut.getItems().contains("proposé")) statut.getItems().add("proposé");
             statut.setValue("proposé");
@@ -225,7 +283,8 @@ public class EntretienFormController {
     @FXML
     private void genererLienMeet() {
         if (dateEntretien.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Champ requis", "Veuillez sélectionner une date."); return;
+            showAlert(Alert.AlertType.WARNING, "Champ requis",
+                    "Veuillez sélectionner une date avant de générer le lien Meet."); return;
         }
         if (dateEntretien.getValue().isBefore(LocalDate.now())) {
             showAlert(Alert.AlertType.WARNING, "Date invalide",
@@ -247,23 +306,36 @@ public class EntretienFormController {
             LocalDateTime dateTimeDebut = LocalDateTime.of(dateEntretien.getValue(), debut);
             LocalDateTime dateTimeFin   = LocalDateTime.of(dateEntretien.getValue(), fin);
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
             String meetLink = GoogleMeetService.creerMeetingLink(
                     "Entretien JobNest", "Entretien d'embauche planifié via JobNest",
                     dateTimeDebut.format(fmt), dateTimeFin.format(fmt));
-            lienVisio.setText(meetLink);
-            showAlert(Alert.AlertType.INFORMATION, "Succès",
-                    "Lien Google Meet généré !\n\n" + meetLink);
+            lienVisio.setText(meetLink);  // déclenche le listener → affiche btnOuvrirMeet
+
+            // Proposer d'ouvrir le lien immédiatement
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Lien Meet généré !");
+            confirm.setHeaderText("✅ Lien Google Meet créé avec succès");
+            confirm.setContentText(meetLink + "\n\nVoulez-vous rejoindre la réunion maintenant ?");
+            ButtonType btnOuvrir  = new ButtonType("🔗 Rejoindre");
+            ButtonType btnFermer  = new ButtonType("Continuer la saisie");
+            confirm.getButtonTypes().setAll(btnOuvrir, btnFermer);
+            Optional<ButtonType> result = confirm.showAndWait();
+            if (result.isPresent() && result.get() == btnOuvrir) {
+                ouvrirLienMeet();
+            }
+
         } catch (DateTimeParseException ex) {
             showAlert(Alert.AlertType.ERROR, "Format invalide",
                     "Format d'heure invalide. Utilisez HH:mm (ex: 14:30)");
         } catch (Exception ex) {
-            showAlert(Alert.AlertType.ERROR, "Erreur",
+            showAlert(Alert.AlertType.ERROR, "Erreur Meet",
                     "Impossible de générer le lien Meet : " + ex.getMessage());
         }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  VALIDER ADRESSE SUR GOOGLE MAPS
+    //  VALIDER ADRESSE (ouvre Google Maps)
     // ─────────────────────────────────────────────────────────────────────────
     @FXML
     private void validerAdresse() {
@@ -296,7 +368,7 @@ public class EntretienFormController {
     // ─────────────────────────────────────────────────────────────────────────
     @FXML
     private void save() {
-        // ── Validations ──────────────────────────────────────────────────────
+        // ── Validation : date ────────────────────────────────────────────────
         if (dateEntretien.getValue() == null) {
             showAlert(Alert.AlertType.WARNING, "Champ obligatoire",
                     "Veuillez sélectionner une date d'entretien.");
@@ -307,42 +379,53 @@ public class EntretienFormController {
                     "Impossible de créer un entretien dans le passé.\nVeuillez choisir une date future.");
             dateEntretien.requestFocus(); return;
         }
+
+        // ── Validation : heures ──────────────────────────────────────────────
         String hDebutStr = heureDebut.getText().trim();
         String hFinStr   = heureFin.getText().trim();
         if (hDebutStr.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Champ obligatoire", "Veuillez renseigner l'heure de début.");
+            showAlert(Alert.AlertType.WARNING, "Champ obligatoire",
+                    "Veuillez renseigner l'heure de début (format HH:mm).");
             heureDebut.requestFocus(); return;
         }
         if (hFinStr.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Champ obligatoire", "Veuillez renseigner l'heure de fin.");
+            showAlert(Alert.AlertType.WARNING, "Champ obligatoire",
+                    "Veuillez renseigner l'heure de fin (format HH:mm).");
             heureFin.requestFocus(); return;
         }
+
+        // ── Validation : type ────────────────────────────────────────────────
         if (typeEntretien.getValue() == null || typeEntretien.getValue().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Champ obligatoire", "Veuillez sélectionner un type d'entretien.");
+            showAlert(Alert.AlertType.WARNING, "Champ obligatoire",
+                    "Veuillez sélectionner un type d'entretien.");
             typeEntretien.requestFocus(); return;
         }
+
+        // ── Validation conditionnelle : lieu ou lien visio ───────────────────
         if ("présentiel".equals(typeEntretien.getValue())) {
             if (lieu.getText() == null || lieu.getText().trim().isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "Champ obligatoire",
-                        "Veuillez renseigner le lieu.\n" +
-                                "Utilisez le bouton \"Choisir sur la carte\" pour sélectionner un lieu.");
+                        "Pour un entretien présentiel, le lieu est obligatoire.\n" +
+                                "Utilisez le bouton carte pour sélectionner un lieu.");
                 lieu.requestFocus(); return;
             }
         } else if ("visio".equals(typeEntretien.getValue())) {
             if (lienVisio.getText() == null || lienVisio.getText().trim().isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "Champ obligatoire",
-                        "Veuillez renseigner le lien visio ou cliquer sur 'Générer Meet'.");
+                        "Pour un entretien en visio, le lien de conférence est obligatoire.\n" +
+                                "Cliquez sur '📹 Meet' pour générer un lien Google Meet.");
                 lienVisio.requestFocus(); return;
             }
         }
 
+        // ── Parse des heures ─────────────────────────────────────────────────
         LocalTime debut, fin;
         try {
             debut = LocalTime.parse(hDebutStr);
             fin   = LocalTime.parse(hFinStr);
         } catch (DateTimeParseException ex) {
             showAlert(Alert.AlertType.ERROR, "Format invalide",
-                    "Format d'heure invalide. Utilisez le format HH:mm\nExemple : 14:30"); return;
+                    "Format d'heure invalide. Utilisez HH:mm (ex: 14:30)"); return;
         }
         if (fin.isBefore(debut) || fin.equals(debut)) {
             showAlert(Alert.AlertType.WARNING, "Incohérence horaire",
@@ -380,7 +463,8 @@ public class EntretienFormController {
                 }
             }
         } catch (SQLException ex) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de vérifier les conflits : " + ex.getMessage()); return;
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible de vérifier les conflits : " + ex.getMessage()); return;
         }
 
         // ── Construction de l'objet Entretien ────────────────────────────────
@@ -395,11 +479,10 @@ public class EntretienFormController {
         entretien.setDateCreation(new Timestamp(System.currentTimeMillis()));
         entretien.setIdRecruteur(ID_RECRUTEUR_COURANT);
 
-        // Utiliser l'id_offre dynamique si fourni, sinon conserver celui de l'entretien existant
         if (idOffreLiee > 0) {
             entretien.setIdOffre(idOffreLiee);
         } else if (entretien.getIdOffre() == 0) {
-            entretien.setIdOffre(10); // fallback pour compatibilité
+            entretien.setIdOffre(10); // fallback
         }
 
         if (entretien.getIdEntretien() == 0 || isReorganisation) {
@@ -409,10 +492,8 @@ public class EntretienFormController {
         // ── Enregistrement ───────────────────────────────────────────────────
         try {
             if (entretien.getIdEntretien() == 0) {
-                // Nouveau entretien → on récupère l'id généré
                 int idNouvelEntretien = service.ajouterEtRetournerId(entretien);
                 if (idNouvelEntretien > 0 && idCandidatALier > 0) {
-                    // Lier le candidat à cet entretien
                     service.ajouterParticipant(idNouvelEntretien, idCandidatALier);
                 }
                 showAlert(Alert.AlertType.INFORMATION, "Succès",

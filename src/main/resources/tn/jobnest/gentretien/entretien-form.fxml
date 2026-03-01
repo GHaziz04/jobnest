@@ -19,7 +19,7 @@
             </VBox>
         </HBox>
 
-        <!-- Bandeau dynamique : candidat + offre (rempli par le contrôleur) -->
+        <!-- Bandeau dynamique : candidat + offre -->
         <HBox spacing="24" alignment="CENTER_LEFT"
               style="-fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 8;
                      -fx-padding: 10 16 10 16; -fx-margin: 8 0 0 0;">
@@ -107,11 +107,12 @@
             <!-- SÉPARATEUR -->
             <Separator style="-fx-background-color: #EFF3FB; -fx-opacity: 0.8;"/>
 
-            <!-- LIEU -->
-            <VBox spacing="6">
+            <!-- LIEU — visible et actif uniquement si type = présentiel -->
+            <VBox fx:id="sectionLieu" spacing="6" disable="true" managed="true">
                 <HBox alignment="CENTER_LEFT" spacing="8">
-                    <Label text="Lieu (si présentiel)"
+                    <Label text="Lieu (présentiel)"
                            style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #1E3A5F;"/>
+                    <Label text="*" style="-fx-text-fill: #EF4444; -fx-font-weight: bold;"/>
                 </HBox>
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <TextField fx:id="lieu"
@@ -126,40 +127,40 @@
                             style="-fx-background-color: #2563eb; -fx-text-fill: #ffffff;
                                    -fx-font-size: 11.5px; -fx-font-weight: 700;
                                    -fx-background-radius: 10; -fx-cursor: hand;
-                                   -fx-border-color: #E2E8F0; -fx-border-radius: 10;
+                                   -fx-border-color: #1e3a8a; -fx-border-radius: 10;
                                    -fx-border-width: 1.5;"/>
                 </HBox>
                 <Button fx:id="btnChoisirSurCarte"
-                        text="🗺️ Choisir le lieu sur la carte (OpenStreetMap)"
+                        text="📍 Choisir le lieu sur la carte (OpenStreetMap)"
                         onAction="#ouvrirLocationPicker"
                         prefWidth="470" prefHeight="42"
-                        disable="true"
-                        style="-fx-background-color: linear-gradient(135deg, #1A6BFF, #0E54CC);
-                               -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: 700;
+                        style="-fx-background-color: #1e3a8a; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-font-weight: 700;
                                -fx-background-radius: 11px; -fx-cursor: hand;
                                -fx-effect: dropshadow(gaussian, rgba(26,107,255,0.35), 10, 0, 0, 3);"/>
                 <HBox spacing="8" alignment="CENTER_LEFT"
                       style="-fx-background-color: #EFF6FF; -fx-background-radius: 8px;
                              -fx-padding: 7 12 7 12;">
                     <Label text="ℹ"
-                           style="-fx-font-size: 12px; -fx-font-weight: 900; -fx-text-fill: #2563EB;
+                           style="-fx-font-size: 12px; -fx-font-weight: 900; -fx-text-fill: #1e3a8a;
                                   -fx-background-color: #BFDBFE; -fx-background-radius: 50%;
                                   -fx-min-width: 18; -fx-min-height: 18; -fx-alignment: CENTER;"/>
-                    <Label text="Sélectionnez 'présentiel' pour activer le sélecteur de lieu sur la carte."
-                           style="-fx-font-size: 11px; -fx-text-fill: #2563EB; -fx-wrap-text: true;"
+                    <Label text="Utilisez la carte pour sélectionner précisément le lieu de l'entretien."
+                           style="-fx-font-size: 11px; -fx-text-fill: #1e3a8a; -fx-wrap-text: true;"
                            wrapText="true" prefWidth="380"/>
                 </HBox>
             </VBox>
 
-            <!-- LIEN VISIO -->
-            <VBox spacing="6">
+            <!-- LIEN VISIO — visible et actif uniquement si type = visio -->
+            <VBox fx:id="sectionVisio" spacing="6" disable="true" managed="true">
                 <HBox alignment="CENTER_LEFT" spacing="8">
-                    <Label text="Lien Visioconférence (si visio)"
+                    <Label text="Lien Visioconférence (visio)"
                            style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #1E3A5F;"/>
+                    <Label text="*" style="-fx-text-fill: #EF4444; -fx-font-weight: bold;"/>
                 </HBox>
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <TextField fx:id="lienVisio"
-                               promptText="Généré automatiquement via Google Meet"
+                               promptText="Cliquez sur '📹 Meet' pour générer automatiquement"
                                HBox.hgrow="ALWAYS"
                                style="-fx-font-size: 12px; -fx-border-color: #E2E8F0;
                                       -fx-border-radius: 10; -fx-background-radius: 10;
@@ -173,7 +174,40 @@
                                    -fx-background-radius: 10; -fx-cursor: hand;
                                    -fx-effect: dropshadow(gaussian,rgba(37,99,235,0.35),8,0,0,2);"/>
                 </HBox>
+                <HBox spacing="8" alignment="CENTER_LEFT"
+                      style="-fx-background-color: #EFF6FF; -fx-background-radius: 8px;
+                             -fx-padding: 7 12 7 12;">
+                    <Label text="ℹ"
+                           style="-fx-font-size: 12px; -fx-font-weight: 900; -fx-text-fill: #1e3a8a;
+                                  -fx-background-color: #BFDBFE; -fx-background-radius: 50%;
+                                  -fx-min-width: 18; -fx-min-height: 18; -fx-alignment: CENTER;"/>
+                    <Label text="Renseignez la date et les heures avant de générer le lien Meet."
+                           style="-fx-font-size: 11px; -fx-text-fill: #1e3a8a; -fx-wrap-text: true;"
+                           wrapText="true" prefWidth="380"/>
+                </HBox>
+                <!-- Bouton "Rejoindre" visible uniquement après génération du lien -->
+                <Button fx:id="btnOuvrirMeet"
+                        text="🔗 Rejoindre le Meet"
+                        onAction="#ouvrirLienMeet"
+                        prefWidth="470" prefHeight="38"
+                        visible="false" managed="false"
+                        style="-fx-background-color: #16a34a; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-font-weight: 700;
+                               -fx-background-radius: 10; -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian,rgba(22,163,74,0.35),8,0,0,2);"/>
             </VBox>
+
+            <!-- Message affiché quand aucun type n'est sélectionné -->
+            <HBox fx:id="hintTypeSection" spacing="8" alignment="CENTER_LEFT"
+                  style="-fx-background-color: #FFF7ED; -fx-background-radius: 8px;
+                         -fx-padding: 10 14 10 14; -fx-border-color: #FED7AA;
+                         -fx-border-radius: 8; -fx-border-width: 1;">
+                <Label text="⬆"
+                       style="-fx-font-size: 14px; -fx-text-fill: #EA580C;"/>
+                <Label text="Sélectionnez le type d'entretien pour accéder aux champs Lieu ou Visio."
+                       style="-fx-font-size: 12px; -fx-text-fill: #9A3412; -fx-wrap-text: true;"
+                       wrapText="true" prefWidth="390"/>
+            </HBox>
 
             <!-- SÉPARATEUR -->
             <Separator style="-fx-background-color: #EFF3FB; -fx-opacity: 0.8;"/>
@@ -220,13 +254,13 @@
     <VBox style="-fx-background-color: #ffffff; -fx-border-color: #1e3a8a;
                  -fx-border-width: 1 0 0 0; -fx-padding: 16 35 20 35;"
           spacing="10">
-        <Label text="* Champs obligatoires"
+        <Label text="* Champs obligatoires selon le type sélectionné"
                style="-fx-font-size: 11px; -fx-text-fill: #1e3a8a; -fx-font-style: italic;"/>
         <Button text="✅ Enregistrer l'entretien"
                 onAction="#save"
                 prefHeight="48" prefWidth="470"
-                style="-fx-background-color: linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%);
-                       -fx-text-fill: #1e3a8a; -fx-font-size: 15px; -fx-font-weight: 800;
+                style="-fx-background-color: linear-gradient(135deg, #1e3a8a 0%, #2563EB 100%);
+                       -fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: 800;
                        -fx-background-radius: 12px; -fx-cursor: hand;
                        -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.45), 14, 0, 0, 5);"/>
     </VBox>
