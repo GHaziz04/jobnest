@@ -8,7 +8,7 @@
       spacing="0" prefWidth="540" prefHeight="800"
       style="-fx-background-color: white;">
 
-    <!-- HEADER BLEU -->
+    <!-- ═══════════════════════════════════════════════════ HEADER BLEU -->
     <VBox style="-fx-background-color: #1E3A5F; -fx-padding: 22 35 18 35;" spacing="4">
         <HBox alignment="CENTER_LEFT" spacing="12">
             <VBox spacing="4">
@@ -19,10 +19,10 @@
             </VBox>
         </HBox>
 
-        <!-- Bandeau dynamique : candidat + offre -->
+        <!-- Bandeau dynamique candidat + offre -->
         <HBox spacing="24" alignment="CENTER_LEFT"
               style="-fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 8;
-                     -fx-padding: 10 16 10 16; -fx-margin: 8 0 0 0;">
+                     -fx-padding: 10 16 10 16;">
             <VBox spacing="2">
                 <Label text="CANDIDAT"
                        style="-fx-font-size: 9px; -fx-text-fill: rgba(255,255,255,0.5); -fx-font-weight: 700;"/>
@@ -39,14 +39,13 @@
         </HBox>
     </VBox>
 
-    <!-- BANDE DÉGRADÉE ACCENT -->
+    <!-- Bande dégradée accent -->
     <Region prefHeight="4"
             style="-fx-background-color: linear-gradient(to right, #F97316, #2563EB);"/>
 
-    <!-- CORPS DU FORMULAIRE -->
+    <!-- ═══════════════════════════════════════════════════ CORPS -->
     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                style="-fx-background-color: white; -fx-background: white;
-                       -fx-border-color: transparent;">
+                style="-fx-background-color: white; -fx-background: white; -fx-border-color: transparent;">
         <VBox spacing="18" style="-fx-background-color: white;">
             <padding><Insets top="25" right="35" bottom="10" left="35"/></padding>
 
@@ -104,11 +103,22 @@
                                  -fx-border-width: 1.5;"/>
             </VBox>
 
-            <!-- SÉPARATEUR -->
             <Separator style="-fx-background-color: #EFF3FB; -fx-opacity: 0.8;"/>
 
-            <!-- LIEU — visible et actif uniquement si type = présentiel -->
-            <VBox fx:id="sectionLieu" spacing="6" disable="true" managed="true">
+            <!-- Message hint : choisir un type d'abord -->
+            <HBox fx:id="hintTypeSection" spacing="8" alignment="CENTER_LEFT"
+                  style="-fx-background-color: #FFF7ED; -fx-background-radius: 8px;
+                         -fx-padding: 10 14 10 14; -fx-border-color: #FED7AA;
+                         -fx-border-radius: 8; -fx-border-width: 1;">
+                <Label text="⬆"
+                       style="-fx-font-size: 14px; -fx-text-fill: #EA580C;"/>
+                <Label text="Sélectionnez le type d'entretien pour accéder aux champs Lieu ou Visio."
+                       style="-fx-font-size: 12px; -fx-text-fill: #9A3412; -fx-wrap-text: true;"
+                       wrapText="true" prefWidth="390"/>
+            </HBox>
+
+            <!-- ═══ SECTION LIEU (présentiel uniquement) -->
+            <VBox fx:id="sectionLieu" spacing="6" disable="true">
                 <HBox alignment="CENTER_LEFT" spacing="8">
                     <Label text="Lieu (présentiel)"
                            style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #1E3A5F;"/>
@@ -124,7 +134,7 @@
                     <Button text="Vérifier"
                             onAction="#validerAdresse"
                             prefHeight="38" prefWidth="85"
-                            style="-fx-background-color: #2563eb; -fx-text-fill: #ffffff;
+                            style="-fx-background-color: #2563eb; -fx-text-fill: white;
                                    -fx-font-size: 11.5px; -fx-font-weight: 700;
                                    -fx-background-radius: 10; -fx-cursor: hand;
                                    -fx-border-color: #1e3a8a; -fx-border-radius: 10;
@@ -146,13 +156,13 @@
                                   -fx-background-color: #BFDBFE; -fx-background-radius: 50%;
                                   -fx-min-width: 18; -fx-min-height: 18; -fx-alignment: CENTER;"/>
                     <Label text="Utilisez la carte pour sélectionner précisément le lieu de l'entretien."
-                           style="-fx-font-size: 11px; -fx-text-fill: #1e3a8a; -fx-wrap-text: true;"
+                           style="-fx-font-size: 11px; -fx-text-fill: #1e3a8a;"
                            wrapText="true" prefWidth="380"/>
                 </HBox>
             </VBox>
 
-            <!-- LIEN VISIO — visible et actif uniquement si type = visio -->
-            <VBox fx:id="sectionVisio" spacing="6" disable="true" managed="true">
+            <!-- ═══ SECTION VISIO (visio uniquement) -->
+            <VBox fx:id="sectionVisio" spacing="6" disable="true">
                 <HBox alignment="CENTER_LEFT" spacing="8">
                     <Label text="Lien Visioconférence (visio)"
                            style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #1E3A5F;"/>
@@ -174,18 +184,6 @@
                                    -fx-background-radius: 10; -fx-cursor: hand;
                                    -fx-effect: dropshadow(gaussian,rgba(37,99,235,0.35),8,0,0,2);"/>
                 </HBox>
-                <HBox spacing="8" alignment="CENTER_LEFT"
-                      style="-fx-background-color: #EFF6FF; -fx-background-radius: 8px;
-                             -fx-padding: 7 12 7 12;">
-                    <Label text="ℹ"
-                           style="-fx-font-size: 12px; -fx-font-weight: 900; -fx-text-fill: #1e3a8a;
-                                  -fx-background-color: #BFDBFE; -fx-background-radius: 50%;
-                                  -fx-min-width: 18; -fx-min-height: 18; -fx-alignment: CENTER;"/>
-                    <Label text="Renseignez la date et les heures avant de générer le lien Meet."
-                           style="-fx-font-size: 11px; -fx-text-fill: #1e3a8a; -fx-wrap-text: true;"
-                           wrapText="true" prefWidth="380"/>
-                </HBox>
-                <!-- Bouton "Rejoindre" visible uniquement après génération du lien -->
                 <Button fx:id="btnOuvrirMeet"
                         text="🔗 Rejoindre le Meet"
                         onAction="#ouvrirLienMeet"
@@ -195,24 +193,22 @@
                                -fx-font-size: 13px; -fx-font-weight: 700;
                                -fx-background-radius: 10; -fx-cursor: hand;
                                -fx-effect: dropshadow(gaussian,rgba(22,163,74,0.35),8,0,0,2);"/>
+                <HBox spacing="8" alignment="CENTER_LEFT"
+                      style="-fx-background-color: #EFF6FF; -fx-background-radius: 8px;
+                             -fx-padding: 7 12 7 12;">
+                    <Label text="ℹ"
+                           style="-fx-font-size: 12px; -fx-font-weight: 900; -fx-text-fill: #1e3a8a;
+                                  -fx-background-color: #BFDBFE; -fx-background-radius: 50%;
+                                  -fx-min-width: 18; -fx-min-height: 18; -fx-alignment: CENTER;"/>
+                    <Label text="Renseignez la date et les heures avant de générer le lien Meet."
+                           style="-fx-font-size: 11px; -fx-text-fill: #1e3a8a;"
+                           wrapText="true" prefWidth="380"/>
+                </HBox>
             </VBox>
 
-            <!-- Message affiché quand aucun type n'est sélectionné -->
-            <HBox fx:id="hintTypeSection" spacing="8" alignment="CENTER_LEFT"
-                  style="-fx-background-color: #FFF7ED; -fx-background-radius: 8px;
-                         -fx-padding: 10 14 10 14; -fx-border-color: #FED7AA;
-                         -fx-border-radius: 8; -fx-border-width: 1;">
-                <Label text="⬆"
-                       style="-fx-font-size: 14px; -fx-text-fill: #EA580C;"/>
-                <Label text="Sélectionnez le type d'entretien pour accéder aux champs Lieu ou Visio."
-                       style="-fx-font-size: 12px; -fx-text-fill: #9A3412; -fx-wrap-text: true;"
-                       wrapText="true" prefWidth="390"/>
-            </HBox>
-
-            <!-- SÉPARATEUR -->
             <Separator style="-fx-background-color: #EFF3FB; -fx-opacity: 0.8;"/>
 
-            <!-- STATUT -->
+            <!-- STATUT (automatique) -->
             <VBox spacing="6">
                 <HBox alignment="CENTER_LEFT" spacing="8">
                     <Label text="Statut de l'entretien"
@@ -235,10 +231,8 @@
 
             <!-- NOTE RECRUTEUR -->
             <VBox spacing="6">
-                <HBox alignment="CENTER_LEFT" spacing="8">
-                    <Label text="Note interne (optionnel)"
-                           style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #1E3A5F;"/>
-                </HBox>
+                <Label text="Note interne (optionnel)"
+                       style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #1E3A5F;"/>
                 <TextField fx:id="noteRecruteur"
                            promptText="Ex: Candidat très motivé, bonne expérience..."
                            style="-fx-font-size: 13px; -fx-border-color: #E2E8F0;
@@ -250,7 +244,7 @@
         </VBox>
     </ScrollPane>
 
-    <!-- FOOTER — BOUTON ENREGISTRER -->
+    <!-- ═══════════════════════════════════════════════════ FOOTER -->
     <VBox style="-fx-background-color: #ffffff; -fx-border-color: #1e3a8a;
                  -fx-border-width: 1 0 0 0; -fx-padding: 16 35 20 35;"
           spacing="10">
