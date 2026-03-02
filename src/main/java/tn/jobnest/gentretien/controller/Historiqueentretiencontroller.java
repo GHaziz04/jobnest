@@ -480,4 +480,5 @@ public class Historiqueentretiencontroller {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
 }

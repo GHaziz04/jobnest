@@ -378,4 +378,5 @@ public class GestionCandidaturesController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
 }

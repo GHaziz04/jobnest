@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.jobnest.gentretien.controller.ProfileRecruteurController"
+            stylesheets="@styles.css"
+            prefWidth="1400.0"
+            prefHeight="850.0">
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  SIDEBAR (identique aux autres vues)                       -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <left>
+        <VBox prefWidth="260" styleClass="sidebar" spacing="10">
+            <padding><Insets top="30" right="20" bottom="30" left="25"/></padding>
+
+            <!-- Logo -->
+            <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
+                <StackPane>
+                    <Circle radius="18" fill="linear-gradient(to bottom right, #FF6B35, #FF8C5A)"/>
+                    <Text text="JN" fill="white"
+                          style="-fx-font-family: 'Segoe UI'; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                </StackPane>
+                <Label text="JobNest" styleClass="logo"/>
+            </HBox>
+
+            <!-- Menu principal -->
+            <VBox styleClass="menu-container" spacing="5" VBox.vgrow="ALWAYS">
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📊" style="-fx-font-size: 18px;"/>
+                        <Label text="Tableau de bord" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="💼" style="-fx-font-size: 18px;"/>
+                        <Label text="Offres d'emploi" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item" onAction="#ouvrirCandidature">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📄" style="-fx-font-size: 18px;"/>
+                        <Label text="Candidatures" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item" onAction="#ouvrirEntretiens">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📅" style="-fx-font-size: 18px;"/>
+                        <Label text="Entretiens" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item" onAction="#ouvrirFeedbacks">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📊" style="-fx-font-size: 18px;"/>
+                        <Label text="Feedbacks" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item" onAction="#ouvrirHistorique">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📅" style="-fx-font-size: 18px;"/>
+                        <Label text="Historique" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="🎯" style="-fx-font-size: 18px;"/>
+                        <Label text="Matching" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+            </VBox>
+
+            <!-- Footer sidebar -->
+            <VBox styleClass="sidebar-footer" spacing="10">
+                <!-- ACTIF : Profil -->
+                <Button styleClass="menu-item, menu-item-active">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="👤" style="-fx-font-size: 18px;"/>
+                        <Label text="Profil" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="🚪" style="-fx-font-size: 18px;"/>
+                        <Label text="Déconnexion" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
+                </Button>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  CONTENU PRINCIPAL                                         -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <center>
+        <HBox spacing="0" style="-fx-background-color: #F5F7FB;">
+
+            <!-- ─────────────────────────────────────────── -->
+            <!--  CARTE PROFIL (gauche)                      -->
+            <!-- ─────────────────────────────────────────── -->
+            <VBox prefWidth="310" spacing="0"
+                  style="-fx-background-color: white;
+                         -fx-border-color: #E2E8F0;
+                         -fx-border-width: 0 1 0 0;">
+
+                <!-- Bandeau dégradé -->
+                <StackPane prefHeight="120"
+                           style="-fx-background-color: linear-gradient(to right, #1e3a8a, #3b82f6);
+                                  -fx-background-radius: 0;"/>
+
+                <!-- Avatar centré chevauchant le bandeau -->
+                <VBox alignment="CENTER" spacing="0" style="-fx-padding: 0;">
+                    <StackPane alignment="CENTER" style="-fx-padding: -48 0 0 0;">
+                        <Circle fx:id="circleAvatar" radius="52"
+                                style="-fx-fill: linear-gradient(to bottom right, #1e3a8a, #3b82f6);
+                                       -fx-stroke: white; -fx-stroke-width: 4;"/>
+                    </StackPane>
+                </VBox>
+
+                <!-- Bouton changer photo -->
+                <VBox alignment="CENTER" style="-fx-padding: 8 20 0 20;">
+                    <Button text="📷 Changer la photo"
+                            onAction="#choisirPhoto"
+                            prefWidth="200"
+                            style="-fx-background-color: #F0F4FF;
+                                   -fx-text-fill: #1e3a8a;
+                                   -fx-font-size: 12px;
+                                   -fx-font-weight: 600;
+                                   -fx-background-radius: 20px;
+                                   -fx-cursor: hand;
+                                   -fx-padding: 6 12 6 12;"/>
+                </VBox>
+
+                <!-- Nom & poste -->
+                <VBox alignment="CENTER" spacing="4" style="-fx-padding: 14 20 0 20;">
+                    <Label fx:id="lblNomComplet"
+                           text="Chargement..."
+                           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1e293b;
+                                  -fx-wrap-text: true;"
+                           maxWidth="270" wrapText="true"/>
+                    <Label fx:id="lblPoste"
+                           text="Recruteur"
+                           style="-fx-font-size: 13px; -fx-text-fill: #64748B;"/>
+                    <Label fx:id="lblStatutBadge"
+                           text="ACTIF"
+                           style="-fx-background-color:#D1FAE5; -fx-text-fill:#065F46;
+                                  -fx-font-weight:700; -fx-padding:4 14 4 14;
+                                  -fx-background-radius:20px; -fx-font-size:11px;"/>
+                </VBox>
+
+                <!-- Séparateur -->
+                <Separator style="-fx-padding: 16 20 0 20; -fx-opacity: 0.4;">
+                    <VBox.margin><Insets top="18" right="20" left="20"/></VBox.margin>
+                </Separator>
+
+                <!-- Informations de contact -->
+                <VBox spacing="12" style="-fx-padding: 18 24 0 24;">
+                    <Label text="INFORMATIONS" style="-fx-font-size: 10px; -fx-font-weight: 700;
+                                 -fx-text-fill: #94A3B8; -fx-letter-spacing: 1px;"/>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="✉️" style="-fx-font-size: 14px;"/>
+                        <Label fx:id="lblEmailCard" text="—"
+                               style="-fx-font-size: 13px; -fx-text-fill: #475569; -fx-wrap-text:true;"
+                               maxWidth="210" wrapText="true"/>
+                    </HBox>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="📞" style="-fx-font-size: 14px;"/>
+                        <Label fx:id="lblTelCard" text="—"
+                               style="-fx-font-size: 13px; -fx-text-fill: #475569;"/>
+                    </HBox>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="📍" style="-fx-font-size: 14px;"/>
+                        <Label fx:id="lblAdresseCard" text="—"
+                               style="-fx-font-size: 13px; -fx-text-fill: #475569;"/>
+                    </HBox>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="🗓️" style="-fx-font-size: 14px;"/>
+                        <Label fx:id="lblDateInscription" text="—"
+                               style="-fx-font-size: 12px; -fx-text-fill: #94A3B8;"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Séparateur -->
+                <Separator style="-fx-opacity: 0.4;">
+                    <VBox.margin><Insets top="18" right="20" left="20"/></VBox.margin>
+                </Separator>
+
+                <!-- Balance -->
+                <VBox spacing="6" style="-fx-padding: 14 24 24 24;">
+                    <Label text="SOLDE DU COMPTE"
+                           style="-fx-font-size: 10px; -fx-font-weight: 700;
+                                  -fx-text-fill: #94A3B8; -fx-letter-spacing: 1px;"/>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="💰" style="-fx-font-size: 20px;"/>
+                        <Label fx:id="lblBalance" text="0.00 TND"
+                               style="-fx-font-size: 22px; -fx-font-weight: 800; -fx-text-fill: #1e3a8a;"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <!-- ─────────────────────────────────────────── -->
+            <!--  FORMULAIRE (droite)                        -->
+            <!-- ─────────────────────────────────────────── -->
+            <ScrollPane fitToWidth="true" HBox.hgrow="ALWAYS"
+                        style="-fx-background:transparent; -fx-background-color:transparent;
+                               -fx-border-color:transparent;">
+                <VBox spacing="24" style="-fx-background-color: #F5F7FB;">
+                    <padding><Insets top="30" right="40" bottom="30" left="40"/></padding>
+
+                    <!-- En-tête page -->
+                    <VBox spacing="4">
+                        <Label text="Mon Profil" styleClass="page-title"/>
+                        <Label text="Gérez vos informations personnelles et les données de votre entreprise"
+                               styleClass="page-subtitle"/>
+                    </VBox>
+
+                    <!-- ────────────────── SECTION : INFOS PERSONNELLES ────────────────── -->
+                    <VBox spacing="16"
+                          style="-fx-background-color: white; -fx-background-radius: 16px;
+                                 -fx-padding: 28 32 28 32;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);
+                                 -fx-border-color: #E2E8F0; -fx-border-radius: 16px; -fx-border-width: 1;">
+
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="👤" style="-fx-font-size: 18px;"/>
+                            <Label text="Informations personnelles"
+                                   style="-fx-font-size: 17px; -fx-font-weight: 700; -fx-text-fill: #1e293b;"/>
+                        </HBox>
+                        <Separator style="-fx-opacity: 0.4;"/>
+
+                        <!-- Prénom / Nom -->
+                        <GridPane hgap="20" vgap="14">
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="50"/>
+                                <ColumnConstraints percentWidth="50"/>
+                            </columnConstraints>
+
+                            <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <Label text="Prénom"
+                                       style="-fx-font-size: 12px; -fx-font-weight: 600;
+                                              -fx-text-fill: #475569;"/>
+                                <TextField fx:id="txtPrenom"
+                                           promptText="Votre prénom"
+                                           style="-fx-background-color: #F8FAFC;
+                                                  -fx-border-color: #E2E8F0; -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px; -fx-padding: 10 14;
+                                                  -fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                <Label text="Nom"
+                                       style="-fx-font-size: 12px; -fx-font-weight: 600;
+                                              -fx-text-fill: #475569;"/>
+                                <TextField fx:id="txtNom"
+                                           promptText="Votre nom"
+                                           style="-fx-background-color: #F8FAFC;
+                                                  -fx-border-color: #E2E8F0; -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px; -fx-padding: 10 14;
+                                                  -fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <Label text="Adresse e-mail"
+                                       style="-fx-font-size: 12px; -fx-font-weight: 600;
+                                              -fx-text-fill: #475569;"/>
+                                <TextField fx:id="txtEmail"
+                                           promptText="votre@email.com"
+                                           style="-fx-background-color: #F8FAFC;
+                                                  -fx-border-color: #E2E8F0; -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px; -fx-padding: 10 14;
+                                                  -fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <Label text="Téléphone"
+                                       style="-fx-font-size: 12px; -fx-font-weight: 600;
+                                              -fx-text-fill: #475569;"/>
+                                <TextField fx:id="txtTel"
+                                           promptText="+216 XX XXX XXX"
+                                           style="-fx-background-color: #F8FAFC;
+                                                  -fx-border-color: #E2E8F0; -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px; -fx-padding: 10 14;
+                                                  -fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                <Label text="Adresse"
+                                       style="-fx-font-size: 12px; -fx-font-weight: 600;
+                                              -fx-text-fill: #475569;"/>
+                                <TextField fx:id="txtAdresse"
+                                           promptText="Ville, Pays"
+                                           style="-fx-background-color: #F8FAFC;
+                                                  -fx-border-color: #E2E8F0; -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px; -fx-padding: 10 14;
+                                                  -fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                <Label text="GitHub / Portfolio"
+                                       style="-fx-font-size: 12px; -fx-font-weight: 600;
+                                              -fx-text-fill: #475569;"/>
+                                <TextField fx:id="txtGitHub"
+                                           promptText="https://github.com/..."
+                                           style="-fx-background-color: #F8FAFC;
+                                                  -fx-border-color: #E2E8F0; -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px; -fx-padding: 10 14;
+                                                  -fx-font-size: 14px;"/>
+                            </VBox>
+                        </GridPane>
+
+                        <!-- Bio -->
+                        <VBox spacing="6">
+                            <Label text="Bio / À propos"
+                                   style="-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #475569;"/>
+                            <TextArea fx:id="txaBio"
+                                      promptText="Décrivez-vous en quelques lignes..."
+                                      prefRowCount="3"
+                                      wrapText="true"
+                                      style="-fx-background-color: #F8FAFC;
+                                             -fx-border-color: #E2E8F0; -fx-border-radius: 10px;
+                                             -fx-background-radius: 10px; -fx-padding: 10 14;
+                                             -fx-font-size: 14px;"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- ────────────────── SECTION : ENTREPRISE ────────────────── -->
+                    <VBox spacing="16"
+                          style="-fx-background-color: white; -fx-background-radius: 16px;
+                                 -fx-padding: 28 32 28 32;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);
+                                 -fx-border-color: #E2E8F0; -fx-border-radius: 16px; -fx-border-width: 1;">
+
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="🏢" style="-fx-font-size: 18px;"/>
+                            <Label text="Informations entreprise"
+                                   style="-fx-font-size: 17px; -fx-font-weight: 700; -fx-text-fill: #1e293b;"/>
+                        </HBox>
+                        <Separator style="-fx-opacity: 0.4;"/>
+
+                        <GridPane hgap="20" vgap="14">
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="50"/>
+                                <ColumnConstraints percentWidth="50"/>
+                            </columnConstraints>
+
+                            <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <Label text="Nom de l'entreprise"
+                                       style="-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #475569;"/>
+                                <TextField fx:id="txtNomEntreprise"
+                                           promptText="Ex : TechSolutions"
+                                           style="-fx-background-color: #F8FAFC;
+                                                  -fx-border-color: #E2E8F0; -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px; -fx-padding: 10 14;
+                                                  -fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                <Label text="Secteur d'activité"
+                                       style="-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #475569;"/>
+                                <TextField fx:id="txtSecteur"
+                                           promptText="Ex : Développement logiciel"
+                                           style="-fx-background-color: #F8FAFC;
+                                                  -fx-border-color: #E2E8F0; -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px; -fx-padding: 10 14;
+                                                  -fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <Label text="Site web"
+                                       style="-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #475569;"/>
+                                <TextField fx:id="txtSiteWeb"
+                                           promptText="https://www.monentreprise.com"
+                                           style="-fx-background-color: #F8FAFC;
+                                                  -fx-border-color: #E2E8F0; -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px; -fx-padding: 10 14;
+                                                  -fx-font-size: 14px;"/>
+                            </VBox>
+                        </GridPane>
+
+                        <!-- Description entreprise -->
+                        <VBox spacing="6">
+                            <Label text="Description de l'entreprise"
+                                   style="-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #475569;"/>
+                            <TextArea fx:id="txaDescEntreprise"
+                                      promptText="Décrivez votre entreprise, sa mission..."
+                                      prefRowCount="3"
+                                      wrapText="true"
+                                      style="-fx-background-color: #F8FAFC;
+                                             -fx-border-color: #E2E8F0; -fx-border-radius: 10px;
+                                             -fx-background-radius: 10px; -fx-padding: 10 14;
+                                             -fx-font-size: 14px;"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- ────────────────── BOUTONS D'ACTION ────────────────── -->
+                    <VBox spacing="10">
+                        <Label fx:id="lblSaveStatus" text=""
+                               style="-fx-font-size: 13px; -fx-font-weight: 600;"/>
+
+                        <HBox spacing="14" alignment="CENTER_RIGHT">
+                            <Button text="✖ Annuler"
+                                    onAction="#annuler"
+                                    prefHeight="46" prefWidth="140"
+                                    style="-fx-background-color: #F1F5F9;
+                                           -fx-text-fill: #475569;
+                                           -fx-font-size: 14px;
+                                           -fx-font-weight: 600;
+                                           -fx-background-radius: 12px;
+                                           -fx-cursor: hand;"/>
+                            <Button text="💾 Sauvegarder"
+                                    onAction="#sauvegarder"
+                                    prefHeight="46" prefWidth="180"
+                                    style="-fx-background-color: #1e3a8a;
+                                           -fx-text-fill: white;
+                                           -fx-font-size: 14px;
+                                           -fx-font-weight: 700;
+                                           -fx-background-radius: 12px;
+                                           -fx-cursor: hand;
+                                           -fx-effect: dropshadow(gaussian, rgb(37,99,235), 10, 0, 0, 3);"/>
+                        </HBox>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+        </HBox>
+    </center>
+
+</BorderPane>

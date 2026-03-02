@@ -421,4 +421,7 @@ public class HistoriqueCandidaturesController {
         Alert a = new Alert(Alert.AlertType.INFORMATION);
         a.setTitle(title); a.setHeaderText(null); a.setContentText(msg); a.showAndWait();
     }
+
+
+
 }
