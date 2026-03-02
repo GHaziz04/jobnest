@@ -80,7 +80,7 @@
                 <Button styleClass="menu-item, menu-item-active">
                     <graphic>
                         <HBox spacing="15" alignment="CENTER_LEFT">
-                            <Text text="🗂️" style="-fx-font-size: 18px;"/>
+                            <Text text="📅" style="-fx-font-size: 18px;"/>
                             <Label text="Historique" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                         </HBox>
                     </graphic>
@@ -151,7 +151,7 @@
                         onAction="#actualiserHistorique"
                         prefHeight="42"
                         prefWidth="130"
-                        style="-fx-background-color: linear-gradient(135deg, #10B981, #059669);
+                        style="-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;
                                -fx-text-fill: white;
                                -fx-font-size: 13px;
                                -fx-font-weight: bold;
@@ -192,30 +192,11 @@
                 </VBox>
 
                 <!-- Légende couleurs -->
-                <VBox spacing="5" style="-fx-padding: 0 0 0 10;">
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <Region prefWidth="14" prefHeight="14"
-                                style="-fx-background-color: #059669; -fx-background-radius: 3px;"/>
-                        <Label text="Vert = réalisé avec feedback"
-                               style="-fx-font-size: 11px; -fx-text-fill: #64748B;"/>
-                    </HBox>
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <Region prefWidth="14" prefHeight="14"
-                                style="-fx-background-color: #F97316; -fx-background-radius: 3px;"/>
-                        <Label text="Orange = réalisé sans feedback"
-                               style="-fx-font-size: 11px; -fx-text-fill: #64748B;"/>
-                    </HBox>
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <Region prefWidth="14" prefHeight="14"
-                                style="-fx-background-color: #DC2626; -fx-background-radius: 3px;"/>
-                        <Label text="Rouge = annulé"
-                               style="-fx-font-size: 11px; -fx-text-fill: #64748B;"/>
-                    </HBox>
-                </VBox>
+
             </HBox>
 
             <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="🗂️ Historique complet" styleClass="section-title"/>
+                <Label text="Historique complet" styleClass="section-title"/>
             </HBox>
 
             <ScrollPane fitToWidth="true"

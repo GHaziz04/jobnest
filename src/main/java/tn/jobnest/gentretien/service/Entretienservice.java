@@ -218,4 +218,14 @@ public class Entretienservice implements Icrud<Entretien> {
         }
         return false;
     }
+    public int annulerEntretiensExpires() throws SQLException {
+        String sql =
+                "UPDATE entretien " +
+                        "SET statut = 'annulé' " +
+                        "WHERE statut IN ('proposé', 'confirmé') " +
+                        "AND date_entretien < CURDATE()";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            return ps.executeUpdate(); // retourne le nombre de lignes mises à jour
+        }
+    }
 }

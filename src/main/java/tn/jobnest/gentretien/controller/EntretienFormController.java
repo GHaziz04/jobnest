@@ -157,6 +157,22 @@ public class EntretienFormController {
     public void setEntretien(Entretien e) {
         this.entretien = e; this.isReorganisation = false;
         if (e == null) return;
+        try {
+            this.idOffreLiee    = e.getIdOffre();
+            this.titreOffreLiee = service.getOffreTitre(e.getIdOffre());
+
+            List<String> participants = service.getParticipants(e.getIdEntretien());
+            if (!participants.isEmpty()) {
+                this.nomCandidat = participants.get(0); // nom du premier participant
+            }
+        } catch (java.sql.SQLException ex) {
+            System.err.println("Erreur chargement offre/participants : " + ex.getMessage());
+        }
+
+        // ── Mettre à jour les labels si déjà injectés ──
+        if (lblInfoCandidat != null) lblInfoCandidat.setText("Candidat : " + this.nomCandidat);
+        if (lblInfoOffre    != null) lblInfoOffre   .setText("Offre : "    + this.titreOffreLiee);
+
         dateEntretien.setValue(e.getDateEntretien() != null ? e.getDateEntretien().toLocalDate() : null);
         heureDebut.setText(e.getHeureDebut() != null ? e.getHeureDebut().toLocalTime().toString() : "");
         heureFin  .setText(e.getHeureFin()   != null ? e.getHeureFin()  .toLocalTime().toString() : "");
@@ -173,6 +189,23 @@ public class EntretienFormController {
     public void setEntretienPourReorganisation(Entretien e) {
         this.entretien = e; this.isReorganisation = true;
         if (e == null) return;
+        try {
+            this.idOffreLiee    = e.getIdOffre();
+            this.titreOffreLiee = service.getOffreTitre(e.getIdOffre());
+
+            List<String> participants = service.getParticipants(e.getIdEntretien());
+            if (!participants.isEmpty()) {
+                this.nomCandidat    = participants.get(0);
+                // Récupérer l'id du candidat pour le relier après réorganisation
+                this.idCandidatALier = getCandidatIdByName(participants.get(0), e.getIdEntretien());
+            }
+        } catch (java.sql.SQLException ex) {
+            System.err.println("Erreur chargement offre/participants (réorganisation) : " + ex.getMessage());
+        }
+
+        // ── Mettre à jour les labels ──
+        if (lblInfoCandidat != null) lblInfoCandidat.setText("Candidat : " + this.nomCandidat);
+        if (lblInfoOffre    != null) lblInfoOffre   .setText("Offre : "    + this.titreOffreLiee);
         dateEntretien.setValue(null); dateEntretien.setPromptText("Choisissez une nouvelle date");
         heureDebut.setText(e.getHeureDebut() != null ? e.getHeureDebut().toLocalTime().toString() : "");
         heureFin  .setText(e.getHeureFin()   != null ? e.getHeureFin()  .toLocalTime().toString() : "");
@@ -183,7 +216,28 @@ public class EntretienFormController {
         statut.setValue("proposé"); statut.setDisable(true);
         noteRecruteur.setText(e.getNoteRecruteur());
     }
-
+    // ─────────────────────────────────────────────────────────────────────────
+// Récupère l'id_candidat depuis participant_entretien pour un entretien donné
+// ─────────────────────────────────────────────────────────────────────────
+    private int getCandidatIdByName(String nomComplet, int idEntretien) {
+        try {
+            String sql =
+                    "SELECT c.id_user FROM candidat c " +
+                            "JOIN participant_entretien p ON c.id_user = p.id_candidat " +
+                            "WHERE p.id_entretien = ? " +
+                            "ORDER BY c.prenom, c.nom LIMIT 1";
+            java.sql.Connection conn = tn.jobnest.gentretien.utils.MyDatabase.getInstance().getConn();
+            try (java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, idEntretien);
+                try (java.sql.ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) return rs.getInt("id_user");
+                }
+            }
+        } catch (java.sql.SQLException ex) {
+            System.err.println("Erreur getCandidatIdByName : " + ex.getMessage());
+        }
+        return -1;
+    }
     // ─────────────────────────────────────────────────────────────────────────
     @FXML
     private void genererLienMeet() {

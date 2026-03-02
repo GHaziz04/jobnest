@@ -30,28 +30,28 @@ import java.util.stream.Collectors;
 
 public class Entretiencontroller {
 
-    @FXML private VBox              entretiensVBox;
-    @FXML private TextField         searchField;
-    @FXML private ComboBox<String>  comboType;
-    @FXML private ComboBox<String>  comboStatut;
-    @FXML private Label             planifiesCount;
-    @FXML private Label             terminesCount;
-    @FXML private Label             semaineCount;
+    @FXML private VBox             entretiensVBox;
+    @FXML private TextField        searchField;
+    @FXML private ComboBox<String> comboType;
+    @FXML private ComboBox<String> comboStatut;
+    @FXML private Label            planifiesCount;
+    @FXML private Label            terminesCount;
+    @FXML private Label            semaineCount;
 
     private final Entretienservice service = new Entretienservice();
-
     private List<Entretien> allEntretiens;
     private List<Entretien> entretiensFiltres;
-
     private final int currentRecruteurId = 1;
 
+    // ────────────────────────────────────────────────────────────────
+    //  INITIALISATION
     // ────────────────────────────────────────────────────────────────
     @FXML
     public void initialize() {
         comboType.setItems(FXCollections.observableArrayList("Tous les types", "présentiel", "visio"));
         comboType.setValue("Tous les types");
 
-        comboStatut.setItems(FXCollections.observableArrayList("Tous les statuts", "proposé", "confirmé"));
+        comboStatut.setItems(FXCollections.observableArrayList("Tous les statuts", "proposé"));
         comboStatut.setValue("Tous les statuts");
 
         comboType  .valueProperty().addListener((obs, o, n) -> filterAndDisplay());
@@ -61,9 +61,6 @@ public class Entretiencontroller {
         rafraichirListe();
     }
 
-    // ────────────────────────────────────────────────────────────────
-    //  BOUTON ACTUALISER
-    // ────────────────────────────────────────────────────────────────
     @FXML
     private void actualiserListe(ActionEvent event) {
         rafraichirListe();
@@ -133,13 +130,19 @@ public class Entretiencontroller {
     // ────────────────────────────────────────────────────────────────
     private void rafraichirListe() {
         try {
+            int nbExpires = service.annulerEntretiensExpires();
+            if (nbExpires > 0)
+                System.out.println("[Auto-annulation] " + nbExpires + " entretien(s) → annulé(s)");
+
             List<Entretien> tous = service.afficher();
             allEntretiens = tous.stream()
                     .filter(e -> e.getIdRecruteur() == currentRecruteurId)
                     .collect(Collectors.toList());
+
             entretiensFiltres = allEntretiens.stream()
-                    .filter(e -> "proposé".equals(e.getStatut()) || "confirmé".equals(e.getStatut()))
+                    .filter(e -> "proposé".equals(e.getStatut()))
                     .collect(Collectors.toList());
+
             updateStats();
             filterAndDisplay();
         } catch (SQLException e) {
@@ -154,14 +157,14 @@ public class Entretiencontroller {
     private void updateStats() {
         if (allEntretiens == null) return;
         long planifies = allEntretiens.stream()
-                .filter(e -> "proposé".equals(e.getStatut()) || "confirmé".equals(e.getStatut()))
+                .filter(e -> "proposé".equals(e.getStatut()))
                 .count();
         long termines = allEntretiens.stream()
                 .filter(e -> "réalisé".equals(e.getStatut()))
                 .count();
-        LocalDate today        = LocalDate.now();
-        LocalDate startOfWeek  = today.minusDays(today.getDayOfWeek().getValue() - 1);
-        LocalDate endOfWeek    = startOfWeek.plusDays(6);
+        LocalDate today       = LocalDate.now();
+        LocalDate startOfWeek = today.minusDays(today.getDayOfWeek().getValue() - 1);
+        LocalDate endOfWeek   = startOfWeek.plusDays(6);
         long cetteSemaine = allEntretiens.stream()
                 .filter(e -> e.getDateEntretien() != null)
                 .filter(e -> {
@@ -179,7 +182,7 @@ public class Entretiencontroller {
     private void filterAndDisplay() {
         entretiensVBox.getChildren().clear();
         if (entretiensFiltres == null || entretiensFiltres.isEmpty()) {
-            entretiensVBox.getChildren().add(emptyLabel("Aucun entretien en cours (proposé ou confirmé)."));
+            entretiensVBox.getChildren().add(emptyLabel("Aucun entretien en cours (proposé)."));
             return;
         }
         String search    = searchField.getText().trim().toLowerCase();
@@ -189,14 +192,16 @@ public class Entretiencontroller {
 
         for (Entretien e : entretiensFiltres) {
             try {
-                String       titreOffre    = service.getOffreTitre(e.getIdOffre()).toLowerCase();
-                List<String> participants  = service.getParticipants(e.getIdEntretien());
+                String       titreOffre      = service.getOffreTitre(e.getIdOffre()).toLowerCase();
+                List<String> participants    = service.getParticipants(e.getIdEntretien());
                 String       participantsStr = String.join(" ", participants).toLowerCase();
+
                 boolean matchSearch = search.isEmpty()
                         || titreOffre.contains(search)
                         || participantsStr.contains(search);
-                boolean matchType   = "Tous les types".equals(selType)   || selType.equals(e.getTypeEntretien());
+                boolean matchType   = "Tous les types".equals(selType)    || selType.equals(e.getTypeEntretien());
                 boolean matchStatut = "Tous les statuts".equals(selStatut) || selStatut.equals(e.getStatut());
+
                 if (matchSearch && matchType && matchStatut) {
                     entretiensVBox.getChildren().add(
                             createEntretienCard(e, participants, service.getOffreTitre(e.getIdOffre())));
@@ -206,9 +211,8 @@ public class Entretiencontroller {
                 System.err.println("Erreur chargement entretien #" + e.getIdEntretien());
             }
         }
-        if (!auMoinsUn) {
+        if (!auMoinsUn)
             entretiensVBox.getChildren().add(emptyLabel("Aucun résultat pour ces filtres."));
-        }
     }
 
     private Label emptyLabel(String msg) {
@@ -227,8 +231,7 @@ public class Entretiencontroller {
 
         // ── Avatar ──
         String participantName = participants.isEmpty() ? "Candidat" : participants.get(0);
-        String initials = participants.isEmpty() ? "C"
-                : buildInitials(participantName);
+        String initials = participants.isEmpty() ? "C" : buildInitials(participantName);
 
         Circle avatar = new Circle(25);
         avatar.getStyleClass().add("avatar");
@@ -267,64 +270,103 @@ public class Entretiencontroller {
             String lieu = (e.getLieu() != null && !e.getLieu().isEmpty()) ? e.getLieu() : "Lieu non défini";
             lieuVisioLabel = new Label("📍 " + lieu);
         } else {
-            String lien = (e.getLienVisio() != null && !e.getLienVisio().isEmpty()) ? e.getLienVisio() : "Lien non défini";
+            String lien = (e.getLienVisio() != null && !e.getLienVisio().isEmpty())
+                    ? e.getLienVisio() : "Lien non défini";
             if (lien.length() > 30) lien = lien.substring(0, 27) + "...";
             lieuVisioLabel = new Label("🔗 " + lien);
         }
-        lieuVisioLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #3498db; -fx-font-weight: 500;");
+        lieuVisioLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #1e3a8a; -fx-font-weight: 500;");
 
         Label statutBadge = buildStatutBadge(e.getStatut());
         details.getChildren().addAll(offreLabel, participantsLabel, dateTimeLabel, lieuVisioLabel, statutBadge);
 
         if (e.getNoteRecruteur() != null && !e.getNoteRecruteur().isEmpty()) {
             Label noteLabel = new Label("📝 Note : " + e.getNoteRecruteur());
-            noteLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #e67e22; -fx-font-style: italic;");
+            noteLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #1e3a8a; -fx-font-style: italic;");
             details.getChildren().add(noteLabel);
         }
 
-        // ── Actions ──
+        // ────────────────────────────────────────────────────────────
+        //  ACTIONS
+        // ────────────────────────────────────────────────────────────
         VBox actionsContainer = new VBox(8);
         actionsContainer.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
-        actionsContainer.setPrefWidth(420);
+        actionsContainer.setPrefWidth(320);
         actionsContainer.setPadding(new Insets(5, 0, 5, 0));
 
+        // Calcul jour J une seule fois
+        boolean estAujourdhui = e.getDateEntretien() != null
+                && e.getDateEntretien().toLocalDate().equals(LocalDate.now());
+
+        // ── Ligne 1 : Modifier uniquement
+        //    (Le bouton Feedback est absent de cette vue.
+        //     Il est disponible uniquement dans l'Historique pour les entretiens réalisés.) ──
         HBox actionsRow1 = new HBox(10);
         actionsRow1.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
 
-        Button btnModifier = new Button("✏️ Modifier");
+        // ── BOUTON MODIFIER : DÉSACTIVÉ le jour J ──
+        Button btnModifier = new Button("Modifier");
         btnModifier.getStyleClass().add("button-primary");
         btnModifier.setPrefWidth(120);
         btnModifier.setPrefHeight(42);
-        btnModifier.setOnAction(ev -> openForm(true, e));
 
-        Button btnFeedback = new Button("💬 Feedback");
-        btnFeedback.setPrefWidth(130);
-        btnFeedback.setPrefHeight(42);
-        btnFeedback.setDisable(true);
-        btnFeedback.setStyle("-fx-background-color:#BDC3C7;-fx-text-fill:#7F8C8D;-fx-font-weight:bold;-fx-background-radius:10px;");
-        String raisonFeedback = "confirmé".equals(e.getStatut())
-                ? "L'entretien est confirmé mais pas encore réalisé."
-                : "L'entretien est en attente de confirmation.";
-        Tooltip.install(btnFeedback, new Tooltip("⚠️ Feedback indisponible\n" + raisonFeedback));
+        if (estAujourdhui) {
+            btnModifier.setDisable(true);
+            btnModifier.setStyle(
+                    "-fx-background-color: #E2E8F0; -fx-text-fill: #94A3B8;" +
+                            "-fx-font-weight: bold; -fx-background-radius: 10px;");
+            Tooltip.install(btnModifier, new Tooltip(
+                    "⚠️ Modification impossible\n" +
+                            "L'entretien est prévu aujourd'hui.\n" +
+                            "Vous ne pouvez pas le modifier le jour J."));
+        } else {
+            btnModifier.setOnAction(ev -> openForm(true, e));
+        }
 
-        actionsRow1.getChildren().addAll(btnModifier, btnFeedback);
+        actionsRow1.getChildren().add(btnModifier);
 
+        // ── Ligne 2 : Map/Rejoindre + Supprimer ──
         HBox actionsRow2 = new HBox(10);
         actionsRow2.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
 
+        // ── BOUTON MAP ou REJOINDRE ──
         Button btnActionSpecifique;
         if ("présentiel".equals(e.getTypeEntretien())) {
-            btnActionSpecifique = new Button("🗺️ Consulter map");
+
+            btnActionSpecifique = new Button("Consulter map");
             btnActionSpecifique.getStyleClass().add("button-map");
             btnActionSpecifique.setPrefWidth(155);
             btnActionSpecifique.setPrefHeight(42);
-            btnActionSpecifique.setOnAction(ev -> consulterMap(e));
+
+            if (estAujourdhui) {
+                // ✅ Jour J → carte accessible
+                btnActionSpecifique.setOnAction(ev -> consulterMap(e));
+            } else {
+                // ❌ Pas le jour J → désactivé
+                btnActionSpecifique.setDisable(true);
+                btnActionSpecifique.setStyle(
+                        "-fx-background-color: #E2E8F0; -fx-text-fill: #94A3B8;" +
+                                "-fx-font-weight: bold; -fx-background-radius: 10px;");
+                LocalDate dateE = e.getDateEntretien() != null
+                        ? e.getDateEntretien().toLocalDate() : null;
+                String tooltipMap;
+                if (dateE != null && dateE.isAfter(LocalDate.now())) {
+                    tooltipMap = "⏳ Carte disponible uniquement le jour J\n(" +
+                            dateE.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")";
+                } else {
+                    tooltipMap = "⛔ Entretien passé — carte non disponible.";
+                }
+                Tooltip.install(btnActionSpecifique, new Tooltip(tooltipMap));
+            }
+
         } else {
+            // ── Bouton Rejoindre (visio) ──
             btnActionSpecifique = new Button("📹 Rejoindre");
             btnActionSpecifique.getStyleClass().add("button-visio");
             btnActionSpecifique.setPrefWidth(130);
             btnActionSpecifique.setPrefHeight(42);
             btnActionSpecifique.setOnAction(ev -> rejoindre(e));
+
             if (e.getLienVisio() == null || e.getLienVisio().isBlank()) {
                 btnActionSpecifique.setDisable(true);
                 btnActionSpecifique.setText("❌ Lien indisponible");
@@ -340,11 +382,30 @@ public class Entretiencontroller {
             }
         }
 
-        Button btnSupprimer = new Button("🗑️ Supprimer");
-        btnSupprimer.getStyleClass().add("button-danger");
+        // ── BOUTON SUPPRIMER ──
+        Button btnSupprimer = new Button("Supprimer");
         btnSupprimer.setPrefWidth(120);
         btnSupprimer.setPrefHeight(42);
-        btnSupprimer.setOnAction(ev -> supprimerEntretien(e));
+
+        if ("proposé".equals(e.getStatut()) && !estAujourdhui) {
+            // ✅ Proposé + pas le jour J → suppression autorisée
+            btnSupprimer.getStyleClass().add("button-danger");
+            btnSupprimer.setOnAction(ev -> supprimerEntretien(e));
+        } else if ("proposé".equals(e.getStatut()) && estAujourdhui) {
+            // ⛔ Proposé + jour J → suppression bloquée
+            btnSupprimer.setDisable(true);
+            btnSupprimer.setStyle(
+                    "-fx-background-color: #E2E8F0; -fx-text-fill: #94A3B8;" +
+                            "-fx-font-weight: bold; -fx-background-radius: 10px;");
+            Tooltip.install(btnSupprimer, new Tooltip(
+                    "⚠️ Suppression impossible\n" +
+                            "L'entretien est prévu aujourd'hui.\n" +
+                            "Vous ne pouvez pas le supprimer le jour J."));
+        } else {
+            // ❌ Tout autre statut → bouton caché
+            btnSupprimer.setVisible(false);
+            btnSupprimer.setManaged(false);
+        }
 
         actionsRow2.getChildren().addAll(btnActionSpecifique, btnSupprimer);
         actionsContainer.getChildren().addAll(actionsRow1, actionsRow2);
@@ -355,7 +416,7 @@ public class Entretiencontroller {
     }
 
     // ────────────────────────────────────────────────────────────────
-    //  INITIALES AVATAR
+    //  HELPERS
     // ────────────────────────────────────────────────────────────────
     private String buildInitials(String name) {
         String[] parts = name.trim().split("\\s+");
@@ -366,9 +427,6 @@ public class Entretiencontroller {
         return sb.toString();
     }
 
-    // ────────────────────────────────────────────────────────────────
-    //  BADGE STATUT
-    // ────────────────────────────────────────────────────────────────
     private Label buildStatutBadge(String statut) {
         String emoji, color, bgColor;
         switch (statut == null ? "" : statut) {
@@ -378,7 +436,8 @@ public class Entretiencontroller {
         }
         Label badge = new Label(emoji + " " + (statut != null ? statut : "inconnu"));
         badge.setStyle("-fx-background-color:" + bgColor + ";-fx-text-fill:" + color + ";"
-                + "-fx-font-size:11px;-fx-font-weight:700;-fx-padding:3 10 3 10;-fx-background-radius:20px;");
+                + "-fx-font-size:11px;-fx-font-weight:700;-fx-padding:3 10 3 10;" +
+                "-fx-background-radius:20px;");
         return badge;
     }
 
@@ -442,33 +501,23 @@ public class Entretiencontroller {
         }
     }
 
-    // ════════════════════════════════════════════════════════════════
-    //  CONSULTER MAP — MapTiler intégré dans WebView JavaFX
-    // ════════════════════════════════════════════════════════════════
+    // ────────────────────────────────────────────────────────────────
+    //  CONSULTER MAP
+    // ────────────────────────────────────────────────────────────────
     private void consulterMap(Entretien e) {
-        // Vérifications préalables
         if (!"présentiel".equals(e.getTypeEntretien())) return;
-
         if (e.getLieu() == null || e.getLieu().isBlank()) {
             showAlert(Alert.AlertType.WARNING, "Adresse manquante",
                     "Aucune adresse n'est définie pour cet entretien présentiel.");
             return;
         }
-
         try {
-            // Récupérer le titre du poste pour l'en-tête de la fenêtre carte
             String titrePoste = service.getOffreTitre(e.getIdOffre());
-
-            // Charger le FXML de la fenêtre carte
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/tn/jobnest/gentretien/map-view.fxml"));
             Parent root = loader.load();
-
-            // Passer l'adresse et le titre au contrôleur de la carte
             MapController mapCtrl = loader.getController();
             mapCtrl.setAdresse(e.getLieu(), "📅 " + titrePoste);
-
-            // Créer et afficher la fenêtre
             Stage mapStage = new Stage();
             mapStage.setTitle("JobNest – Carte : " + e.getLieu());
             mapStage.setScene(new Scene(root));
@@ -478,7 +527,6 @@ public class Entretiencontroller {
             mapStage.setHeight(680);
             mapStage.centerOnScreen();
             mapStage.show();
-
         } catch (IOException | SQLException ex) {
             showAlert(Alert.AlertType.ERROR, "Erreur",
                     "Impossible d'ouvrir la carte : " + ex.getMessage());
@@ -498,8 +546,7 @@ public class Entretiencontroller {
             try {
                 service.delete(e.getIdEntretien());
                 rafraichirListe();
-                showAlert(Alert.AlertType.INFORMATION, "Succès",
-                        "Entretien supprimé avec succès.");
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Entretien supprimé avec succès.");
             } catch (SQLException ex) {
                 showAlert(Alert.AlertType.ERROR, "Erreur",
                         "Échec de la suppression : " + ex.getMessage());
@@ -508,7 +555,7 @@ public class Entretiencontroller {
     }
 
     // ────────────────────────────────────────────────────────────────
-    //  HELPER
+    //  ALERT HELPER
     // ────────────────────────────────────────────────────────────────
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
@@ -517,5 +564,4 @@ public class Entretiencontroller {
         alert.setContentText(content);
         alert.showAndWait();
     }
-
 }
