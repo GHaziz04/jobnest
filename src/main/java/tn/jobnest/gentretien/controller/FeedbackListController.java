@@ -282,21 +282,21 @@ public class FeedbackListController {
         actionsContainer.getChildren().add(spacer);
 
         // Bouton Consulter (Détails complets)
-        Button btnConsulter = new Button("👁️ Consulter");
+        Button btnConsulter = new Button("Consulter");
         btnConsulter.getStyleClass().add("button-primary");
         btnConsulter.setPrefWidth(180);
         btnConsulter.setPrefHeight(40);
         btnConsulter.setOnAction(ev -> consulterFeedback(f, entretien));
 
         // Bouton Modifier
-        Button btnModifier = new Button("✏️ Modifier");
+        Button btnModifier = new Button("Modifier");
         btnModifier.getStyleClass().add("button-success");
         btnModifier.setPrefWidth(180);
         btnModifier.setPrefHeight(40);
         btnModifier.setOnAction(ev -> modifierFeedback(f, entretien));
 
         // Bouton Supprimer
-        Button btnSupprimer = new Button("🗑️ Supprimer");
+        Button btnSupprimer = new Button("Supprimer");
         btnSupprimer.getStyleClass().add("button-danger");
         btnSupprimer.setPrefWidth(180);
         btnSupprimer.setPrefHeight(40);
