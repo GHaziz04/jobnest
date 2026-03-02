@@ -454,6 +454,10 @@ public class Historiqueentretiencontroller {
         naviguerVers("/tn/jobnest/gentretien/GestionCandidatures.fxml",
                 "JobNest - Gestion des Candidatures", event);
     }
+    @FXML
+    private void ouvrirProfil(ActionEvent event) {
+        naviguerVers("/tn/jobnest/gentretien/profil-recruteur.fxml", "JobNest - Mon Profil", event);
+    }
 
     private void naviguerVers(String fxmlPath, String titre, ActionEvent event) {
         try {

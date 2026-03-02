@@ -341,6 +341,10 @@ public class GestionCandidaturesController {
         naviguer(event, "/tn/jobnest/gentretien/HistoriqueCandidatures.fxml",
                 "JobNest - Historique des Candidatures");
     }
+    @FXML
+    private void ouvrirProfil(ActionEvent event) {
+        naviguer(event, "/tn/jobnest/gentretien/profil-recruteur.fxml", "JobNest - Mon Profil");
+    }
 
     @FXML
     private void ouvrirEntretiens(ActionEvent event) {

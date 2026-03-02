@@ -75,11 +75,13 @@
             </VBox>
 
             <VBox styleClass="sidebar-footer" spacing="10">
-                <Button styleClass="menu-item">
-                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
-                        <Text text="👤" style="-fx-font-size: 18px;"/>
-                        <Label text="Profil" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
-                    </HBox></graphic>
+                <Button styleClass="menu-item" onAction="#ouvrirProfil">
+                    <graphic>
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Text text="👤" style="-fx-font-size: 18px;"/>
+                            <Label text="Profil" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                        </HBox>
+                    </graphic>
                 </Button>
                 <Button styleClass="menu-item">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">

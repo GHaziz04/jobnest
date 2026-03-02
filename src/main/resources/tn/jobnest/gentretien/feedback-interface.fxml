@@ -96,7 +96,7 @@
 
             <!-- Footer sidebar -->
             <VBox styleClass="sidebar-footer" spacing="10">
-                <Button styleClass="menu-item">
+                <Button styleClass="menu-item" onAction="#ouvrirProfil">
                     <graphic>
                         <HBox spacing="15" alignment="CENTER_LEFT">
                             <Text text="👤" style="-fx-font-size: 18px;"/>

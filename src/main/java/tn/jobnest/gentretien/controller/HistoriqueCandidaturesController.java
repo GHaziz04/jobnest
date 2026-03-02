@@ -395,6 +395,10 @@ public class HistoriqueCandidaturesController {
     @FXML private void ouvrirFeedbacks(ActionEvent e) {
         naviguer(e, "/tn/jobnest/gentretien/feedback-interface.fxml", "JobNest - Feedbacks");
     }
+    @FXML
+    private void ouvrirProfil(ActionEvent event) {
+        naviguer(event, "/tn/jobnest/gentretien/profil-recruteur.fxml", "JobNest - Mon Profil");
+    }
 
     private void naviguer(ActionEvent event, String fxml, String titre) {
         try {
