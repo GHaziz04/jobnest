@@ -23,25 +23,28 @@ public class Entretienservice implements Icrud<Entretien> {
      * Insère l'entretien et retourne l'id_entretien généré (AUTO_INCREMENT).
      * À utiliser depuis les contrôleurs qui ont besoin de l'id pour créer le participant.
      */
+    // Remplacez la méthode ajouterEtRetournerId par celle-ci :
+
     public int ajouterEtRetournerId(Entretien entretien) throws SQLException {
         String sql =
                 "INSERT INTO entretien " +
                         "(date_entretien, heure_debut, heure_fin, type_entretien, lieu, lien_visio, " +
-                        " statut, note_recruteur, date_creation, id_recruteur, id_offre) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        " statut, note_recruteur, date_creation, id_recruteur, id_offre, google_event_id) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setDate     (1,  entretien.getDateEntretien());
             ps.setTime     (2,  entretien.getHeureDebut());
             ps.setTime     (3,  entretien.getHeureFin());
             ps.setString   (4,  entretien.getTypeEntretien());
-            ps.setString   (5,  entretien.getLieu()         != null ? entretien.getLieu()         : "");
-            ps.setString   (6,  entretien.getLienVisio()    != null ? entretien.getLienVisio()    : "");
+            ps.setString   (5,  entretien.getLieu()          != null ? entretien.getLieu()          : "");
+            ps.setString   (6,  entretien.getLienVisio()     != null ? entretien.getLienVisio()     : "");
             ps.setString   (7,  entretien.getStatut());
-            ps.setString   (8,  entretien.getNoteRecruteur()!= null ? entretien.getNoteRecruteur(): "");
+            ps.setString   (8,  entretien.getNoteRecruteur() != null ? entretien.getNoteRecruteur() : "");
             ps.setTimestamp(9,  entretien.getDateCreation());
             ps.setInt      (10, entretien.getIdRecruteur());
             ps.setInt      (11, entretien.getIdOffre());
+            ps.setString   (12, entretien.getGoogleEventId()); // ← NOUVEAU
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -66,12 +69,16 @@ public class Entretienservice implements Icrud<Entretien> {
     // ─────────────────────────────────────────────────────────────────────────
     //  UPDATE
     // ─────────────────────────────────────────────────────────────────────────
+
+    // Remplacez la méthode update() par celle-ci :
+
     @Override
     public void update(Entretien entretien) throws SQLException {
         String sql =
                 "UPDATE entretien SET date_entretien=?, heure_debut=?, heure_fin=?, " +
                         "type_entretien=?, lieu=?, lien_visio=?, statut=?, note_recruteur=?, " +
-                        "date_creation=?, id_recruteur=?, id_offre=? WHERE id_entretien=?";
+                        "date_creation=?, id_recruteur=?, id_offre=?, google_event_id=? " +
+                        "WHERE id_entretien=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setDate     (1,  entretien.getDateEntretien());
             ps.setTime     (2,  entretien.getHeureDebut());
@@ -84,7 +91,8 @@ public class Entretienservice implements Icrud<Entretien> {
             ps.setTimestamp(9,  entretien.getDateCreation());
             ps.setInt      (10, entretien.getIdRecruteur());
             ps.setInt      (11, entretien.getIdOffre());
-            ps.setInt      (12, entretien.getIdEntretien());
+            ps.setString   (12, entretien.getGoogleEventId()); // ← NOUVEAU
+            ps.setInt      (13, entretien.getIdEntretien());
             ps.executeUpdate();
         }
     }
@@ -92,17 +100,37 @@ public class Entretienservice implements Icrud<Entretien> {
     // ─────────────────────────────────────────────────────────────────────────
     //  DELETE (supprime aussi les participants)
     // ─────────────────────────────────────────────────────────────────────────
+    // Remplacez delete() par :
+
     @Override
     public void delete(int id) throws SQLException {
+        // Récupérer le google_event_id avant suppression
+        String googleEventId = null;
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT google_event_id FROM entretien WHERE id_entretien = ?")) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) googleEventId = rs.getString("google_event_id");
+            }
+        }
+
+        // Supprimer les participants
         try (PreparedStatement ps = connection.prepareStatement(
                 "DELETE FROM participant_entretien WHERE id_entretien = ?")) {
             ps.setInt(1, id);
             ps.executeUpdate();
         }
+
+        // Supprimer l'entretien
         try (PreparedStatement ps = connection.prepareStatement(
                 "DELETE FROM entretien WHERE id_entretien = ?")) {
             ps.setInt(1, id);
             ps.executeUpdate();
+        }
+
+        // Supprimer l'événement Google Calendar (non bloquant)
+        if (googleEventId != null && !googleEventId.isBlank()) {
+            GoogleCalendarReminderService.supprimerEvenement(googleEventId);
         }
     }
 
@@ -137,6 +165,7 @@ public class Entretienservice implements Icrud<Entretien> {
         e.setDateCreation(rs.getTimestamp("date_creation"));
         e.setIdRecruteur (rs.getInt      ("id_recruteur"));
         e.setIdOffre     (rs.getInt      ("id_offre"));
+        e.setGoogleEventId(rs.getString("google_event_id"));
         return e;
     }
 
@@ -149,6 +178,19 @@ public class Entretienservice implements Icrud<Entretien> {
             }
         }
         return "Offre inconnue";
+    }
+    public List<String> getParticipantEmails(int idEntretien) throws SQLException {
+        List<String> emails = new ArrayList<>();
+        String sql = "SELECT c.email FROM candidat c " +
+                "JOIN participant_entretien p ON c.id_user = p.id_candidat " +
+                "WHERE p.id_entretien = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idEntretien);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) emails.add(rs.getString("email"));
+            }
+        }
+        return emails;
     }
 
     public List<String> getParticipants(int idEntretien) throws SQLException {

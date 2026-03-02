@@ -19,6 +19,7 @@ public class Entretien {
     private Timestamp dateCreation;
     private int idRecruteur;
     private int idOffre;
+    private String googleEventId;
 
     public Entretien() {
     }
@@ -118,4 +119,6 @@ public class Entretien {
     public void setIdOffre(int idOffre) {
         this.idOffre = idOffre;
     }
+    public String getGoogleEventId() { return googleEventId; }
+    public void setGoogleEventId(String googleEventId) { this.googleEventId = googleEventId; }
 }
