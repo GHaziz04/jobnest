@@ -336,67 +336,226 @@ public class FeedbackListController {
 
     private void consulterFeedback(Feedback f, Entretien entretien) {
         try {
-            // Récupérer les participants
             List<String> participants = entretienService.getParticipants(entretien.getIdEntretien());
             String candidatNom = participants.isEmpty() ? "Candidat inconnu" : participants.get(0);
             String titreOffre = entretienService.getOffreTitre(entretien.getIdOffre());
 
-            // Calculer la moyenne
             double moyenne = (f.getCompetenceTechniques() + f.getCompetenceCommunication() +
                     f.getMotivation() + f.getAdequationAuPoste()) / 4.0;
 
-            // Créer une boîte de dialogue de consultation
-            Alert dialog = new Alert(Alert.AlertType.INFORMATION);
-            dialog.setTitle("📊 Détails du Feedback");
-            dialog.setHeaderText("Feedback - Entretien #" + entretien.getIdEntretien());
+            // ── Couleur selon la note ──
+            String couleur = moyenne >= 8.0 ? "#27AE60"
+                    : moyenne >= 6.0 ? "#2563EB"
+                    : moyenne >= 4.0 ? "#F97316"
+                    : "#EF4444";
 
-            String content = String.format(
-                    "📋 INFORMATIONS GÉNÉRALES\n" +
-                            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-                            "Offre : %s\n" +
-                            "Candidat : %s\n" +
-                            "Date entretien : %s\n" +
-                            "Date feedback : %s\n\n" +
-                            "📊 ÉVALUATION (Moyenne : %.1f/10)\n" +
-                            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-                            "💻 Compétences Techniques : %d/10\n" +
-                            "💬 Compétences Communication : %d/10\n" +
-                            "🎯 Motivation : %d/10\n" +
-                            "✅ Adéquation au Poste : %d/10\n\n" +
-                            "💬 COMMENTAIRE GÉNÉRAL\n" +
-                            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-                            "%s\n\n" +
-                            "⚠️ COMPÉTENCES MANQUANTES\n" +
-                            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-                            "%s\n\n" +
-                            "🎓 FORMATION RECOMMANDÉE\n" +
-                            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-                            "%s",
-                    titreOffre,
-                    candidatNom,
-                    entretien.getDateEntretien().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                    f.getDateFeedback().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                    moyenne,
-                    f.getCompetenceTechniques(),
-                    f.getCompetenceCommunication(),
-                    f.getMotivation(),
-                    f.getAdequationAuPoste(),
-                    f.getCommentaire(),
-                    f.getCompetenceManquantes(),
-                    f.isSuggestionFormation() ? "✅ Oui, une formation est recommandée" : "❌ Non, pas de formation nécessaire"
-            );
+            String niveauTexte = moyenne >= 8.0 ? "Excellent"
+                    : moyenne >= 6.0 ? "Bien"
+                    : moyenne >= 4.0 ? "Moyen"
+                    : "Faible";
 
-            dialog.setContentText(content);
+            // ── Création du Dialog ──
+            Dialog<Void> dialog = new Dialog<>();
+            dialog.setTitle("Détails du Feedback");
+            dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
 
-            // Agrandir la fenêtre
-            dialog.getDialogPane().setPrefWidth(700);
-            dialog.getDialogPane().setPrefHeight(600);
+            // ── ScrollPane principal ──
+            ScrollPane scrollPane = new ScrollPane();
+            scrollPane.setFitToWidth(true);
+            scrollPane.setPrefWidth(720);
+            scrollPane.setPrefHeight(580);
+            scrollPane.setStyle("-fx-background-color: transparent; -fx-background: #F8FAFC; -fx-border-color: transparent;");
+
+            VBox container = new VBox(0);
+            container.setStyle("-fx-background-color: #F8FAFC;");
+
+            // ── HEADER BLEU MARINE ──
+            VBox header = new VBox(8);
+            header.setStyle("-fx-background-color: #1E3A5F; -fx-padding: 24 30 20 30;");
+
+            HBox headerRow = new HBox(16);
+            headerRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
+            // Badge note ronde
+            javafx.scene.layout.StackPane noteBadge = new javafx.scene.layout.StackPane();
+            noteBadge.setPrefSize(70, 70);
+            noteBadge.setMinSize(70, 70);
+            noteBadge.setStyle("-fx-background-color: " + couleur + "; -fx-background-radius: 35;");
+
+            VBox noteContent = new VBox(0);
+            noteContent.setAlignment(javafx.geometry.Pos.CENTER);
+            Label noteGrande = new Label(String.format("%.1f", moyenne));
+            noteGrande.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;");
+            Label surDix = new Label("/10");
+            surDix.setStyle("-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.85);");
+            noteContent.getChildren().addAll(noteGrande, surDix);
+            noteBadge.getChildren().add(noteContent);
+
+            VBox headerInfo = new VBox(4);
+            Label titreLabel = new Label("Feedback — Entretien #" + entretien.getIdEntretien());
+            titreLabel.setStyle("-fx-font-size: 19px; -fx-font-weight: bold; -fx-text-fill: white;");
+            Label offreLabel = new Label("📌 " + titreOffre + "   •   👤 " + candidatNom);
+            offreLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #8BAECF;");
+
+            String dateEntretienStr = entretien.getDateEntretien() != null
+                    ? entretien.getDateEntretien().toLocalDate()
+                    .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    : "Date inconnue";
+            String dateFeedbackStr = f.getDateFeedback() != null
+                    ? f.getDateFeedback().toLocalDateTime()
+                    .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                    : "—";
+
+            Label datesLabel = new Label("📅 Entretien : " + dateEntretienStr
+                    + "    🕐 Feedback : " + dateFeedbackStr);
+            datesLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #8BAECF;");
+
+            headerInfo.getChildren().addAll(titreLabel, offreLabel, datesLabel);
+            headerRow.getChildren().addAll(noteBadge, headerInfo);
+            header.getChildren().add(headerRow);
+
+            // ── CORPS ──
+            VBox body = new VBox(16);
+            body.setStyle("-fx-padding: 24 30 24 30; -fx-background-color: #F8FAFC;");
+
+            // ── Section : Évaluation ──
+            Label sectionEval = new Label("ÉVALUATION DÉTAILLÉE");
+            sectionEval.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #94A3B8; -fx-padding: 0 0 6 0;");
+
+            // Card notes 4 critères
+            HBox notesCard = new HBox(0);
+            notesCard.setStyle("-fx-background-color: white; -fx-background-radius: 14; "
+                    + "-fx-effect: dropshadow(gaussian, rgba(30,58,95,0.08), 12, 0, 0, 4); "
+                    + "-fx-border-color: #EEF2FF; -fx-border-width: 1; -fx-border-radius: 14;");
+
+            String[][] criteres = {
+                    {"💻", "Technique",      String.valueOf(f.getCompetenceTechniques())},
+                    {"💬", "Communication",  String.valueOf(f.getCompetenceCommunication())},
+                    {"🎯", "Motivation",     String.valueOf(f.getMotivation())},
+                    {"✅", "Adéquation",     String.valueOf(f.getAdequationAuPoste())}
+            };
+
+            for (int i = 0; i < criteres.length; i++) {
+                String[] c = criteres[i];
+                int noteVal = Integer.parseInt(c[2]);
+                String noteCouleur = noteVal >= 8 ? "#27AE60" : noteVal >= 6 ? "#2563EB" : noteVal >= 4 ? "#F97316" : "#EF4444";
+
+                VBox item = new VBox(6);
+                item.setAlignment(javafx.geometry.Pos.CENTER);
+                item.setPrefWidth(150);
+                item.setStyle("-fx-padding: 18 10 18 10;"
+                        + (i < 3 ? " -fx-border-color: transparent #EEF2FF transparent transparent; -fx-border-width: 0 1 0 0;" : ""));
+
+                Label emoji = new Label(c[0]);
+                emoji.setStyle("-fx-font-size: 22px;");
+
+                Label noteNum = new Label(c[2] + "/10");
+                noteNum.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: " + noteCouleur + ";");
+
+                Label labelCritere = new Label(c[1]);
+                labelCritere.setStyle("-fx-font-size: 11px; -fx-text-fill: #94A3B8; -fx-font-weight: 500;");
+
+                // Mini barre de progression
+                HBox barBg = new HBox();
+                barBg.setPrefWidth(80);
+                barBg.setPrefHeight(5);
+                barBg.setStyle("-fx-background-color: #F1F5F9; -fx-background-radius: 3;");
+
+                HBox barFill = new HBox();
+                barFill.setPrefHeight(5);
+                barFill.setPrefWidth(noteVal * 8); // max 80px pour 10
+                barFill.setStyle("-fx-background-color: " + noteCouleur + "; -fx-background-radius: 3;");
+                barBg.getChildren().add(barFill);
+
+                item.getChildren().addAll(emoji, noteNum, labelCritere, barBg);
+                HBox.setHgrow(item, javafx.scene.layout.Priority.ALWAYS);
+                notesCard.getChildren().add(item);
+            }
+
+            // ── Badge niveau global ──
+            HBox badgeRow = new HBox(10);
+            badgeRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            Label badgeNiveau = new Label("  " + niveauTexte + "  ");
+            badgeNiveau.setStyle("-fx-background-color: " + couleur + "; -fx-text-fill: white; "
+                    + "-fx-font-size: 12px; -fx-font-weight: bold; -fx-background-radius: 8; "
+                    + "-fx-padding: 4 12 4 12;");
+            Label moyenneText = new Label("Moyenne globale : " + String.format("%.1f", moyenne) + " / 10");
+            moyenneText.setStyle("-fx-font-size: 13px; -fx-text-fill: #334155; -fx-font-weight: 600;");
+            badgeRow.getChildren().addAll(badgeNiveau, moyenneText);
+
+            // ── Section : Commentaire ──
+            Label sectionComment = new Label("COMMENTAIRE GÉNÉRAL");
+            sectionComment.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #94A3B8; -fx-padding: 8 0 6 0;");
+
+            VBox commentCard = new VBox(10);
+            commentCard.setStyle("-fx-background-color: white; -fx-background-radius: 12; "
+                    + "-fx-effect: dropshadow(gaussian, rgba(30,58,95,0.08), 12, 0, 0, 4); "
+                    + "-fx-border-color: #EEF2FF; -fx-border-width: 1; -fx-border-radius: 12; "
+                    + "-fx-padding: 16 18 16 18;");
+
+            Label commentTexte = new Label(f.getCommentaire());
+            commentTexte.setWrapText(true);
+            commentTexte.setStyle("-fx-font-size: 13px; -fx-text-fill: #334155; -fx-line-spacing: 3;");
+            commentCard.getChildren().add(commentTexte);
+
+            // ── Section : Compétences manquantes ──
+            Label sectionComp = new Label("COMPÉTENCES MANQUANTES");
+            sectionComp.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #94A3B8; -fx-padding: 8 0 6 0;");
+
+            VBox compCard = new VBox(8);
+            compCard.setStyle("-fx-background-color: #FFF7ED; -fx-background-radius: 12; "
+                    + "-fx-border-color: #FED7AA; -fx-border-width: 1; -fx-border-radius: 12; "
+                    + "-fx-padding: 14 18 14 18;");
+
+            HBox compRow = new HBox(10);
+            compRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            Label compEmoji = new Label("⚠️");
+            compEmoji.setStyle("-fx-font-size: 16px;");
+            Label compTexte = new Label(f.getCompetenceManquantes());
+            compTexte.setWrapText(true);
+            compTexte.setStyle("-fx-font-size: 13px; -fx-text-fill: #9A3412; -fx-font-weight: 500;");
+            compRow.getChildren().addAll(compEmoji, compTexte);
+            compCard.getChildren().add(compRow);
+
+            // ── Badge formation ──
+            if (f.isSuggestionFormation()) {
+                Label formationBadge = new Label("  🎓  Formation recommandée pour ce candidat  ");
+                formationBadge.setStyle("-fx-background-color: #EFF6FF; -fx-text-fill: #1D4ED8; "
+                        + "-fx-font-size: 13px; -fx-font-weight: bold; -fx-background-radius: 10; "
+                        + "-fx-border-color: #BFDBFE; -fx-border-width: 1; -fx-border-radius: 10; "
+                        + "-fx-padding: 10 16 10 16;");
+                body.getChildren().addAll(sectionEval, notesCard, badgeRow, sectionComment, commentCard,
+                        sectionComp, compCard, formationBadge);
+            } else {
+                Label pasFormation = new Label("  ✓  Aucune formation requise  ");
+                pasFormation.setStyle("-fx-background-color: #F0FDF4; -fx-text-fill: #166534; "
+                        + "-fx-font-size: 13px; -fx-font-weight: bold; -fx-background-radius: 10; "
+                        + "-fx-border-color: #BBF7D0; -fx-border-width: 1; -fx-border-radius: 10; "
+                        + "-fx-padding: 10 16 10 16;");
+                body.getChildren().addAll(sectionEval, notesCard, badgeRow, sectionComment, commentCard,
+                        sectionComp, compCard, pasFormation);
+            }
+
+            container.getChildren().addAll(header, body);
+            scrollPane.setContent(container);
+
+            // ── Style du DialogPane ──
+            dialog.getDialogPane().setContent(scrollPane);
+            dialog.getDialogPane().setStyle("-fx-background-color: #F8FAFC; -fx-padding: 0; -fx-background-radius: 14;");
+            dialog.getDialogPane().setPrefWidth(720);
+
+            // Style bouton Fermer
+            javafx.scene.Node closeBtn = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
+            if (closeBtn != null) {
+                closeBtn.setStyle("-fx-background-color: #2563EB; -fx-text-fill: white; "
+                        + "-fx-font-weight: bold; -fx-background-radius: 8; "
+                        + "-fx-padding: 8 22 8 22; -fx-font-size: 13px; -fx-cursor: hand;");
+            }
 
             dialog.showAndWait();
 
         } catch (SQLException ex) {
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Impossible de charger les détails : " + ex.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger les détails : " + ex.getMessage());
         }
     }
 
