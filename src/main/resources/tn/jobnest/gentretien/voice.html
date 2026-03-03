@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Voice</title>
+</head>
+
+<body style="text-align:center; font-family:Arial; margin-top:100px;">
+
+<h2>🎤 Speak Now...</h2>
+<button onclick="start()" style="font-size:20px;padding:15px;">Start Talking</button>
+
+<script>
+
+    function start(){
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        recognition.lang = "fr-FR";
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onresult = function(event){
+
+            let text = event.results[0][0].transcript;
+            console.log("Recognized:", text);
+
+            // 🔥 THIS IS THE MOST IMPORTANT LINE
+            fetch("http://localhost:5555/voice", {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: text
+            })
+                .then(res => console.log("sent to java"))
+                .catch(err => console.error(err));
+        };
+
+        recognition.start();
+    }
+
+</script>
+
+</body>
+</html>

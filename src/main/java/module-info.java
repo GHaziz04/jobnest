@@ -20,6 +20,9 @@ module tn.jobnest.gentretien {
     requires com.google.api.services.calendar;
     requires google.api.client;
     requires com.google.gson;
+    requires jakarta.mail;
+    requires org.json;
+
 
     // Exports
     exports tn.jobnest.gentretien;
