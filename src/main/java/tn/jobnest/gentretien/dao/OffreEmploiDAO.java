@@ -1,7 +1,5 @@
 package tn.jobnest.gentretien.dao;
 
-
-
 import tn.jobnest.gentretien.utils.MyDatabase;
 import tn.jobnest.gentretien.model.OffreEmploi;
 
@@ -13,9 +11,6 @@ public class OffreEmploiDAO {
 
     private final Connection connection = MyDatabase.getInstance().getConn();
 
-    // =========================
-    // 🔥 AJOUTER + RETOURNER ID
-    // =========================
     public int ajouterEtRetournerId(OffreEmploi o) throws SQLException {
 
         String sql = "INSERT INTO offre_emploi " +
@@ -24,8 +19,7 @@ public class OffreEmploiDAO {
                 " date_publication, date_expiration, statut, matching_score) " +
                 "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-        try (PreparedStatement ps = connection.prepareStatement(
-                sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, o.getIdRecruteur());
             ps.setString(2, o.getTitre());
@@ -40,32 +34,21 @@ public class OffreEmploiDAO {
             ps.setDate(11, o.getDateExpiration());
             ps.setString(12, o.getStatut());
 
-            // matching_score peut être null
-            if (o.getMatchingScore() != null) {
+            if (o.getMatchingScore() != null)
                 ps.setDouble(13, o.getMatchingScore());
-            } else {
+            else
                 ps.setNull(13, Types.DOUBLE);
-            }
 
             int rows = ps.executeUpdate();
-
-            if (rows == 0) {
-                throw new SQLException("Échec insertion offre");
-            }
+            if (rows == 0) throw new SQLException("Échec insertion offre");
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
+                if (rs.next()) return rs.getInt(1);
             }
-
             throw new SQLException("ID non généré");
         }
     }
 
-    // =========================
-    // 📄 AFFICHER TOUTES LES OFFRES
-    // =========================
     public List<OffreEmploi> afficher() throws SQLException {
 
         List<OffreEmploi> list = new ArrayList<>();
@@ -73,18 +56,11 @@ public class OffreEmploiDAO {
 
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
-
-            while (rs.next()) {
-                list.add(mapRow(rs));
-            }
+            while (rs.next()) list.add(mapRow(rs));
         }
-
         return list;
     }
 
-    // =========================
-    // ✏️ MODIFIER
-    // =========================
     public void modifier(OffreEmploi o) throws SQLException {
 
         String sql = "UPDATE offre_emploi " +
@@ -94,7 +70,6 @@ public class OffreEmploiDAO {
                 "WHERE id_offre=?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-
             ps.setString(1, o.getTitre());
             ps.setString(2, o.getDescription());
             ps.setString(3, o.getEntreprise());
@@ -107,69 +82,45 @@ public class OffreEmploiDAO {
             ps.setDate(10, o.getDateExpiration());
             ps.setString(11, o.getStatut());
 
-            if (o.getMatchingScore() != null) {
+            if (o.getMatchingScore() != null)
                 ps.setDouble(12, o.getMatchingScore());
-            } else {
+            else
                 ps.setNull(12, Types.DOUBLE);
-            }
 
             ps.setInt(13, o.getIdOffre());
 
             int rows = ps.executeUpdate();
-
-            if (rows == 0) {
-                throw new SQLException("Modification échouée : offre introuvable");
-            }
+            if (rows == 0) throw new SQLException("Modification échouée : offre introuvable");
         }
     }
 
-    // =========================
-    // ❌ SUPPRIMER
-    // =========================
     public void supprimer(int id) throws SQLException {
 
         String sql = "DELETE FROM offre_emploi WHERE id_offre=?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-
             ps.setInt(1, id);
-
             int rows = ps.executeUpdate();
-
-            if (rows == 0) {
-                throw new SQLException("Suppression échouée : offre introuvable");
-            }
+            if (rows == 0) throw new SQLException("Suppression échouée : offre introuvable");
         }
     }
 
-    // =========================
-    // 🔎 GET BY ID
-    // =========================
     public OffreEmploi getById(int id) throws SQLException {
 
         String sql = "SELECT * FROM offre_emploi WHERE id_offre=?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-
             ps.setInt(1, id);
-
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapRow(rs);
-                }
+                if (rs.next()) return mapRow(rs);
             }
         }
-
         return null;
     }
 
-    // =========================
-    // 🔧 HELPER MAP ROW
-    // =========================
     private OffreEmploi mapRow(ResultSet rs) throws SQLException {
 
         OffreEmploi o = new OffreEmploi();
-
         o.setIdOffre(rs.getInt("id_offre"));
         o.setIdRecruteur(rs.getInt("id_recruteur"));
         o.setTitre(rs.getString("titre"));
@@ -186,11 +137,8 @@ public class OffreEmploiDAO {
         o.setNbVues(rs.getInt("nb_vues"));
         o.setNbCandidatures(rs.getInt("nb_candidatures"));
 
-        // matching_score peut être null en base
         double score = rs.getDouble("matching_score");
-        if (!rs.wasNull()) {
-            o.setMatchingScore(score);
-        }
+        if (!rs.wasNull()) o.setMatchingScore(score);
 
         return o;
     }

@@ -68,7 +68,29 @@ public class Entretiencontroller {
     }
 
     // ────────────────────────────────────────────────────────────────
-    //  NAVIGATION SIDEBAR
+    //  ✅ NAVIGATION VERS OFFRES D'EMPLOI (SIDEBAR)
+    // ────────────────────────────────────────────────────────────────
+    @FXML
+    private void ouvrirOffresEmploi(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/tn/jobnest/gentretien/offre-emploi_view.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            java.net.URL css = getClass().getResource("/tn/jobnest/gentretien/styles.css");
+            if (css != null) scene.getStylesheets().add(css.toExternalForm());
+            stage.setScene(scene);
+            stage.setTitle("JobNest - Offres d'Emploi");
+            stage.show();
+        } catch (IOException ex) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir les offres : " + ex.getMessage());
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  NAVIGATION SIDEBAR (existant)
     // ────────────────────────────────────────────────────────────────
     @FXML
     private void ouvrirFeedbacks(ActionEvent event) {
@@ -157,11 +179,9 @@ public class Entretiencontroller {
     private void updateStats() {
         if (allEntretiens == null) return;
         long planifies = allEntretiens.stream()
-                .filter(e -> "proposé".equals(e.getStatut()))
-                .count();
+                .filter(e -> "proposé".equals(e.getStatut())).count();
         long termines = allEntretiens.stream()
-                .filter(e -> "réalisé".equals(e.getStatut()))
-                .count();
+                .filter(e -> "réalisé".equals(e.getStatut())).count();
         LocalDate today       = LocalDate.now();
         LocalDate startOfWeek = today.minusDays(today.getDayOfWeek().getValue() - 1);
         LocalDate endOfWeek   = startOfWeek.plusDays(6);
@@ -192,9 +212,9 @@ public class Entretiencontroller {
 
         for (Entretien e : entretiensFiltres) {
             try {
-                String       titreOffre      = service.getOffreTitre(e.getIdOffre()).toLowerCase();
-                List<String> participants    = service.getParticipants(e.getIdEntretien());
-                String       participantsStr = String.join(" ", participants).toLowerCase();
+                String       titreOffre   = service.getOffreTitre(e.getIdOffre()).toLowerCase();
+                List<String> participants = service.getParticipants(e.getIdEntretien());
+                String participantsStr   = String.join(" ", participants).toLowerCase();
 
                 boolean matchSearch = search.isEmpty()
                         || titreOffre.contains(search)
@@ -229,7 +249,6 @@ public class Entretiencontroller {
         card.getStyleClass().add("card");
         card.setPrefHeight(130);
 
-        // ── Avatar ──
         String participantName = participants.isEmpty() ? "Candidat" : participants.get(0);
         String initials = participants.isEmpty() ? "C" : buildInitials(participantName);
 
@@ -242,7 +261,6 @@ public class Entretiencontroller {
         avatarBox.setAlignment(javafx.geometry.Pos.CENTER);
         avatarBox.setPrefWidth(70);
 
-        // ── Détails ──
         VBox details = new VBox(8);
         details.setPrefWidth(400);
         details.setPadding(new Insets(5, 0, 5, 0));
@@ -286,25 +304,17 @@ public class Entretiencontroller {
             details.getChildren().add(noteLabel);
         }
 
-        // ────────────────────────────────────────────────────────────
-        //  ACTIONS
-        // ────────────────────────────────────────────────────────────
         VBox actionsContainer = new VBox(8);
         actionsContainer.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
         actionsContainer.setPrefWidth(320);
         actionsContainer.setPadding(new Insets(5, 0, 5, 0));
 
-        // Calcul jour J une seule fois
         boolean estAujourdhui = e.getDateEntretien() != null
                 && e.getDateEntretien().toLocalDate().equals(LocalDate.now());
 
-        // ── Ligne 1 : Modifier uniquement
-        //    (Le bouton Feedback est absent de cette vue.
-        //     Il est disponible uniquement dans l'Historique pour les entretiens réalisés.) ──
         HBox actionsRow1 = new HBox(10);
         actionsRow1.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
 
-        // ── BOUTON MODIFIER : DÉSACTIVÉ le jour J ──
         Button btnModifier = new Button("Modifier");
         btnModifier.getStyleClass().add("button-primary");
         btnModifier.setPrefWidth(120);
@@ -316,57 +326,35 @@ public class Entretiencontroller {
                     "-fx-background-color: #E2E8F0; -fx-text-fill: #94A3B8;" +
                             "-fx-font-weight: bold; -fx-background-radius: 10px;");
             Tooltip.install(btnModifier, new Tooltip(
-                    "⚠️ Modification impossible\n" +
-                            "L'entretien est prévu aujourd'hui.\n" +
-                            "Vous ne pouvez pas le modifier le jour J."));
+                    "⚠️ Modification impossible\nL'entretien est prévu aujourd'hui."));
         } else {
             btnModifier.setOnAction(ev -> openForm(true, e));
         }
-
         actionsRow1.getChildren().add(btnModifier);
 
-        // ── Ligne 2 : Map/Rejoindre + Supprimer ──
         HBox actionsRow2 = new HBox(10);
         actionsRow2.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
 
-        // ── BOUTON MAP ou REJOINDRE ──
         Button btnActionSpecifique;
         if ("présentiel".equals(e.getTypeEntretien())) {
-
             btnActionSpecifique = new Button("Consulter map");
             btnActionSpecifique.getStyleClass().add("button-map");
             btnActionSpecifique.setPrefWidth(155);
             btnActionSpecifique.setPrefHeight(42);
-
             if (estAujourdhui) {
-                // ✅ Jour J → carte accessible
                 btnActionSpecifique.setOnAction(ev -> consulterMap(e));
             } else {
-                // ❌ Pas le jour J → désactivé
                 btnActionSpecifique.setDisable(true);
                 btnActionSpecifique.setStyle(
                         "-fx-background-color: #E2E8F0; -fx-text-fill: #94A3B8;" +
                                 "-fx-font-weight: bold; -fx-background-radius: 10px;");
-                LocalDate dateE = e.getDateEntretien() != null
-                        ? e.getDateEntretien().toLocalDate() : null;
-                String tooltipMap;
-                if (dateE != null && dateE.isAfter(LocalDate.now())) {
-                    tooltipMap = "⏳ Carte disponible uniquement le jour J\n(" +
-                            dateE.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")";
-                } else {
-                    tooltipMap = "⛔ Entretien passé — carte non disponible.";
-                }
-                Tooltip.install(btnActionSpecifique, new Tooltip(tooltipMap));
             }
-
         } else {
-            // ── Bouton Rejoindre (visio) ──
             btnActionSpecifique = new Button("📹 Rejoindre");
             btnActionSpecifique.getStyleClass().add("button-visio");
             btnActionSpecifique.setPrefWidth(130);
             btnActionSpecifique.setPrefHeight(42);
             btnActionSpecifique.setOnAction(ev -> rejoindre(e));
-
             if (e.getLienVisio() == null || e.getLienVisio().isBlank()) {
                 btnActionSpecifique.setDisable(true);
                 btnActionSpecifique.setText("❌ Lien indisponible");
@@ -382,27 +370,19 @@ public class Entretiencontroller {
             }
         }
 
-        // ── BOUTON SUPPRIMER ──
         Button btnSupprimer = new Button("Supprimer");
         btnSupprimer.setPrefWidth(120);
         btnSupprimer.setPrefHeight(42);
 
         if ("proposé".equals(e.getStatut()) && !estAujourdhui) {
-            // ✅ Proposé + pas le jour J → suppression autorisée
             btnSupprimer.getStyleClass().add("button-danger");
             btnSupprimer.setOnAction(ev -> supprimerEntretien(e));
         } else if ("proposé".equals(e.getStatut()) && estAujourdhui) {
-            // ⛔ Proposé + jour J → suppression bloquée
             btnSupprimer.setDisable(true);
             btnSupprimer.setStyle(
                     "-fx-background-color: #E2E8F0; -fx-text-fill: #94A3B8;" +
                             "-fx-font-weight: bold; -fx-background-radius: 10px;");
-            Tooltip.install(btnSupprimer, new Tooltip(
-                    "⚠️ Suppression impossible\n" +
-                            "L'entretien est prévu aujourd'hui.\n" +
-                            "Vous ne pouvez pas le supprimer le jour J."));
         } else {
-            // ❌ Tout autre statut → bouton caché
             btnSupprimer.setVisible(false);
             btnSupprimer.setManaged(false);
         }
@@ -436,8 +416,8 @@ public class Entretiencontroller {
         }
         Label badge = new Label(emoji + " " + (statut != null ? statut : "inconnu"));
         badge.setStyle("-fx-background-color:" + bgColor + ";-fx-text-fill:" + color + ";"
-                + "-fx-font-size:11px;-fx-font-weight:700;-fx-padding:3 10 3 10;" +
-                "-fx-background-radius:20px;");
+                + "-fx-font-size:11px;-fx-font-weight:700;-fx-padding:3 10 3 10;"
+                + "-fx-background-radius:20px;");
         return badge;
     }
 
@@ -447,9 +427,6 @@ public class Entretiencontroller {
                 e.getHeureFin().getTime() - e.getHeureDebut().getTime());
     }
 
-    // ────────────────────────────────────────────────────────────────
-    //  OUVRIR FORMULAIRE
-    // ────────────────────────────────────────────────────────────────
     private void openForm(boolean edition, Entretien ent) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -471,9 +448,6 @@ public class Entretiencontroller {
         }
     }
 
-    // ────────────────────────────────────────────────────────────────
-    //  REJOINDRE VISIO
-    // ────────────────────────────────────────────────────────────────
     private void rejoindre(Entretien e) {
         if (e.getDateEntretien() != null) {
             LocalDate dateE = e.getDateEntretien().toLocalDate();
@@ -501,9 +475,6 @@ public class Entretiencontroller {
         }
     }
 
-    // ────────────────────────────────────────────────────────────────
-    //  CONSULTER MAP
-    // ────────────────────────────────────────────────────────────────
     private void consulterMap(Entretien e) {
         if (!"présentiel".equals(e.getTypeEntretien())) return;
         if (e.getLieu() == null || e.getLieu().isBlank()) {
@@ -533,9 +504,6 @@ public class Entretiencontroller {
         }
     }
 
-    // ────────────────────────────────────────────────────────────────
-    //  SUPPRIMER
-    // ────────────────────────────────────────────────────────────────
     private void supprimerEntretien(Entretien e) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmation");
@@ -554,9 +522,6 @@ public class Entretiencontroller {
         }
     }
 
-    // ────────────────────────────────────────────────────────────────
-    //  ALERT HELPER
-    // ────────────────────────────────────────────────────────────────
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -564,6 +529,7 @@ public class Entretiencontroller {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
     @FXML
     private void ouvrirProfil(ActionEvent event) {
         try {

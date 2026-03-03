@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox spacing="22"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.jobnest.gentretien.controller.OffreEmploiController"
+      style="-fx-background-color: #F5F7FB;">
+
+    <padding>
+        <Insets top="24" right="28" bottom="24" left="28"/>
+    </padding>
+
+    <!-- TITRE -->
+    <VBox spacing="6">
+        <Label text="Gestion des Offres d'Emploi"
+               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1e3a8a;"/>
+        <Label text="Créer et gérer les annonces de recrutement"
+               style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
+    </VBox>
+
+    <!-- SEARCH + FILTER + ADD -->
+    <HBox spacing="16" alignment="CENTER_LEFT">
+
+        <TextField fx:id="searchField"
+                   promptText="Rechercher une offre..."
+                   prefWidth="260"
+                   style="-fx-background-radius: 10px; -fx-border-radius: 10px;
+                          -fx-border-color: #e2e8f0; -fx-padding: 8 12 8 12;"/>
+
+        <ComboBox fx:id="contratFilterBox"
+                  promptText="Tous"
+                  prefWidth="160"
+                  style="-fx-background-radius: 10px;"/>
+
+        <!-- Spacer -->
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button text="+ Nouvelle Offre"
+                onAction="#showAddForm"
+                style="-fx-background-color: #1e3a8a; -fx-text-fill: white;
+                       -fx-font-weight: bold; -fx-background-radius: 10px;
+                       -fx-padding: 8 18 8 18; -fx-cursor: hand;"/>
+    </HBox>
+
+    <!-- CARDS -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background: transparent; -fx-background-color: transparent;
+                       -fx-border-color: transparent;">
+
+        <FlowPane fx:id="cardContainer"
+                  hgap="20"
+                  vgap="20"
+                  prefWrapLength="900"
+                  alignment="TOP_LEFT"
+                  style="-fx-background-color: transparent;">
+            <padding>
+                <Insets bottom="20"/>
+            </padding>
+        </FlowPane>
+    </ScrollPane>
+
+    <!-- PAGINATION + COUNT -->
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Pagination fx:id="pagination" maxPageIndicatorCount="5"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="tableCountLabel"
+               text="0 offres"
+               style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
+    </HBox>
+
+</VBox>

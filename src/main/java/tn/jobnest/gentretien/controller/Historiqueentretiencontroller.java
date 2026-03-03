@@ -312,10 +312,13 @@ public class Historiqueentretiencontroller {
                 btnAction.setPrefWidth(175);
                 btnAction.setPrefHeight(42);
                 btnAction.setStyle(
-                        "-fx-background-color: linear-gradient(135deg, #1e3a8a, #ffffff);" +
-                                "-fx-text-fill: #1e3a8a; -fx-font-weight: 800; -fx-font-size: 13px;" +
-                                "-fx-background-radius: 10px; -fx-cursor: hand;" +
-                                "-fx-effect: dropshadow(gaussian, rgba(37,99,235,0.35), 8, 0, 0, 3);");
+                        "-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;"+
+                                " -fx-text-fill: white;"+
+                                "-fx-font-size: 13px;"+
+                                "-fx-font-weight: bold;"+
+                                "-fx-background-radius: 12px;"+
+                                "-fx-cursor: hand;"+
+                                "-fx-effect: dropshadow(gaussian, rgba(16,185,129,0.35), 10, 0, 0, 3);");
                 btnAction.setOnAction(ev -> ouvrirFeedbackPourEntretien(e));
                 Tooltip.install(btnAction, new Tooltip("Ajouter un feedback pour cet entretien réalisé"));
             }
@@ -331,10 +334,13 @@ public class Historiqueentretiencontroller {
         if (estAnnule) {
             // ✅ Annulé → suppression autorisée
             btnSupprimer.setStyle(
-                    "-fx-background-color: linear-gradient(135deg, #DC2626, #B91C1C);" +
-                            "-fx-text-fill: white; -fx-font-weight: 800; -fx-font-size: 13px;" +
-                            "-fx-background-radius: 10px; -fx-cursor: hand;" +
-                            "-fx-effect: dropshadow(gaussian, rgba(220,38,38,0.4), 8, 0, 0, 3);");
+                    "-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;"+
+                           " -fx-text-fill: white;"+
+            "-fx-font-size: 13px;"+
+            "-fx-font-weight: bold;"+
+            "-fx-background-radius: 12px;"+
+            "-fx-cursor: hand;"+
+            "-fx-effect: dropshadow(gaussian, rgba(16,185,129,0.35), 10, 0, 0, 3);");
             btnSupprimer.setOnAction(ev -> supprimerEntretienHistorique(e));
             Tooltip.install(btnSupprimer,
                     new Tooltip("🗑️ Supprimer définitivement cet entretien annulé"));

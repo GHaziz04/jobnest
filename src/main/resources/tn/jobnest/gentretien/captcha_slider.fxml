@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" alignment="CENTER"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.jobnest.gentretien.controller.SliderCaptchaController">
+
+    <padding><Insets top="30" bottom="30" left="30" right="30"/></padding>
+
+    <Label text="Glissez la barre jusqu au bout pour valider"
+           style="-fx-font-size:14px; -fx-font-weight:bold;"/>
+
+    <Slider fx:id="slider" min="0" max="100" value="0" prefWidth="300"/>
+
+    <Button text="Verifier"
+            onAction="#handleVerify"
+            prefWidth="150" prefHeight="38"
+            style="-fx-background-color:#1e3a8a; -fx-text-fill:white;
+                   -fx-font-weight:bold; -fx-background-radius:8px; -fx-cursor:hand;"/>
+</VBox>

@@ -27,24 +27,29 @@
             </HBox>
 
             <VBox styleClass="menu-container" spacing="5" VBox.vgrow="ALWAYS">
+
                 <Button styleClass="menu-item">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📊" style="-fx-font-size: 18px;"/>
                         <Label text="Tableau de bord" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
-                <Button styleClass="menu-item">
+
+                <!-- ✅ BOUTON OFFRES D'EMPLOI avec navigation -->
+                <Button styleClass="menu-item" onAction="#ouvrirOffresEmploi">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="💼" style="-fx-font-size: 18px;"/>
                         <Label text="Offres d'emploi" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
+
                 <Button styleClass="menu-item" onAction="#ouvrirCandidature">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📄" style="-fx-font-size: 18px;"/>
                         <Label text="Candidatures" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
+
                 <!-- ACTIF -->
                 <Button styleClass="menu-item, menu-item-active">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
@@ -52,24 +57,28 @@
                         <Label text="Entretiens" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
+
                 <Button styleClass="menu-item" onAction="#ouvrirFeedbacks">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📊" style="-fx-font-size: 18px;"/>
                         <Label text="Feedbacks" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
+
                 <Button styleClass="menu-item" onAction="#ouvrirHistorique">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📅" style="-fx-font-size: 18px;"/>
                         <Label text="Historique" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
+
                 <Button styleClass="menu-item">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="🎯" style="-fx-font-size: 18px;"/>
                         <Label text="Matching" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
+
             </VBox>
 
             <VBox styleClass="sidebar-footer" spacing="10">
@@ -96,7 +105,6 @@
             <Label text="Gestion des Entretiens" styleClass="page-title"/>
             <Label text="Entretiens en cours — proposés et confirmés uniquement" styleClass="page-subtitle"/>
 
-            <!-- Barre filtres — SANS bouton Nouvel entretien (il est dans Candidatures) -->
             <HBox spacing="15" alignment="CENTER_LEFT">
                 <TextField fx:id="searchField"
                            promptText="Rechercher par candidat ou poste..."
@@ -106,13 +114,13 @@
                 <Button text="🔄 Actualiser" onAction="#actualiserListe"
                         prefHeight="42" prefWidth="135"
                         style="-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;
-                               -fx-text-fill:white; -fx-font-size:13px; -fx-font-weight:bold;
+                               -fx-font-size:13px; -fx-font-weight:bold;
                                -fx-background-radius:12px; -fx-cursor:hand;
                                -fx-effect:dropshadow(gaussian,rgb(37,99,235),10,0,0,3);"/>
                 <Button text="📊 Voir Feedbacks" onAction="#ouvrirFeedbacks"
                         prefHeight="42" prefWidth="160"
                         style="-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;
-                               -fx-text-fill:white; -fx-font-size:14px; -fx-font-weight:bold;
+                               -fx-font-size:14px; -fx-font-weight:bold;
                                -fx-background-radius:12px; -fx-cursor:hand;
                                -fx-effect:dropshadow(gaussian,rgb(37,99,235),10,0,0,3);"/>
             </HBox>
@@ -135,7 +143,8 @@
             <Label text="Entretiens en cours" styleClass="section-title"/>
 
             <ScrollPane fitToWidth="true" prefHeight="600.0"
-                        style="-fx-background:transparent; -fx-background-color:transparent; -fx-border-color:transparent;"
+                        style="-fx-background:transparent; -fx-background-color:transparent;
+                               -fx-border-color:transparent;"
                         VBox.vgrow="ALWAYS">
                 <VBox fx:id="entretiensVBox" spacing="12" style="-fx-background-color:transparent;"/>
             </ScrollPane>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="15"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.jobnest.gentretien.controller.ExperienceFormController">
+
+    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+    <Label text="Nom de l'expérience"
+           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
+    <TextField fx:id="nomField" promptText="Ex: Développeur Java Senior"/>
+
+    <Label text="Catégorie"
+           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
+    <ComboBox fx:id="categorieBox" prefWidth="300"/>
+
+    <Label text="Description"
+           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
+    <TextArea fx:id="descriptionField" promptText="Description" prefRowCount="3" wrapText="true"/>
+
+    <Label text="Niveau requis"
+           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
+    <ComboBox fx:id="niveauBox" prefWidth="300"/>
+
+    <HBox spacing="10">
+        <Button text="Parler"
+                onAction="#startVoice"
+                prefHeight="35"
+                style="-fx-background-color:#7c3aed; -fx-text-fill:white;
+                       -fx-background-radius:8px; -fx-cursor:hand;"/>
+
+        <Button text="Enregistrer"
+                onAction="#handleSave"
+                prefHeight="35" prefWidth="180"
+                style="-fx-background-color:#059669; -fx-text-fill:white;
+                       -fx-font-weight:bold; -fx-background-radius:8px; -fx-cursor:hand;"/>
+    </HBox>
+</VBox>

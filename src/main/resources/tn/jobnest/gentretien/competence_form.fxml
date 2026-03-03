@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="15"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.jobnest.gentretien.controller.CompetenceFormController">
+
+    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+    <Label text="Nom"
+           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
+    <TextField fx:id="nomField" promptText="Nom de la compétence"/>
+
+    <Label text="Catégorie"
+           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
+    <ComboBox fx:id="categorieCombo" prefWidth="300"/>
+
+    <Label text="Niveau"
+           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
+    <ComboBox fx:id="niveauCombo" prefWidth="300"/>
+
+    <Label text="Description"
+           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
+    <TextArea fx:id="descriptionField" promptText="Description" prefRowCount="3" wrapText="true"/>
+
+    <Label text="QR Code Google Authenticator"
+           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
+    <ImageView fx:id="qrImage" fitWidth="180" fitHeight="180" preserveRatio="true"/>
+
+    <Label text="Code Google Authenticator (6 chiffres)"
+           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
+    <TextField fx:id="otpField" promptText="Code à 6 chiffres"/>
+
+    <Button fx:id="btnSave"
+            text="Enregistrer"
+            onAction="#save"
+            prefWidth="200" prefHeight="38"
+            style="-fx-background-color:#1e3a8a; -fx-text-fill:white;
+                   -fx-font-weight:bold; -fx-background-radius:8px; -fx-cursor:hand;"/>
+</VBox>

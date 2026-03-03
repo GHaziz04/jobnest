@@ -1,7 +1,7 @@
 package tn.jobnest.gentretien.service;
 
 import tn.jobnest.gentretien.utils.SkillExtractor;
-import tn.jobnest.gentretien.utils.MyDatabase;  // ← importe la bonne classe
+import tn.jobnest.gentretien.utils.MyDatabase;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,29 +18,25 @@ public class AutoSkillService {
             return;
         }
 
-        // Changement unique ici : on utilise MyDatabase au lieu de DatabaseConfig
-        try (Connection cnx = MyDatabase.getInstance().getConn()) {
+        // ✅ On récupère la connexion via MyDatabase (singleton)
+        Connection cnx = MyDatabase.getInstance().getConn();
 
-            for (String skill : extractedSkills) {
+        for (String skill : extractedSkills) {
 
-                if (skill == null || skill.trim().isEmpty()) {
-                    continue;
-                }
+            if (skill == null || skill.trim().isEmpty()) continue;
 
-                skill = skill.trim();
+            skill = skill.trim();
 
-                // ✅ CHECK IF SKILL EXISTS (correct column name)
+            try {
                 String checkQuery = "SELECT id_competence FROM competence WHERE LOWER(nom) = LOWER(?)";
 
                 try (PreparedStatement checkPs = cnx.prepareStatement(checkQuery)) {
-
                     checkPs.setString(1, skill);
                     ResultSet rs = checkPs.executeQuery();
 
-                    // ❌ If skill does NOT exist → insert it
                     if (!rs.next()) {
-
-                        String insert = "INSERT INTO competence(nom, categorie, niveau_requis) VALUES(?, 'technique', 'debutant')";
+                        String insert = "INSERT INTO competence(nom, categorie, niveau_requis) " +
+                                "VALUES(?, 'technique', 'debutant')";
 
                         try (PreparedStatement insertPs = cnx.prepareStatement(insert)) {
                             insertPs.setString(1, skill);
@@ -50,10 +46,10 @@ public class AutoSkillService {
                         System.out.println("Nouvelle compétence ajoutée: " + skill);
                     }
                 }
-            }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

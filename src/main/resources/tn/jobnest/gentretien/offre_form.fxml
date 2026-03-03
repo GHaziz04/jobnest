@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane fitToWidth="true"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.jobnest.gentretien.controller.OffreFormController">
+
+    <content>
+        <VBox spacing="18" alignment="TOP_LEFT" fillWidth="true">
+
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- HEADER -->
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Créer une Nouvelle Offre"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e3a8a;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="✕" onAction="#closePopup"
+                        style="-fx-background-color: transparent; -fx-font-size: 16px; -fx-cursor: hand;"/>
+            </HBox>
+
+            <!-- TITRE -->
+            <VBox spacing="6">
+                <Label text="Titre du Poste"
+                       style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                <TextField fx:id="titreField" promptText="Ex: Développeur Full Stack"/>
+            </VBox>
+
+            <!-- ENTREPRISE -->
+            <VBox spacing="6">
+                <Label text="Entreprise"
+                       style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                <TextField fx:id="entrepriseField" promptText="Nom de l'entreprise"/>
+            </VBox>
+
+            <!-- CONTRAT -->
+            <VBox spacing="6">
+                <Label text="Type de Contrat"
+                       style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                <ComboBox fx:id="contratBox" prefWidth="250"/>
+            </VBox>
+
+            <!-- SALAIRE -->
+            <VBox spacing="6">
+                <Label text="Salaire (DT)"
+                       style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                <TextField fx:id="salaireField" promptText="Ex: 1500"/>
+            </VBox>
+
+            <!-- DESCRIPTION -->
+            <VBox spacing="6">
+                <Label text="Description"
+                       style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                <TextArea fx:id="descriptionField"
+                          prefRowCount="4"
+                          wrapText="true"
+                          promptText="Description du poste..."/>
+            </VBox>
+
+            <!-- AI BUTTON -->
+            <Button text="✨ Suggest Skills (IA)"
+                    onAction="#suggestSkillsAI"
+                    prefHeight="38"
+                    style="-fx-background-color: #7c3aed; -fx-text-fill: white;
+                           -fx-font-weight: bold; -fx-background-radius: 10px;
+                           -fx-cursor: hand; -fx-padding: 8 18 8 18;"/>
+
+            <!-- COMPETENCES -->
+            <VBox spacing="6">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Compétences requises"
+                           style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="+ Ajouter Compétence"
+                            onAction="#handleAddCompetence"
+                            style="-fx-background-color: #1e3a8a; -fx-text-fill: white;
+                                   -fx-background-radius: 8px; -fx-cursor: hand;
+                                   -fx-padding: 6 12 6 12;"/>
+                </HBox>
+                <ListView fx:id="competencesList" prefHeight="140"/>
+            </VBox>
+
+            <!-- EXPERIENCES -->
+            <VBox spacing="6">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Expériences requises"
+                           style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="+ Ajouter Expérience"
+                            onAction="#handleAddExperience"
+                            style="-fx-background-color: #1e3a8a; -fx-text-fill: white;
+                                   -fx-background-radius: 8px; -fx-cursor: hand;
+                                   -fx-padding: 6 12 6 12;"/>
+                </HBox>
+                <ListView fx:id="experiencesList" prefHeight="120"/>
+            </VBox>
+
+            <!-- PUBLISH BUTTON -->
+            <Button text="Publier l'Offre"
+                    onAction="#ajouter"
+                    prefHeight="40"
+                    prefWidth="220"
+                    style="-fx-background-color: #059669; -fx-text-fill: white;
+                           -fx-font-weight: bold; -fx-background-radius: 10px;
+                           -fx-cursor: hand;"/>
+
+        </VBox>
+    </content>
+</ScrollPane>
