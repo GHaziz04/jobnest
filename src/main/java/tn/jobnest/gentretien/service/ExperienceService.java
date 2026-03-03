@@ -7,19 +7,25 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ✅ FIX CRITIQUE :
+ * AVANT (bug) : private final Connection cnx = MyDatabase.getInstance().getConn();
+ *   → cnx pointe vers une connexion MORTE après timeout MariaDB.
+ *
+ * APRÈS (corrigé) : chaque méthode appelle getConn() au moment de son exécution.
+ *   → utilise toujours la connexion VIVANTE du singleton.
+ */
 public class ExperienceService {
 
-    private final Connection cnx;
-
-    public ExperienceService() {
-        cnx = MyDatabase.getInstance().getConn();
+    // ✅ Méthode privée — appelle le singleton à chaque fois
+    private Connection getConn() {
+        return MyDatabase.getInstance().getConn();
     }
 
     public List<Experience> getAll() {
         List<Experience> list = new ArrayList<>();
-        String sql = "SELECT * FROM experience";
-        try (Statement st = cnx.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+        try (Statement st = getConn().createStatement();
+             ResultSet rs = st.executeQuery("SELECT * FROM experience")) {
             while (rs.next()) {
                 list.add(new Experience(
                         rs.getInt("id_experience"),
@@ -36,8 +42,8 @@ public class ExperienceService {
     }
 
     public void addExperience(Experience e) {
-        String sql = "INSERT INTO experience (nom, categorie, description, niveau_requis) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        String sql = "INSERT INTO experience (nom, categorie, description, niveau_requis) VALUES (?,?,?,?)";
+        try (PreparedStatement ps = getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, e.getNom());
             ps.setString(2, e.getCategorie());
             ps.setString(3, e.getDescription());
@@ -51,8 +57,8 @@ public class ExperienceService {
     }
 
     public void supprimer(int id) {
-        String sql = "DELETE FROM experience WHERE id_experience=?";
-        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+        try (PreparedStatement ps = getConn().prepareStatement(
+                "DELETE FROM experience WHERE id_experience=?")) {
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -62,7 +68,7 @@ public class ExperienceService {
 
     public void modifier(Experience e) {
         String sql = "UPDATE experience SET nom=?, categorie=?, description=?, niveau_requis=? WHERE id_experience=?";
-        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ps.setString(1, e.getNom());
             ps.setString(2, e.getCategorie());
             ps.setString(3, e.getDescription());

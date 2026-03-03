@@ -7,109 +7,196 @@
 <ScrollPane fitToWidth="true"
             xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="tn.jobnest.gentretien.controller.OffreFormController">
+            fx:controller="tn.jobnest.gentretien.controller.OffreFormController"
+            style="-fx-background: #F5F7FB; -fx-background-color: #F5F7FB; -fx-border-color: transparent;"
+            prefWidth="700" prefHeight="800">
 
     <content>
-        <VBox spacing="18" alignment="TOP_LEFT" fillWidth="true">
+        <VBox spacing="0"
+              style="-fx-background-color: #F5F7FB;"
+              fillWidth="true">
 
-            <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
-            </padding>
-
-            <!-- HEADER -->
-            <HBox alignment="CENTER_LEFT">
-                <Label text="Créer une Nouvelle Offre"
-                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e3a8a;"/>
+            <!-- ══════════════════════════════ HEADER ══════════════════════════════ -->
+            <HBox alignment="CENTER_LEFT"
+                  style="-fx-background-color: #1E3A5F;
+                         -fx-padding: 20 24 20 24;">
+                <Label text="💼  Créer une Nouvelle Offre"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button text="✕" onAction="#closePopup"
-                        style="-fx-background-color: transparent; -fx-font-size: 16px; -fx-cursor: hand;"/>
+                        style="-fx-background-color: rgba(255,255,255,0.15);
+                               -fx-text-fill: white; -fx-font-size: 15px;
+                               -fx-background-radius: 8; -fx-cursor: hand;
+                               -fx-padding: 4 10 4 10;"/>
             </HBox>
 
-            <!-- TITRE -->
-            <VBox spacing="6">
-                <Label text="Titre du Poste"
-                       style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
-                <TextField fx:id="titreField" promptText="Ex: Développeur Full Stack"/>
-            </VBox>
+            <!-- ══════════════════════════════ BODY ══════════════════════════════ -->
+            <VBox spacing="16"
+                  style="-fx-padding: 24 28 24 28; -fx-background-color: #F5F7FB;">
 
-            <!-- ENTREPRISE -->
-            <VBox spacing="6">
-                <Label text="Entreprise"
-                       style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
-                <TextField fx:id="entrepriseField" promptText="Nom de l'entreprise"/>
-            </VBox>
-
-            <!-- CONTRAT -->
-            <VBox spacing="6">
-                <Label text="Type de Contrat"
-                       style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
-                <ComboBox fx:id="contratBox" prefWidth="250"/>
-            </VBox>
-
-            <!-- SALAIRE -->
-            <VBox spacing="6">
-                <Label text="Salaire (DT)"
-                       style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
-                <TextField fx:id="salaireField" promptText="Ex: 1500"/>
-            </VBox>
-
-            <!-- DESCRIPTION -->
-            <VBox spacing="6">
-                <Label text="Description"
-                       style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
-                <TextArea fx:id="descriptionField"
-                          prefRowCount="4"
-                          wrapText="true"
-                          promptText="Description du poste..."/>
-            </VBox>
-
-            <!-- AI BUTTON -->
-            <Button text="✨ Suggest Skills (IA)"
-                    onAction="#suggestSkillsAI"
-                    prefHeight="38"
-                    style="-fx-background-color: #7c3aed; -fx-text-fill: white;
-                           -fx-font-weight: bold; -fx-background-radius: 10px;
-                           -fx-cursor: hand; -fx-padding: 8 18 8 18;"/>
-
-            <!-- COMPETENCES -->
-            <VBox spacing="6">
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label text="Compétences requises"
-                           style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Button text="+ Ajouter Compétence"
-                            onAction="#handleAddCompetence"
-                            style="-fx-background-color: #1e3a8a; -fx-text-fill: white;
-                                   -fx-background-radius: 8px; -fx-cursor: hand;
-                                   -fx-padding: 6 12 6 12;"/>
+                <!-- ── Ligne 1 : Titre + Entreprise ── -->
+                <HBox spacing="16">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Titre du Poste *"
+                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                        <TextField fx:id="titreField"
+                                   promptText="Ex: Développeur Full Stack Java"
+                                   style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                          -fx-border-width:1.5; -fx-border-radius:9;
+                                          -fx-background-radius:9; -fx-padding:9 12 9 12;
+                                          -fx-font-size:13px;"/>
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Entreprise *"
+                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                        <TextField fx:id="entrepriseField"
+                                   promptText="Nom de l'entreprise"
+                                   style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                          -fx-border-width:1.5; -fx-border-radius:9;
+                                          -fx-background-radius:9; -fx-padding:9 12 9 12;
+                                          -fx-font-size:13px;"/>
+                    </VBox>
                 </HBox>
-                <ListView fx:id="competencesList" prefHeight="140"/>
-            </VBox>
 
-            <!-- EXPERIENCES -->
-            <VBox spacing="6">
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label text="Expériences requises"
-                           style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Button text="+ Ajouter Expérience"
-                            onAction="#handleAddExperience"
-                            style="-fx-background-color: #1e3a8a; -fx-text-fill: white;
-                                   -fx-background-radius: 8px; -fx-cursor: hand;
-                                   -fx-padding: 6 12 6 12;"/>
+                <!-- ── Ligne 2 : Contrat + Salaire ── -->
+                <HBox spacing="16">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Type de Contrat *"
+                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                        <ComboBox fx:id="contratBox"
+                                  promptText="Choisir..."
+                                  maxWidth="Infinity"
+                                  style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                         -fx-border-width:1.5; -fx-border-radius:9;
+                                         -fx-background-radius:9; -fx-font-size:13px;
+                                         -fx-padding:4 10 4 10;"/>
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Salaire (DT) *"
+                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                        <TextField fx:id="salaireField"
+                                   promptText="Ex: 1500"
+                                   style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                          -fx-border-width:1.5; -fx-border-radius:9;
+                                          -fx-background-radius:9; -fx-padding:9 12 9 12;
+                                          -fx-font-size:13px;"/>
+                    </VBox>
                 </HBox>
-                <ListView fx:id="experiencesList" prefHeight="120"/>
+
+                <!-- ── Description ── -->
+                <VBox spacing="6">
+                    <Label text="Description du Poste *"
+                           style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                    <TextArea fx:id="descriptionField"
+                              prefRowCount="5"
+                              wrapText="true"
+                              promptText="Décrivez le poste, les responsabilités, le profil recherché..."
+                              style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                     -fx-border-width:1.5; -fx-border-radius:9;
+                                     -fx-background-radius:9; -fx-font-size:13px;
+                                     -fx-padding:9 12 9 12;"/>
+                </VBox>
+
+                <!-- ── Bouton IA ── -->
+                <HBox>
+                    <Button text="✨  Suggest Skills (IA)"
+                            onAction="#suggestSkillsAI"
+                            prefHeight="40"
+                            style="-fx-background-color: #7C3AED;
+                                   -fx-text-fill: white;
+                                   -fx-font-weight: bold;
+                                   -fx-font-size: 13px;
+                                   -fx-background-radius: 10;
+                                   -fx-cursor: hand;
+                                   -fx-padding: 0 20 0 20;
+                                   -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.35), 10, 0, 0, 3);"/>
+                </HBox>
+
+                <!-- ── Séparateur ── -->
+                <Separator style="-fx-background-color:#E2E8F0;"/>
+
+                <!-- ── Compétences ── -->
+                <VBox spacing="8"
+                      style="-fx-background-color:white; -fx-padding:16;
+                             -fx-background-radius:12;
+                             -fx-border-color:#E8EFF8; -fx-border-width:1;
+                             -fx-border-radius:12;">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="🔧  Compétences requises"
+                               style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#1E3A5F;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="＋  Ajouter Compétence"
+                                onAction="#handleAddCompetence"
+                                prefHeight="34"
+                                style="-fx-background-color:#2563EB; -fx-text-fill:white;
+                                       -fx-font-weight:bold; -fx-font-size:12px;
+                                       -fx-background-radius:8; -fx-cursor:hand;
+                                       -fx-padding:0 14 0 14;"/>
+                    </HBox>
+                    <ListView fx:id="competencesList"
+                              prefHeight="150"
+                              style="-fx-background-color:#F8FAFC;
+                                     -fx-border-color:#E2E8F0;
+                                     -fx-border-width:1;
+                                     -fx-border-radius:8;
+                                     -fx-background-radius:8;"/>
+                </VBox>
+
+                <!-- ── Expériences ── -->
+                <VBox spacing="8"
+                      style="-fx-background-color:white; -fx-padding:16;
+                             -fx-background-radius:12;
+                             -fx-border-color:#E8EFF8; -fx-border-width:1;
+                             -fx-border-radius:12;">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="📋  Expériences requises"
+                               style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#1E3A5F;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="＋  Ajouter Expérience"
+                                onAction="#handleAddExperience"
+                                prefHeight="34"
+                                style="-fx-background-color:#059669; -fx-text-fill:white;
+                                       -fx-font-weight:bold; -fx-font-size:12px;
+                                       -fx-background-radius:8; -fx-cursor:hand;
+                                       -fx-padding:0 14 0 14;"/>
+                    </HBox>
+                    <ListView fx:id="experiencesList"
+                              prefHeight="130"
+                              style="-fx-background-color:#F8FAFC;
+                                     -fx-border-color:#E2E8F0;
+                                     -fx-border-width:1;
+                                     -fx-border-radius:8;
+                                     -fx-background-radius:8;"/>
+                </VBox>
+
+                <!-- ── Séparateur ── -->
+                <Separator style="-fx-background-color:#E2E8F0;"/>
+
+                <!-- ── Bouton Publier ── -->
+                <HBox alignment="CENTER_RIGHT" spacing="12">
+                    <Button text="Annuler" onAction="#closePopup"
+                            prefHeight="42" prefWidth="130"
+                            style="-fx-background-color:white;
+                                   -fx-text-fill:#64748B;
+                                   -fx-border-color:#E2E8F0;
+                                   -fx-border-width:1.5;
+                                   -fx-border-radius:10;
+                                   -fx-background-radius:10;
+                                   -fx-font-weight:bold;
+                                   -fx-cursor:hand;"/>
+                    <Button text="🚀  Publier l'Offre"
+                            onAction="#ajouter"
+                            prefHeight="42" prefWidth="200"
+                            style="-fx-background-color: #059669;
+                                   -fx-text-fill: white;
+                                   -fx-font-weight: bold;
+                                   -fx-font-size: 14px;
+                                   -fx-background-radius: 10;
+                                   -fx-cursor: hand;
+                                   -fx-effect: dropshadow(gaussian, rgba(5,150,105,0.4), 10, 0, 0, 3);"/>
+                </HBox>
+
             </VBox>
-
-            <!-- PUBLISH BUTTON -->
-            <Button text="Publier l'Offre"
-                    onAction="#ajouter"
-                    prefHeight="40"
-                    prefWidth="220"
-                    style="-fx-background-color: #059669; -fx-text-fill: white;
-                           -fx-font-weight: bold; -fx-background-radius: 10px;
-                           -fx-cursor: hand;"/>
-
         </VBox>
     </content>
 </ScrollPane>

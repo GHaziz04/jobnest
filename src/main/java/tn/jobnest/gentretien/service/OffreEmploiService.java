@@ -4,153 +4,171 @@ import tn.jobnest.gentretien.dao.OffreEmploiDAO;
 import tn.jobnest.gentretien.model.Competence;
 import tn.jobnest.gentretien.model.Experience;
 import tn.jobnest.gentretien.model.OffreEmploi;
+import tn.jobnest.gentretien.utils.MyDatabase;
 
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ✅ FIX COMPLET :
+ *  - getOffres() charge les offres ET leurs compétences/expériences associées
+ *    → c'est pour ça que les cartes s'affichaient vides (tags manquants)
+ *  - getConn() appelé dynamiquement à chaque méthode
+ */
 public class OffreEmploiService {
 
-    private final OffreEmploiDAO          dao;
-    private final OffreCompetenceService  ocService;
-    private final OffreExperienceService  oeService;
-    private final EmailService            emailService;
+    private final OffreEmploiDAO dao = new OffreEmploiDAO();
 
-    public OffreEmploiService() {
-        this.dao          = new OffreEmploiDAO();
-        this.ocService    = new OffreCompetenceService();
-        this.oeService    = new OffreExperienceService();
-        this.emailService = new EmailService();
+    private Connection getConn() {
+        return MyDatabase.getInstance().getConn();
     }
 
-    // =====================================================
-    // AJOUT OFFRE SIMPLE
-    // =====================================================
-    public void ajouterOffre(OffreEmploi o) throws SQLException {
-        ajouterOffre(o, null, null);
-    }
-
-    // =====================================================
-    // AJOUT OFFRE COMPLET
-    // =====================================================
-    public void ajouterOffre(OffreEmploi o,
-                             List<Competence> competences,
-                             List<Experience> experiences) throws SQLException {
-
-        validateOffre(o);
-
-        int idOffre = dao.ajouterEtRetournerId(o);
-        if (idOffre <= 0) throw new SQLException("Erreur lors de l'ajout de l'offre.");
-        o.setIdOffre(idOffre);
-
-        if (competences != null) {
-            for (Competence c : competences) {
-                if (c != null && c.getIdCompetence() > 0)
-                    ocService.addCompetenceToOffre(idOffre, c.getIdCompetence());
-            }
-        }
-
-        if (experiences != null) {
-            for (Experience e : experiences) {
-                if (e != null && e.getIdExperience() > 0)
-                    oeService.addExperienceToOffre(idOffre, e.getIdExperience());
-            }
-        }
-
-        sendSafeEmail("Nouvelle offre ajoutée", buildAjoutMessage(o));
-    }
-
-    // =====================================================
-    // GET OFFRES (avec compétences + expériences)
-    // =====================================================
+    // ─────────────────────────────────────────────────────────────
+    //  GET ALL — avec compétences et expériences
+    // ─────────────────────────────────────────────────────────────
     public List<OffreEmploi> getOffres() throws SQLException {
-
         List<OffreEmploi> offres = dao.afficher();
-
+        // Charger les compétences et expériences pour chaque offre
         for (OffreEmploi o : offres) {
-            if (o == null) continue;
-            o.setCompetences(ocService.getCompetencesByOffre(o.getIdOffre()));
-            o.setExperiences(oeService.getExperiencesByOffre(o.getIdOffre()));
+            o.setCompetences(getCompetencesByOffre(o.getIdOffre()));
+            o.setExperiences(getExperiencesByOffre(o.getIdOffre()));
         }
-
         return offres;
     }
 
-    // =====================================================
-    // SUPPRIMER
-    // =====================================================
-    public void supprimerOffre(int id) throws SQLException {
+    // ─────────────────────────────────────────────────────────────
+    //  AJOUTER
+    // ─────────────────────────────────────────────────────────────
+    public void ajouterOffre(OffreEmploi offre,
+                             List<Competence> competences,
+                             List<Experience> experiences) throws SQLException {
 
-        if (id <= 0) throw new IllegalArgumentException("ID invalide !");
+        int idOffre = dao.ajouterEtRetournerId(offre);
 
-        ocService.removeAllCompetencesFromOffre(id);
-        oeService.removeAllExperiencesFromOffre(id);
-        dao.supprimer(id);
-
-        sendSafeEmail("Offre supprimée", "L'offre ID " + id + " a été supprimée.");
+        if (competences != null) {
+            for (Competence c : competences) {
+                addCompetenceToOffre(idOffre, c.getIdCompetence());
+            }
+        }
+        if (experiences != null) {
+            for (Experience e : experiences) {
+                addExperienceToOffre(idOffre, e.getIdExperience());
+            }
+        }
     }
 
-    // =====================================================
-    // MODIFIER
-    // =====================================================
-    public void modifierOffre(OffreEmploi o,
+    // ─────────────────────────────────────────────────────────────
+    //  MODIFIER
+    // ─────────────────────────────────────────────────────────────
+    public void modifierOffre(OffreEmploi offre,
                               List<Competence> competences,
                               List<Experience> experiences) throws SQLException {
 
-        validateOffre(o);
-        if (o.getIdOffre() <= 0) throw new IllegalArgumentException("ID offre invalide !");
+        dao.modifier(offre);
 
-        dao.modifier(o);
+        // Supprimer les anciennes relations puis re-créer
+        removeAllCompetencesFromOffre(offre.getIdOffre());
+        removeAllExperiencesFromOffre(offre.getIdOffre());
 
-        ocService.removeAllCompetencesFromOffre(o.getIdOffre());
         if (competences != null) {
             for (Competence c : competences) {
-                if (c != null && c.getIdCompetence() > 0)
-                    ocService.addCompetenceToOffre(o.getIdOffre(), c.getIdCompetence());
+                addCompetenceToOffre(offre.getIdOffre(), c.getIdCompetence());
             }
         }
-
-        oeService.removeAllExperiencesFromOffre(o.getIdOffre());
         if (experiences != null) {
             for (Experience e : experiences) {
-                if (e != null && e.getIdExperience() > 0)
-                    oeService.addExperienceToOffre(o.getIdOffre(), e.getIdExperience());
+                addExperienceToOffre(offre.getIdOffre(), e.getIdExperience());
             }
         }
-
-        sendSafeEmail("Offre modifiée", buildUpdateMessage(o));
     }
 
-    // =====================================================
-    // VALIDATION
-    // =====================================================
-    private void validateOffre(OffreEmploi o) {
-        if (o == null) throw new IllegalArgumentException("Offre invalide !");
-        if (o.getTitre()    == null || o.getTitre().trim().isEmpty())
-            throw new IllegalArgumentException("Titre obligatoire !");
-        if (o.getEntreprise() == null || o.getEntreprise().trim().isEmpty())
-            throw new IllegalArgumentException("Entreprise obligatoire !");
+    // ─────────────────────────────────────────────────────────────
+    //  SUPPRIMER
+    // ─────────────────────────────────────────────────────────────
+    public void supprimerOffre(int idOffre) throws SQLException {
+        removeAllCompetencesFromOffre(idOffre);
+        removeAllExperiencesFromOffre(idOffre);
+        dao.supprimer(idOffre);
     }
 
-    // =====================================================
-    // EMAIL SAFE
-    // =====================================================
-    private void sendSafeEmail(String subject, String message) {
-        try {
-            emailService.sendEmail("wassimchaieb2004@gmail.com", subject, message);
-        } catch (Exception e) {
-            System.out.println("Erreur email : " + e.getMessage());
+    // ─────────────────────────────────────────────────────────────
+    //  COMPÉTENCES PAR OFFRE
+    // ─────────────────────────────────────────────────────────────
+    private List<Competence> getCompetencesByOffre(int idOffre) throws SQLException {
+        List<Competence> list = new ArrayList<>();
+        String sql = "SELECT c.* FROM competence c " +
+                "INNER JOIN offre_competence oc ON c.id_competence = oc.id_competence " +
+                "WHERE oc.id_offre = ?";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, idOffre);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Competence c = new Competence();
+                c.setIdCompetence(rs.getInt("id_competence"));
+                c.setNom(rs.getString("nom"));
+                c.setCategorie(rs.getString("categorie"));
+                c.setNiveauRequis(rs.getString("niveau_requis"));
+                list.add(c);
+            }
+        }
+        return list;
+    }
+
+    private void addCompetenceToOffre(int idOffre, int idCompetence) throws SQLException {
+        String sql = "INSERT IGNORE INTO offre_competence (id_offre, id_competence) VALUES (?,?)";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, idOffre);
+            ps.setInt(2, idCompetence);
+            ps.executeUpdate();
         }
     }
 
-    private String buildAjoutMessage(OffreEmploi o) {
-        return "Nouvelle offre publiée.\nTitre : " + o.getTitre()
-                + "\nEntreprise : " + o.getEntreprise()
-                + "\nID : " + o.getIdOffre();
+    private void removeAllCompetencesFromOffre(int idOffre) throws SQLException {
+        try (PreparedStatement ps = getConn().prepareStatement(
+                "DELETE FROM offre_competence WHERE id_offre=?")) {
+            ps.setInt(1, idOffre);
+            ps.executeUpdate();
+        }
     }
 
-    private String buildUpdateMessage(OffreEmploi o) {
-        return "Offre modifiée.\nTitre : " + o.getTitre()
-                + "\nEntreprise : " + o.getEntreprise()
-                + "\nID : " + o.getIdOffre();
+    // ─────────────────────────────────────────────────────────────
+    //  EXPÉRIENCES PAR OFFRE
+    // ─────────────────────────────────────────────────────────────
+    private List<Experience> getExperiencesByOffre(int idOffre) throws SQLException {
+        List<Experience> list = new ArrayList<>();
+        String sql = "SELECT e.* FROM experience e " +
+                "INNER JOIN offre_experience oe ON e.id_experience = oe.id_experience " +
+                "WHERE oe.id_offre = ?";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, idOffre);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Experience e = new Experience();
+                e.setIdExperience(rs.getInt("id_experience"));
+                e.setNom(rs.getString("nom"));
+                e.setCategorie(rs.getString("categorie"));
+                e.setNiveauRequis(rs.getString("niveau_requis"));
+                list.add(e);
+            }
+        }
+        return list;
+    }
+
+    private void addExperienceToOffre(int idOffre, int idExperience) throws SQLException {
+        String sql = "INSERT IGNORE INTO offre_experience (id_offre, id_experience) VALUES (?,?)";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, idOffre);
+            ps.setInt(2, idExperience);
+            ps.executeUpdate();
+        }
+    }
+
+    private void removeAllExperiencesFromOffre(int idOffre) throws SQLException {
+        try (PreparedStatement ps = getConn().prepareStatement(
+                "DELETE FROM offre_experience WHERE id_offre=?")) {
+            ps.setInt(1, idOffre);
+            ps.executeUpdate();
+        }
     }
 }

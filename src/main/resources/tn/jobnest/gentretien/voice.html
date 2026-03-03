@@ -28,7 +28,7 @@
             console.log("Recognized:", text);
 
             // 🔥 THIS IS THE MOST IMPORTANT LINE
-            fetch("http://localhost:5555/voice", {
+            fetch("http://localhost:127.0.0.1/voice", {
                 method: "POST",
                 headers: { "Content-Type": "text/plain" },
                 body: text

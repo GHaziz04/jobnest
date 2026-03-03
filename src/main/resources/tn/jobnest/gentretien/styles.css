@@ -1,5 +1,5 @@
 /* ================================================================
-   JOBNEST — DESIGN SYSTEM UNIFIÉ v3
+   JOBNEST — DESIGN SYSTEM UNIFIÉ v4
    #1E3A5F  Bleu marine (sidebar, titres)
    #2563EB  Bleu primaire (boutons, actif, accents)
    #F97316  Orange (CTA, logo accent)
@@ -20,19 +20,16 @@
     -fx-effect: dropshadow(gaussian, rgba(15,30,55,0.55), 18, 0, 5, 0);
 }
 
-/* Logo texte */
 .logo {
     -fx-font-size: 21px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
 }
 
-/* Conteneur menu */
 .menu-container {
     -fx-padding: 8 0 8 0;
 }
 
-/* Bouton menu de base */
 .menu-item {
     -fx-background-color: transparent;
     -fx-text-fill: #8BAECF;
@@ -48,13 +45,11 @@
     -fx-border-width: 0;
 }
 
-/* Hover */
 .menu-item:hover {
     -fx-background-color: rgba(37,99,235,0.18);
     -fx-text-fill: #DBEAFE;
 }
 
-/* Actif — page courante */
 .menu-item-active {
     -fx-background-color: #2563EB;
     -fx-text-fill: white;
@@ -66,14 +61,12 @@
     -fx-background-color: #1D4ED8;
 }
 
-/* Séparateur footer */
 .sidebar-footer {
     -fx-border-color: rgba(139,174,207,0.18);
     -fx-border-width: 1 0 0 0;
     -fx-padding: 12 0 0 0;
 }
 
-/* Bouton recruteur (carte profil en bas de sidebar) */
 .sidebar-profile-card {
     -fx-background-color: rgba(37,99,235,0.15);
     -fx-background-radius: 12;
@@ -84,7 +77,7 @@
 }
 
 /* ================================================================
-   TITRES & HEADERS PAGE
+   TITRES & HEADERS
    ================================================================ */
 .page-title {
     -fx-font-size: 28px;
@@ -105,7 +98,7 @@
 }
 
 /* ================================================================
-   STAT CARDS
+   STAT CARDS (Entretiens)
    ================================================================ */
 .stat-card {
     -fx-background-color: white;
@@ -131,7 +124,104 @@
 }
 
 /* ================================================================
-   ENTRETIEN / CANDIDATURE CARDS
+   JOB CARDS (Offres d'emploi)
+   ================================================================ */
+.job-card {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 18 20 18 20;
+    -fx-effect: dropshadow(gaussian, rgba(30,58,95,0.09), 14, 0, 0, 4);
+    -fx-border-color: #E8EFF8;
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-cursor: hand;
+}
+
+.job-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.20), 20, 0, 0, 6);
+    -fx-border-color: #BFDBFE;
+}
+
+.job-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E3A5F;
+    -fx-wrap-text: true;
+}
+
+.company-name {
+    -fx-font-size: 13px;
+    -fx-text-fill: #475569;
+}
+
+.score-badge {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #1D4ED8;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 4 10 4 10;
+}
+
+.status-badge {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 3 10 3 10;
+}
+
+.badge-open {
+    -fx-background-color: #DCFCE7;
+    -fx-text-fill: #16A34A;
+}
+
+.badge-closed {
+    -fx-background-color: #FEE2E2;
+    -fx-text-fill: #DC2626;
+}
+
+.competence-tag {
+    -fx-background-color: #DBEAFE;
+    -fx-text-fill: #1E40AF;
+    -fx-font-size: 11px;
+    -fx-background-radius: 12;
+    -fx-padding: 3 8 3 8;
+}
+
+.btn-details {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #1D4ED8;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 6 12 6 12;
+}
+
+.btn-edit {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 6 12 6 12;
+}
+
+.btn-delete {
+    -fx-background-color: #EF4444;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 6 12 6 12;
+}
+
+.card-actions {
+    -fx-spacing: 8;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* ================================================================
+   ENTRETIEN CARDS
    ================================================================ */
 .card {
     -fx-background-color: white;
@@ -178,7 +268,7 @@
 }
 
 /* ================================================================
-   AVATAR (Circle JavaFX)
+   AVATAR
    ================================================================ */
 .avatar {
     -fx-fill: #2563EB;
@@ -256,7 +346,7 @@ TextArea:focused {
 }
 
 /* ================================================================
-   SLIDER (Feedback)
+   SLIDER
    ================================================================ */
 .slider .track {
     -fx-background-color: #DBEAFE;
@@ -289,11 +379,8 @@ CheckBox {
 }
 
 /* ================================================================
-   BUTTONS — Système unifié
-   Gradient JavaFX: linear-gradient(from X% Y% to X% Y%, c1, c2)
+   BUTTONS
    ================================================================ */
-
-/* Modifier / Voir détails — Bleu primaire */
 .button-primary {
     -fx-background-color: #2563EB;
     -fx-text-fill: white;
@@ -310,7 +397,6 @@ CheckBox {
     -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.5), 12, 0, 0, 3);
 }
 
-/* Terminé — Bleu ciel */
 .button-success {
     -fx-background-color: #0EA5E9;
     -fx-text-fill: white;
@@ -326,7 +412,6 @@ CheckBox {
     -fx-background-color: #0284C7;
 }
 
-/* Supprimer — Rouge */
 .button-danger {
     -fx-background-color: #EF4444;
     -fx-text-fill: white;
@@ -342,7 +427,6 @@ CheckBox {
     -fx-background-color: #DC2626;
 }
 
-/* Map — Orange */
 .button-map {
     -fx-background-color: #F97316;
     -fx-text-fill: white;
@@ -358,7 +442,6 @@ CheckBox {
     -fx-background-color: #EA6B00;
 }
 
-/* Visio — Bleu foncé */
 .button-visio {
     -fx-background-color: #1E3A5F;
     -fx-text-fill: white;
@@ -374,7 +457,6 @@ CheckBox {
     -fx-background-color: #162D4A;
 }
 
-/* + Nouvel entretien — Orange dégradé (CTA) */
 .button-add {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 0%, #F97316, #EA6B00);
     -fx-text-fill: white;
@@ -391,7 +473,6 @@ CheckBox {
     -fx-effect: dropshadow(gaussian, rgba(249,115,22,0.55), 14, 0, 0, 4);
 }
 
-/* Enregistrer — Bleu dégradé */
 .button-save {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 0%, #2563EB, #1D4ED8);
     -fx-text-fill: white;
@@ -408,7 +489,7 @@ CheckBox {
 }
 
 /* ================================================================
-   FORMULAIRE
+   FORM
    ================================================================ */
 .form-container {
     -fx-background-color: white;
@@ -459,6 +540,36 @@ CheckBox {
 }
 
 /* ================================================================
+   PAGINATION
+   ================================================================ */
+.pagination .page-information {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 12px;
+}
+
+.pagination .left-arrow-button,
+.pagination .right-arrow-button {
+    -fx-background-color: white;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.pagination .number-button {
+    -fx-background-color: white;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-text-fill: #475569;
+}
+
+.pagination .number-button:selected {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: white;
+    -fx-border-color: #2563EB;
+}
+
+/* ================================================================
    TABLE VIEW
    ================================================================ */
 .table-view {
@@ -486,17 +597,9 @@ CheckBox {
     -fx-border-color: transparent;
 }
 
-.table-row-cell:odd {
-    -fx-background-color: #FAFBFF;
-}
-
-.table-row-cell:even {
-    -fx-background-color: white;
-}
-
-.table-row-cell:hover {
-    -fx-background-color: #EFF6FF;
-}
+.table-row-cell:odd  { -fx-background-color: #FAFBFF; }
+.table-row-cell:even { -fx-background-color: white; }
+.table-row-cell:hover { -fx-background-color: #EFF6FF; }
 
 .table-row-cell:selected {
     -fx-background-color: #DBEAFE;
