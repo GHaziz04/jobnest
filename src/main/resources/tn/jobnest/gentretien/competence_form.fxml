@@ -1,44 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.geometry.Insets?>
 
 <VBox spacing="15"
       xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="tn.jobnest.gentretien.controller.CompetenceFormController">
+      fx:controller="tn.jobnest.gentretien.controller.CompetenceFormController"
+      prefWidth="380">
 
-    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
 
-    <Label text="Nom"
-           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
-    <TextField fx:id="nomField" promptText="Nom de la compétence"/>
+    <!-- HEADER -->
+    <Label text="➕  Nouvelle Compétence"
+           style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#1E3A5F;"/>
 
-    <Label text="Catégorie"
-           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
-    <ComboBox fx:id="categorieCombo" prefWidth="300"/>
+    <Separator/>
 
-    <Label text="Niveau"
-           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
-    <ComboBox fx:id="niveauCombo" prefWidth="300"/>
+    <!-- Nom -->
+    <VBox spacing="5">
+        <Label text="Nom de la compétence *"
+               style="-fx-font-weight:bold; -fx-text-fill:#374151; -fx-font-size:12px;"/>
+        <TextField fx:id="nomField"
+                   promptText="Ex: Java, React, Docker..."
+                   style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                          -fx-border-width:1.5; -fx-border-radius:8;
+                          -fx-background-radius:8; -fx-padding:8 12 8 12;
+                          -fx-font-size:13px;"/>
+    </VBox>
 
-    <Label text="Description"
-           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
-    <TextArea fx:id="descriptionField" promptText="Description" prefRowCount="3" wrapText="true"/>
+    <!-- Catégorie -->
+    <VBox spacing="5">
+        <Label text="Catégorie *"
+               style="-fx-font-weight:bold; -fx-text-fill:#374151; -fx-font-size:12px;"/>
+        <ComboBox fx:id="categorieCombo"
+                  prefWidth="335"
+                  promptText="Choisir une catégorie"
+                  style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                         -fx-border-width:1.5; -fx-border-radius:8;
+                         -fx-background-radius:8; -fx-font-size:13px;
+                         -fx-padding:4 10 4 10;"/>
+    </VBox>
 
-    <Label text="QR Code Google Authenticator"
-           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
-    <ImageView fx:id="qrImage" fitWidth="180" fitHeight="180" preserveRatio="true"/>
+    <!-- Niveau -->
+    <VBox spacing="5">
+        <Label text="Niveau requis *"
+               style="-fx-font-weight:bold; -fx-text-fill:#374151; -fx-font-size:12px;"/>
+        <ComboBox fx:id="niveauCombo"
+                  prefWidth="335"
+                  promptText="Choisir un niveau"
+                  style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                         -fx-border-width:1.5; -fx-border-radius:8;
+                         -fx-background-radius:8; -fx-font-size:13px;
+                         -fx-padding:4 10 4 10;"/>
+    </VBox>
 
-    <Label text="Code Google Authenticator (6 chiffres)"
-           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
-    <TextField fx:id="otpField" promptText="Code à 6 chiffres"/>
+    <!-- Description -->
+    <VBox spacing="5">
+        <Label text="Description *"
+               style="-fx-font-weight:bold; -fx-text-fill:#374151; -fx-font-size:12px;"/>
+        <TextArea fx:id="descriptionField"
+                  promptText="Décrivez cette compétence..."
+                  prefRowCount="4"
+                  wrapText="true"
+                  style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                         -fx-border-width:1.5; -fx-border-radius:8;
+                         -fx-background-radius:8; -fx-font-size:13px;
+                         -fx-padding:8 12 8 12;"/>
+    </VBox>
 
-    <Button fx:id="btnSave"
-            text="Enregistrer"
-            onAction="#save"
-            prefWidth="200" prefHeight="38"
-            style="-fx-background-color:#1e3a8a; -fx-text-fill:white;
-                   -fx-font-weight:bold; -fx-background-radius:8px; -fx-cursor:hand;"/>
+    <Separator/>
+
+    <!-- Bouton Enregistrer -->
+    <HBox alignment="CENTER_RIGHT">
+        <Button fx:id="btnSave"
+                text="Enregistrer"
+                onAction="#save"
+                prefWidth="180" prefHeight="40"
+                style="-fx-background-color:#1E3A5F; -fx-text-fill:white;
+                       -fx-font-weight:bold; -fx-font-size:13px;
+                       -fx-background-radius:10; -fx-cursor:hand;
+                       -fx-effect:dropshadow(gaussian,rgba(30,58,95,0.35),10,0,0,3);"/>
+    </HBox>
+
 </VBox>

@@ -4,6 +4,7 @@ import tn.jobnest.gentretien.model.Competence;
 import tn.jobnest.gentretien.model.Experience;
 import tn.jobnest.gentretien.model.OffreEmploi;
 import tn.jobnest.gentretien.service.OffreEmploiService;
+import tn.jobnest.gentretien.service.OffreAlertService;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
@@ -67,13 +68,30 @@ public class OffreEmploiController {
     }
 
     // ============================
-    //  CHARGEMENT
+    //  CHARGEMENT + ALERTES EMAIL
+    //  ✅ OffreAlertService appelé dans un thread daemon
+    //     → n'affecte pas les performances de l'interface
     // ============================
     private void chargerOffres() {
         try {
             masterData   = FXCollections.observableArrayList(service.getOffres());
             filteredData = new FilteredList<>(masterData, p -> true);
             appliquerFiltres();
+
+            // ✅ Lancement des alertes email dans un thread séparé
+            Thread alertThread = new Thread(() -> {
+                try {
+                    System.out.println("[OffreEmploiController] Lancement vérification alertes...");
+                    new OffreAlertService().verifierEtEnvoyerAlertes();
+                } catch (Exception e) {
+                    System.err.println("[Alertes] Erreur : " + e.getMessage());
+                    e.printStackTrace();
+                }
+            });
+            alertThread.setDaemon(true);
+            alertThread.setName("Offre-Alert-Thread");
+            alertThread.start();
+
         } catch (SQLException e) {
             showAlert("Erreur chargement des offres : " + e.getMessage());
         }
@@ -104,14 +122,11 @@ public class OffreEmploiController {
             tableCountLabel.setText(total + " offre" + (total > 1 ? "s" : ""));
 
         pagination.setPageCount(pageCount);
-        // ✅ FIX AFFICHAGE : setPageFactory peuple cardContainer via Platform.runLater
         pagination.setPageFactory(this::buildPage);
     }
 
     // ============================
     //  PAGE FACTORY
-    //  ✅ FIX : retourne un VBox vide (requis par l'API Pagination)
-    //  Les cartes sont injectées dans le FlowPane FXML via Platform.runLater
     // ============================
     private VBox buildPage(int pageIndex) {
         if (filteredData == null || cardContainer == null) return new VBox();
@@ -136,7 +151,7 @@ public class OffreEmploiController {
             }
         });
 
-        return new VBox(); // requis par Pagination API
+        return new VBox();
     }
 
     // ============================
@@ -176,7 +191,7 @@ public class OffreEmploiController {
                         "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);"
         ));
 
-        // Statut
+        // Statut ouvert/fermé
         boolean ouvert = o.getDateExpiration() != null
                 && o.getDateExpiration().toLocalDate().isAfter(LocalDate.now());
 

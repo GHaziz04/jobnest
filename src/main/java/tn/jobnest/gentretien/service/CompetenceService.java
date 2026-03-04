@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ✅ FIX : getConn() appelé dynamiquement à chaque méthode.
+ * ✅ Version simplifiée : otp_secret retiré de toutes les opérations
+ *    (la colonne reste en DB mais n'est plus utilisée par l'application)
  */
 public class CompetenceService {
 
@@ -26,8 +27,8 @@ public class CompetenceService {
                         rs.getString("nom"),
                         rs.getString("categorie"),
                         rs.getString("description"),
-                        rs.getString("niveau_requis"),
-                        rs.getString("otp_secret")
+                        rs.getString("niveau_requis")
+                        // otp_secret ignoré volontairement
                 ));
             }
         } catch (SQLException e) {
@@ -37,13 +38,12 @@ public class CompetenceService {
     }
 
     public void ajouter(Competence c) {
-        String sql = "INSERT INTO competence (nom, categorie, description, niveau_requis, otp_secret) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO competence (nom, categorie, description, niveau_requis) VALUES (?,?,?,?)";
         try (PreparedStatement ps = getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, c.getNom());
             ps.setString(2, c.getCategorie());
             ps.setString(3, c.getDescription());
             ps.setString(4, c.getNiveauRequis());
-            ps.setString(5, c.getOtpSecret());
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) c.setIdCompetence(rs.getInt(1));
@@ -63,14 +63,13 @@ public class CompetenceService {
     }
 
     public void modifier(Competence c) {
-        String sql = "UPDATE competence SET nom=?, categorie=?, description=?, niveau_requis=?, otp_secret=? WHERE id_competence=?";
+        String sql = "UPDATE competence SET nom=?, categorie=?, description=?, niveau_requis=? WHERE id_competence=?";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ps.setString(1, c.getNom());
             ps.setString(2, c.getCategorie());
             ps.setString(3, c.getDescription());
             ps.setString(4, c.getNiveauRequis());
-            ps.setString(5, c.getOtpSecret());
-            ps.setInt(6, c.getIdCompetence());
+            ps.setInt(5, c.getIdCompetence());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
