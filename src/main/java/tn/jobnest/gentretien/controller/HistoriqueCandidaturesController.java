@@ -373,14 +373,15 @@ public class HistoriqueCandidaturesController {
     private void ouvrirProfil(ActionEvent event) {
         naviguer(event, "/tn/jobnest/gentretien/profil-recruteur.fxml", "JobNest - Mon Profil");
     }
-
-    // ────────────────────────────────────────────────────────────────
-    //  ✅ NAVIGATION VERS OFFRES D'EMPLOI (SIDEBAR)
-    // ────────────────────────────────────────────────────────────────
     @FXML
     private void ouvrirOffresEmploi(ActionEvent event) {
         naviguer(event, "/tn/jobnest/gentretien/offre-emploi_view.fxml",
                 "JobNest - Offres d'Emploi");
+    }
+    @FXML
+    private void ouvrirMatching(ActionEvent event) {
+        naviguer(event, "/tn/jobnest/gentretien/matching-view.fxml",
+                "JobNest - Matching");
     }
 
     private void naviguer(ActionEvent event, String fxml, String titre) {

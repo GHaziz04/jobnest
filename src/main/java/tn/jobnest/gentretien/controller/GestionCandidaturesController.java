@@ -33,7 +33,6 @@ public class GestionCandidaturesController {
     private final CandidatureService service = new CandidatureService();
     private final int CURRENT_RECRUTEUR_ID = 1;
 
-    // ✅ CHANGEMENT : renommé pour refléter qu'on affiche les "en_revision"
     private List<CandidatureDTO> candidaturesEnRevision;
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -49,7 +48,6 @@ public class GestionCandidaturesController {
     private void chargerDonnees() {
         List<CandidatureDTO> toutes = service.getCandidaturesPourRecruteur(CURRENT_RECRUTEUR_ID);
 
-        // ✅ CHANGEMENT : on affiche uniquement les candidatures "en_revision"
         candidaturesEnRevision = toutes.stream()
                 .filter(c -> "en_revision".equalsIgnoreCase(c.getStatut()))
                 .collect(Collectors.toList());
@@ -183,7 +181,6 @@ public class GestionCandidaturesController {
         VBox badgesBlock = new VBox(6);
         badgesBlock.setAlignment(Pos.CENTER_RIGHT);
 
-        // ✅ CHANGEMENT : badge "EN RÉVISION" au lieu de "EN ATTENTE"
         Label lblStatut = new Label("🔍  EN RÉVISION");
         lblStatut.setStyle(
                 "-fx-background-color: #FEF3C7; -fx-text-fill: #D97706;"
@@ -353,6 +350,12 @@ public class GestionCandidaturesController {
     private void ouvrirOffresEmploi(ActionEvent event) {
         naviguer(event, "/tn/jobnest/gentretien/offre-emploi_view.fxml",
                 "JobNest - Offres d'Emploi");
+    }
+
+    @FXML
+    private void ouvrirMatching(ActionEvent event) {
+        naviguer(event, "/tn/jobnest/gentretien/matching-view.fxml",
+                "JobNest - Matching");
     }
 
     private void naviguer(ActionEvent event, String fxml, String titre) {

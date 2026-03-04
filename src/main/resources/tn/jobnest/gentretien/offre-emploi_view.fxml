@@ -32,35 +32,31 @@
                         <Label text="Offres d'emploi" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
                     </HBox></graphic>
                 </Button>
-                <!-- ✅ NAVIGATION VERS CANDIDATURES -->
                 <Button styleClass="menu-item" onAction="#ouvrirCandidature">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📄" style="-fx-font-size:18px;"/>
                         <Label text="Candidatures" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
                     </HBox></graphic>
                 </Button>
-                <!-- ✅ NAVIGATION VERS ENTRETIENS -->
                 <Button styleClass="menu-item" onAction="#ouvrirEntretiens">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📅" style="-fx-font-size:18px;"/>
                         <Label text="Entretiens" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
                     </HBox></graphic>
                 </Button>
-                <!-- ✅ NAVIGATION VERS FEEDBACKS -->
                 <Button styleClass="menu-item" onAction="#ouvrirFeedbacks">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📊" style="-fx-font-size:18px;"/>
                         <Label text="Feedbacks" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
                     </HBox></graphic>
                 </Button>
-                <!-- ✅ NAVIGATION VERS HISTORIQUE -->
                 <Button styleClass="menu-item" onAction="#ouvrirHistorique">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="🕐" style="-fx-font-size:18px;"/>
                         <Label text="Historique" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
                     </HBox></graphic>
                 </Button>
-                <Button styleClass="menu-item">
+                <Button styleClass="menu-item" onAction="#ouvrirMatching">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="🎯" style="-fx-font-size:18px;"/>
                         <Label text="Matching" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
@@ -68,7 +64,6 @@
                 </Button>
             </VBox>
             <VBox styleClass="sidebar-footer" spacing="10">
-                <!-- ✅ NAVIGATION VERS PROFIL -->
                 <Button styleClass="menu-item" onAction="#ouvrirProfil">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="👤" style="-fx-font-size:18px;"/>

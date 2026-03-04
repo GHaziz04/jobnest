@@ -50,7 +50,7 @@
                         <Label text="Feedbacks" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
-                <Button styleClass="menu-item">
+                <Button styleClass="menu-item" onAction="#ouvrirMatching">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="🎯" style="-fx-font-size: 18px;"/>
                         <Label text="Matching" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
@@ -77,7 +77,6 @@
     <center>
         <VBox spacing="20" style="-fx-background-color: #F5F7FB;">
             <padding><Insets top="25" right="35" bottom="25" left="35"/></padding>
-            <!-- ✅ CHANGEMENT : titre mis à jour -->
             <Label text="Tableau des Candidatures" styleClass="page-title"/>
             <Label text="Candidatures en révision — à valider ou rejeter" styleClass="page-subtitle"/>
             <HBox spacing="12" alignment="CENTER_LEFT">
@@ -98,7 +97,6 @@
             <HBox spacing="20" alignment="CENTER_LEFT">
                 <VBox styleClass="stat-card">
                     <Label fx:id="totalCandidaturesLabel" text="0" styleClass="stat-number"/>
-                    <!-- ✅ CHANGEMENT : "En révision" au lieu de "En attente" -->
                     <Label text="En révision" styleClass="stat-label"/>
                 </VBox>
                 <VBox styleClass="stat-card">
@@ -109,11 +107,9 @@
                 <VBox styleClass="stat-card">
                     <Label fx:id="enAttenteLabel" text="0"
                            style="-fx-font-size:36px; -fx-font-weight:bold; -fx-text-fill:#D97706;"/>
-                    <!-- ✅ CHANGEMENT : "En révision" au lieu de "Sans entretien" -->
                     <Label text="En révision" styleClass="stat-label"/>
                 </VBox>
             </HBox>
-            <!-- ✅ CHANGEMENT : titre section mis à jour -->
             <Label text="Candidatures en révision — décision requise" styleClass="section-title"/>
             <ScrollPane fitToWidth="true" prefHeight="600.0"
                         style="-fx-background:transparent; -fx-background-color:transparent; -fx-border-color:transparent;"

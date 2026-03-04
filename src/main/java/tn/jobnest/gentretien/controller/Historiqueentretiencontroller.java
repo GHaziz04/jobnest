@@ -439,13 +439,16 @@ public class Historiqueentretiencontroller {
         naviguerVers("/tn/jobnest/gentretien/profil-recruteur.fxml", "JobNest - Mon Profil", event);
     }
 
-    // ────────────────────────────────────────────────────────────────
-    //  ✅ NAVIGATION VERS OFFRES D'EMPLOI (SIDEBAR)
-    // ────────────────────────────────────────────────────────────────
     @FXML
     private void ouvrirOffresEmploi(ActionEvent event) {
         naviguerVers("/tn/jobnest/gentretien/offre-emploi_view.fxml",
                 "JobNest - Offres d'Emploi", event);
+    }
+
+    @FXML
+    private void ouvrirMatching(ActionEvent event) {
+        naviguerVers("/tn/jobnest/gentretien/matching-view.fxml",
+                "JobNest - Matching", event);
     }
 
     private void naviguerVers(String fxmlPath, String titre, ActionEvent event) {

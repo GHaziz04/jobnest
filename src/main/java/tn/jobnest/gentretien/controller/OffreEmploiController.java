@@ -576,6 +576,12 @@ public class OffreEmploiController {
                 "JobNest - Mon Profil");
     }
 
+    @FXML
+    private void ouvrirMatching(ActionEvent event) {
+        navigate(event, "/tn/jobnest/gentretien/matching-view.fxml",
+                "JobNest - Matching");
+    }
+
     private void navigate(ActionEvent event, String fxmlPath, String title) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
