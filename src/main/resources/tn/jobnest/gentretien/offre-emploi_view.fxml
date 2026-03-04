@@ -24,7 +24,6 @@
                 <Label text="JobNest" styleClass="logo"/>
             </HBox>
             <VBox styleClass="menu-container" spacing="5" VBox.vgrow="ALWAYS">
-
                 <!-- ACTIF -->
                 <Button styleClass="menu-item, menu-item-active">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
@@ -81,52 +80,79 @@
     </left>
 
     <center>
-        <VBox spacing="18" style="-fx-background-color: #F5F7FB;">
-            <padding><Insets top="28" right="32" bottom="20" left="32"/></padding>
-            <HBox alignment="CENTER_LEFT" spacing="16">
-                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                    <Label text="Gestion des Offres d'Emploi" styleClass="page-title"/>
-                    <Label text="Créez et gérez vos annonces de recrutement" styleClass="page-subtitle"/>
-                </VBox>
-                <Button text="🔄  Actualiser" onAction="#actualiser" prefHeight="44"
-                        style="-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;
-                               -fx-font-size:13px; -fx-font-weight:bold;
-                               -fx-background-radius:12px; -fx-cursor:hand;
-                               -fx-effect:dropshadow(gaussian,rgb(37,99,235),10,0,0,3);"/>
-                <Button text="＋  Nouvelle Offre" onAction="#showAddForm" prefHeight="44"
-                        style="-fx-background-color: #F97316; -fx-text-fill: white;
-                               -fx-font-weight: bold; -fx-font-size: 14px;
-                               -fx-background-radius: 12; -fx-cursor: hand;
-                               -fx-padding: 0 24 0 24;
-                               -fx-effect: dropshadow(gaussian,rgba(249,115,22,0.45),12,0,0,3);"/>
-            </HBox>
-            <HBox spacing="12" alignment="CENTER_LEFT">
-                <TextField fx:id="searchField" promptText="🔍  Rechercher par titre ou entreprise..."
-                           prefWidth="300" HBox.hgrow="ALWAYS"
-                           style="-fx-background-color:white; -fx-border-color:#E2E8F0;
-                                  -fx-border-width:1.5; -fx-border-radius:10;
-                                  -fx-background-radius:10; -fx-padding:10 14 10 14; -fx-font-size:13px;"/>
-                <ComboBox fx:id="contratFilterBox" promptText="Contrat" prefWidth="170"
-                          style="-fx-background-color:white; -fx-border-color:#E2E8F0;
-                                 -fx-border-width:1.5; -fx-border-radius:10;
-                                 -fx-background-radius:10; -fx-padding:4 10 4 10; -fx-font-size:13px;"/>
-                <ComboBox fx:id="statutFilterBox" promptText="Statut" prefWidth="190"
-                          style="-fx-background-color:white; -fx-border-color:#E2E8F0;
-                                 -fx-border-width:1.5; -fx-border-radius:10;
-                                 -fx-background-radius:10; -fx-padding:4 10 4 10; -fx-font-size:13px;"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Label fx:id="tableCountLabel" text="0 offre"
-                       style="-fx-font-size:13px; -fx-text-fill:#64748B; -fx-font-weight:bold;"/>
-            </HBox>
-            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                        style="-fx-background:transparent; -fx-background-color:transparent; -fx-border-color:transparent;">
-                <FlowPane fx:id="cardContainer" hgap="20" vgap="20" prefWrapLength="1000"
-                          alignment="TOP_LEFT" style="-fx-background-color:transparent; -fx-padding:4 0 10 0;"/>
-            </ScrollPane>
-            <HBox alignment="CENTER" spacing="12" style="-fx-padding:0 0 10 0;">
-                <Pagination fx:id="pagination" maxPageIndicatorCount="7"
-                            style="-fx-page-information-visible:false;"/>
-            </HBox>
-        </VBox>
+        <HBox spacing="0">
+            <VBox spacing="18" style="-fx-background-color: #F5F7FB;" HBox.hgrow="ALWAYS">
+                <padding><Insets top="28" right="32" bottom="20" left="32"/></padding>
+
+                <!-- Header avec cloche -->
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Gestion des Offres d'Emploi" styleClass="page-title"/>
+                        <Label text="Créez et gérez vos annonces de recrutement" styleClass="page-subtitle"/>
+                    </VBox>
+                    <!-- Boutons existants -->
+                    <Button text="🔄  Actualiser" onAction="#actualiser" prefHeight="44"
+                            style="-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;
+                                   -fx-font-size:13px; -fx-font-weight:bold;
+                                   -fx-background-radius:12px; -fx-cursor:hand;
+                                   -fx-effect:dropshadow(gaussian,rgb(37,99,235),10,0,0,3);"/>
+                    <Button text="＋  Nouvelle Offre" onAction="#showAddForm" prefHeight="44"
+                            style="-fx-background-color: #F97316; -fx-text-fill: white;
+                                   -fx-font-weight: bold; -fx-font-size: 14px;
+                                   -fx-background-radius: 12; -fx-cursor: hand;
+                                   -fx-padding: 0 24 0 24;
+                                   -fx-effect: dropshadow(gaussian,rgba(249,115,22,0.45),12,0,0,3);"/>
+                    <!-- Cloche -->
+                    <StackPane alignment="TOP_RIGHT">
+                        <Button fx:id="btnNotifications"
+                                onAction="#toggleNotificationPanel"
+                                prefWidth="46" prefHeight="46"
+                                style="-fx-background-color: white; -fx-background-radius: 50;
+                                       -fx-border-color: #E2E8F0; -fx-border-width: 1.5;
+                                       -fx-border-radius: 50; -fx-cursor: hand; -fx-padding: 0;
+                                       -fx-effect: dropshadow(gaussian,rgba(30,58,95,0.08),10,0,0,3);">
+                            <graphic><Text text="🔔" style="-fx-font-size: 20px;"/></graphic>
+                        </Button>
+                        <Label fx:id="notifBadgeLabel" text="0" visible="false" managed="false"
+                               style="-fx-background-color: #EF4444; -fx-text-fill: white;
+                                      -fx-font-size: 9px; -fx-font-weight: bold;
+                                      -fx-background-radius: 10; -fx-padding: 2 5 2 5;
+                                      -fx-min-width: 18; -fx-min-height: 18; -fx-alignment: center;"
+                               StackPane.alignment="TOP_RIGHT" translateX="4" translateY="-4"/>
+                    </StackPane>
+                </HBox>
+
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <TextField fx:id="searchField" promptText="🔍  Rechercher par titre ou entreprise..."
+                               prefWidth="300" HBox.hgrow="ALWAYS"
+                               style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                      -fx-border-width:1.5; -fx-border-radius:10;
+                                      -fx-background-radius:10; -fx-padding:10 14 10 14; -fx-font-size:13px;"/>
+                    <ComboBox fx:id="contratFilterBox" promptText="Contrat" prefWidth="170"
+                              style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                     -fx-border-width:1.5; -fx-border-radius:10;
+                                     -fx-background-radius:10; -fx-padding:4 10 4 10; -fx-font-size:13px;"/>
+                    <ComboBox fx:id="statutFilterBox" promptText="Statut" prefWidth="190"
+                              style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                     -fx-border-width:1.5; -fx-border-radius:10;
+                                     -fx-background-radius:10; -fx-padding:4 10 4 10; -fx-font-size:13px;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="tableCountLabel" text="0 offre"
+                           style="-fx-font-size:13px; -fx-text-fill:#64748B; -fx-font-weight:bold;"/>
+                </HBox>
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                            style="-fx-background:transparent; -fx-background-color:transparent; -fx-border-color:transparent;">
+                    <FlowPane fx:id="cardContainer" hgap="20" vgap="20" prefWrapLength="1000"
+                              alignment="TOP_LEFT" style="-fx-background-color:transparent; -fx-padding:4 0 10 0;"/>
+                </ScrollPane>
+                <HBox alignment="CENTER" spacing="12" style="-fx-padding:0 0 10 0;">
+                    <Pagination fx:id="pagination" maxPageIndicatorCount="7"
+                                style="-fx-page-information-visible:false;"/>
+                </HBox>
+            </VBox>
+
+            <!-- Panneau notifications -->
+            <fx:include fx:id="notifInclude" source="notification-panel.fxml"/>
+        </HBox>
     </center>
 </BorderPane>
