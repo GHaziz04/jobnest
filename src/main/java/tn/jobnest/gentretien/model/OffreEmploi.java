@@ -25,7 +25,7 @@ public class OffreEmploi {
     private int nbCandidatures;
     private Timestamp dateCreation;
     private Timestamp dateModification;
-    private Double matchingScore;
+    // ✅ matchingScore supprimé
 
     private List<Competence> competences;
     private List<Experience> experiences;
@@ -45,9 +45,6 @@ public class OffreEmploi {
 
     public int getIdRecruteur() { return idRecruteur; }
     public void setIdRecruteur(int idRecruteur) { this.idRecruteur = idRecruteur; }
-
-    public Double getMatchingScore() { return matchingScore; }
-    public void setMatchingScore(Double matchingScore) { this.matchingScore = matchingScore; }
 
     public String getTitre() { return titre; }
     public void setTitre(String titre) { this.titre = titre; }

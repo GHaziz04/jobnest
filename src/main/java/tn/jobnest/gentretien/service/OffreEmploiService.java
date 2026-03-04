@@ -4,23 +4,33 @@ import tn.jobnest.gentretien.dao.OffreEmploiDAO;
 import tn.jobnest.gentretien.model.Competence;
 import tn.jobnest.gentretien.model.Experience;
 import tn.jobnest.gentretien.model.OffreEmploi;
+import tn.jobnest.gentretien.model.Recruteur;
 import tn.jobnest.gentretien.utils.MyDatabase;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ✅ FIX COMPLET :
- *  - getOffres() charge les offres ET leurs compétences/expériences associées
- *  - fermerOffre() : change le statut d'une offre en 'fermee'
- */
 public class OffreEmploiService {
 
-    private final OffreEmploiDAO dao = new OffreEmploiDAO();
+    private final OffreEmploiDAO   dao              = new OffreEmploiDAO();
+    private final RecruteurService recruteurService = new RecruteurService();
 
     private Connection getConn() {
         return MyDatabase.getInstance().getConn();
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    //  ✅ NOM DU RECRUTEUR — utilise RecruteurService existant
+    // ─────────────────────────────────────────────────────────────
+    public String getNomRecruteur(int idRecruteur) {
+        try {
+            Recruteur r = recruteurService.getRecruteurById(idRecruteur);
+            if (r != null) return r.getNomComplet();
+        } catch (Exception e) {
+            System.err.println("[RecruteurNom] " + e.getMessage());
+        }
+        return "Recruteur #" + idRecruteur;
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -73,8 +83,7 @@ public class OffreEmploiService {
     }
 
     // ─────────────────────────────────────────────────────────────
-    //  ✅ FERMER UNE OFFRE (statut → 'fermee')
-    //  Met aussi à jour la date_expiration à aujourd'hui
+    //  FERMER UNE OFFRE
     // ─────────────────────────────────────────────────────────────
     public void fermerOffre(int idOffre) throws SQLException {
         String sql = "UPDATE offre_emploi SET statut = 'fermee', " +

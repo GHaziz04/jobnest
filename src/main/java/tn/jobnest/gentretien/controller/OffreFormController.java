@@ -59,7 +59,6 @@ public class OffreFormController {
         contratBox.setItems(FXCollections.observableArrayList(
                 "CDI", "CDD", "Stage", "Alternance", "Freelance"));
 
-        // Validation : chiffres uniquement pour salaire min/max
         salaireMinField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal.matches("\\d*(\\.\\d*)?")) salaireMinField.setText(oldVal);
         });
@@ -67,12 +66,10 @@ public class OffreFormController {
             if (!newVal.matches("\\d*(\\.\\d*)?")) salaireMaxField.setText(oldVal);
         });
 
-        // Validation : entier uniquement pour nb_postes
         nbPostesField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal.matches("\\d*")) nbPostesField.setText(oldVal);
         });
 
-        // Date d'expiration : uniquement dans le futur
         dateExpirationPicker.setDayCellFactory(picker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
@@ -191,28 +188,40 @@ public class OffreFormController {
     // ============================
     private void chargerCompetences() {
         try {
-            ObservableList<Competence> list = FXCollections.observableArrayList(competenceService.getAll());
+            ObservableList<Competence> list =
+                    FXCollections.observableArrayList(competenceService.getAll());
             competencesList.setItems(list);
             competencesList.setCellFactory(CheckBoxListCell.forListView(
                     Competence::selectedProperty,
                     new StringConverter<>() {
-                        @Override public String toString(Competence c) { return c.getNom() + " (" + c.getCategorie() + ")"; }
+                        @Override public String toString(Competence c) {
+                            return c.getNom() + " (" + c.getCategorie() + ")";
+                        }
                         @Override public Competence fromString(String s) { return null; }
                     }));
-        } catch (Exception e) { showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur chargement compétences : " + e.getMessage()); }
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Erreur chargement compétences : " + e.getMessage());
+        }
     }
 
     private void chargerExperiences() {
         try {
-            ObservableList<Experience> list = FXCollections.observableArrayList(experienceService.getAll());
+            ObservableList<Experience> list =
+                    FXCollections.observableArrayList(experienceService.getAll());
             experiencesList.setItems(list);
             experiencesList.setCellFactory(CheckBoxListCell.forListView(
                     Experience::selectedProperty,
                     new StringConverter<>() {
-                        @Override public String toString(Experience e) { return e.getNom() + " (" + e.getNiveauRequis() + ")"; }
+                        @Override public String toString(Experience e) {
+                            return e.getNom() + " (" + e.getNiveauRequis() + ")";
+                        }
                         @Override public Experience fromString(String s) { return null; }
                     }));
-        } catch (Exception e) { showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur chargement expériences : " + e.getMessage()); }
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Erreur chargement expériences : " + e.getMessage());
+        }
     }
 
     // ============================
@@ -222,7 +231,10 @@ public class OffreFormController {
     private void handleAddCompetence() {
         try {
             URL fxmlUrl = getClass().getResource("/tn/jobnest/gentretien/competence_form.fxml");
-            if (fxmlUrl == null) { showAlert(Alert.AlertType.ERROR, "Erreur", "competence_form.fxml introuvable."); return; }
+            if (fxmlUrl == null) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "competence_form.fxml introuvable.");
+                return;
+            }
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
             Parent root = loader.load();
             CompetenceFormController ctrl = loader.getController();
@@ -232,8 +244,15 @@ public class OffreFormController {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
             Competence nc = ctrl.getCompetence();
-            if (nc != null) { competencesList.getItems().add(nc); nc.setSelected(true); competencesList.refresh(); }
-        } catch (Exception e) { showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur popup compétence : " + e.getMessage()); }
+            if (nc != null) {
+                competencesList.getItems().add(nc);
+                nc.setSelected(true);
+                competencesList.refresh();
+            }
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Erreur popup compétence : " + e.getMessage());
+        }
     }
 
     // ============================
@@ -270,7 +289,8 @@ public class OffreFormController {
                 experiencesList.refresh();
             }
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur ouverture popup expérience : " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Erreur ouverture popup expérience : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -289,25 +309,20 @@ public class OffreFormController {
         contratBox.setValue(o.getTypeContrat());
         descriptionField.setText(o.getDescription());
 
-        // Salaire min / max séparés
         salaireMinField.setText(o.getSalaireMin() > 0 ? String.valueOf((int) o.getSalaireMin()) : "");
         salaireMaxField.setText(o.getSalaireMax() > 0 ? String.valueOf((int) o.getSalaireMax()) : "");
 
-        // Nb postes
         if (o.getNbPostes() > 0) nbPostesField.setText(String.valueOf(o.getNbPostes()));
 
-        // Date expiration
         if (o.getDateExpiration() != null)
             dateExpirationPicker.setValue(o.getDateExpiration().toLocalDate());
 
-        // Compétences cochées
         if (o.getCompetences() != null) {
             for (Competence c : competencesList.getItems())
                 for (Competence sel : o.getCompetences())
                     if (c.getIdCompetence() == sel.getIdCompetence()) c.setSelected(true);
             competencesList.refresh();
         }
-        // Expériences cochées
         if (o.getExperiences() != null) {
             for (Experience exp : experiencesList.getItems())
                 for (Experience sel : o.getExperiences())
@@ -317,19 +332,14 @@ public class OffreFormController {
     }
 
     // ============================
-    //  ✅ MODE REPUBLICATION
-    //  Appelé depuis OffreEmploiController quand on republie une offre fermée.
-    //  → Change le header, met en évidence le champ date d'expiration
-    //    et affiche une bannière d'information.
+    //  MODE REPUBLICATION
     // ============================
     public void setModeRepublication(boolean actif) {
         if (!actif) return;
 
-        // Titre du formulaire
         if (headerLabel != null)
             headerLabel.setText("🔄  Republier l'Offre");
 
-        // Mettre en évidence la date d'expiration (bordure orange)
         if (dateExpirationPicker != null) {
             dateExpirationPicker.setStyle(
                     "-fx-font-size:13px;" +
@@ -340,14 +350,9 @@ public class OffreFormController {
             dateExpirationPicker.setPromptText("⚠  Obligatoire : choisissez une nouvelle date limite");
         }
 
-        // Bouton de soumission
-        // On cherche le bouton Publier via la scène (il sera stylé après initialize)
-        // On utilise un Platform.runLater pour être sûr que le graphe est prêt
         javafx.application.Platform.runLater(() -> {
             if (titreField == null || titreField.getScene() == null) return;
-            // Trouver et re-styler le bouton publier
             titreField.getScene().lookup("#btnPublier");
-            // Le message d'avertissement sera géré par la bannière dans la validation
         });
     }
 
@@ -357,11 +362,15 @@ public class OffreFormController {
     public OffreEmploi getOffre() { return offre; }
 
     public List<Competence> getSelectedCompetences() {
-        return competencesList.getItems().stream().filter(Competence::isSelected).collect(Collectors.toList());
+        return competencesList.getItems().stream()
+                .filter(Competence::isSelected)
+                .collect(Collectors.toList());
     }
 
     public List<Experience> getSelectedExperiences() {
-        return experiencesList.getItems().stream().filter(Experience::isSelected).collect(Collectors.toList());
+        return experiencesList.getItems().stream()
+                .filter(Experience::isSelected)
+                .collect(Collectors.toList());
     }
 
     // ============================
@@ -393,7 +402,6 @@ public class OffreFormController {
             offre.setSalaireMax(salaireMax);
             offre.setNbPostes(nbPostes);
 
-            // Date d'expiration
             if (dateExpirationPicker.getValue() != null)
                 offre.setDateExpiration(Date.valueOf(dateExpirationPicker.getValue()));
             else
@@ -401,15 +409,7 @@ public class OffreFormController {
 
             offre.setCompetences(getSelectedCompetences());
             offre.setExperiences(getSelectedExperiences());
-
-            List<String> aiSkills = aiService.extractSkills(descriptionField.getText());
-            if (aiSkills == null) aiSkills = new ArrayList<>();
-            double bestScore = 0;
-            for (Experience exp : getSelectedExperiences()) {
-                double s = calculerScore(aiSkills, exp);
-                if (s > bestScore) bestScore = s;
-            }
-            offre.setMatchingScore(bestScore);
+            // ✅ setMatchingScore() supprimé — attribut retiré du modèle
 
             closePopup();
         } catch (Exception e) {
@@ -432,14 +432,12 @@ public class OffreFormController {
         if (descriptionField.getText() == null || descriptionField.getText().isBlank())
             errors.append("• Description obligatoire\n");
 
-        // Cohérence salaire min / max
         if (!salaireMinField.getText().trim().isEmpty() && !salaireMaxField.getText().trim().isEmpty()) {
             double min = Double.parseDouble(salaireMinField.getText().trim());
             double max = Double.parseDouble(salaireMaxField.getText().trim());
             if (max < min) errors.append("• Le salaire max doit être ≥ au salaire min\n");
         }
 
-        // Date expiration obligatoire
         if (dateExpirationPicker.getValue() == null)
             errors.append("• La date d'expiration est obligatoire\n");
         else if (!dateExpirationPicker.getValue().isAfter(LocalDate.now()))

@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 
 public class OffreDetailsController {
@@ -54,14 +53,14 @@ public class OffreDetailsController {
     @FXML private Button   republierBtn;
 
     // ── Services & données ──
-    private OffreEmploi             offre;
+    private OffreEmploi              offre;
     private final OffreEmploiService service = new OffreEmploiService();
 
     private static final DateTimeFormatter DATE_FMT =
             DateTimeFormatter.ofPattern("dd MMMM yyyy");
 
     // ============================================================
-    //  SETTER PRINCIPAL — appelé depuis OffreEmploiController
+    //  SETTER PRINCIPAL
     // ============================================================
     public void setOffre(OffreEmploi o) {
         this.offre = o;
@@ -192,7 +191,6 @@ public class OffreDetailsController {
             Parent root = loader.load();
             OffreFormController ctrl = loader.getController();
 
-            // Copie avec date d'expiration nulle pour forcer une nouvelle saisie
             OffreEmploi copie = clonerPourRepublication(offre);
             ctrl.setOffre(copie);
             ctrl.setModeRepublication(true);
@@ -211,7 +209,6 @@ public class OffreDetailsController {
                         ctrl.getSelectedCompetences(),
                         ctrl.getSelectedExperiences());
 
-                // Mettre à jour l'UI sans fermer la fenêtre
                 offre.setStatut("publiee");
                 offre.setDateExpiration(offreModifiee.getDateExpiration());
                 expirationLabel.setText(formatDate(offre.getDateExpiration()));
@@ -237,7 +234,6 @@ public class OffreDetailsController {
     //  MISE À JOUR UI SELON STATUT
     // ============================================================
     private void rafraichirStatutUI(boolean ouvert) {
-        // Badge statut
         if (statutBadgeLabel != null) {
             statutBadgeLabel.setText(ouvert ? "● Ouvert" : "● Fermé");
             statutBadgeLabel.setStyle(ouvert
@@ -248,12 +244,10 @@ public class OffreDetailsController {
                     "-fx-font-size:12px; -fx-font-weight:bold;" +
                     "-fx-background-radius:20; -fx-padding:4 12 4 12;");
         }
-        // Bouton Fermer : visible seulement si ouvert
         if (fermerBtn != null) {
             fermerBtn.setVisible(ouvert);
             fermerBtn.setManaged(ouvert);
         }
-        // Bouton Republier : visible seulement si fermé
         if (republierBtn != null) {
             republierBtn.setVisible(!ouvert);
             republierBtn.setManaged(!ouvert);
@@ -264,7 +258,7 @@ public class OffreDetailsController {
     //  HELPERS
     // ============================================================
 
-    /** Clone l'offre avec date_expiration = null pour la republication */
+    /** Clone l'offre pour republication — matchingScore supprimé */
     private OffreEmploi clonerPourRepublication(OffreEmploi src) {
         OffreEmploi c = new OffreEmploi();
         c.setIdOffre(src.getIdOffre());
@@ -278,11 +272,11 @@ public class OffreDetailsController {
         c.setNbPostes(src.getNbPostes());
         c.setNiveauExperience(src.getNiveauExperience());
         c.setDatePublication(src.getDatePublication());
-        c.setMatchingScore(src.getMatchingScore());
         c.setCompetences(src.getCompetences());
         c.setExperiences(src.getExperiences());
         c.setDateExpiration(null); // Force une nouvelle date d'expiration
         c.setStatut("publiee");
+        // ✅ setMatchingScore / getMatchingScore supprimés — attribut retiré du modèle
         return c;
     }
 

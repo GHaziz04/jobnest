@@ -7,12 +7,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ✅ FIX :
- *  - getConn() appelé dynamiquement à chaque méthode
- *  - matching_score : toujours 0.0 minimum (NOT NULL en BD)
- *  - afficher() retourne toutes les offres correctement
- */
 public class OffreEmploiDAO {
 
     private Connection getConn() {
@@ -26,8 +20,8 @@ public class OffreEmploiDAO {
         String sql = "INSERT INTO offre_emploi " +
                 "(id_recruteur, titre, description, entreprise, type_contrat, " +
                 " salaire_min, salaire_max, niveau_experience, nb_postes, " +
-                " date_publication, date_expiration, statut, matching_score) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                " date_publication, date_expiration, statut) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 
         try (PreparedStatement ps = getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt   (1,  o.getIdRecruteur());
@@ -50,8 +44,7 @@ public class OffreEmploiDAO {
             ps.setDate  (10, o.getDatePublication());
             ps.setDate  (11, o.getDateExpiration());
             ps.setString(12, o.getStatut() != null ? o.getStatut() : "publiee");
-            // ✅ matching_score est NOT NULL en BD
-            ps.setDouble(13, o.getMatchingScore() != null ? o.getMatchingScore() : 0.0);
+            // ✅ matching_score supprimé
 
             int rows = ps.executeUpdate();
             if (rows == 0) throw new SQLException("Échec insertion offre");
@@ -68,7 +61,6 @@ public class OffreEmploiDAO {
     // ─────────────────────────────────────────────
     public List<OffreEmploi> afficher() throws SQLException {
         List<OffreEmploi> list = new ArrayList<>();
-        // Utilise date_creation si elle existe, sinon id_offre DESC pour l'ordre
         String sql = "SELECT * FROM offre_emploi ORDER BY id_offre DESC";
         try (Statement st = getConn().createStatement();
              ResultSet rs = st.executeQuery(sql)) {
@@ -86,7 +78,7 @@ public class OffreEmploiDAO {
         String sql = "UPDATE offre_emploi " +
                 "SET titre=?, description=?, entreprise=?, type_contrat=?, " +
                 "    salaire_min=?, salaire_max=?, niveau_experience=?, nb_postes=?, " +
-                "    date_publication=?, date_expiration=?, statut=?, matching_score=? " +
+                "    date_publication=?, date_expiration=?, statut=? " +
                 "WHERE id_offre=?";
 
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
@@ -109,8 +101,8 @@ public class OffreEmploiDAO {
             ps.setDate  (9,  o.getDatePublication());
             ps.setDate  (10, o.getDateExpiration());
             ps.setString(11, o.getStatut() != null ? o.getStatut() : "publiee");
-            ps.setDouble(12, o.getMatchingScore() != null ? o.getMatchingScore() : 0.0);
-            ps.setInt   (13, o.getIdOffre());
+            ps.setInt   (12, o.getIdOffre());
+            // ✅ matching_score supprimé
 
             if (ps.executeUpdate() == 0)
                 throw new SQLException("Modification échouée : offre introuvable");
@@ -149,7 +141,7 @@ public class OffreEmploiDAO {
         o.setStatut          (rs.getString("statut"));
         o.setNbVues          (rs.getInt   ("nb_vues"));
         o.setNbCandidatures  (rs.getInt   ("nb_candidatures"));
-        o.setMatchingScore   (rs.getDouble("matching_score"));
+        // ✅ matching_score supprimé
         return o;
     }
 }
