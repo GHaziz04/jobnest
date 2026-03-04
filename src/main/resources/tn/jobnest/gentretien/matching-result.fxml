@@ -1,141 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="0"
-      xmlns="http://javafx.com/javafx/17"
+<!--
+    matching-result.fxml
+    Layout minimaliste : tout le design est construit dynamiquement
+    dans MatchingResultController#afficherResultat() pour reproduire
+    fidèlement le style dark premium (identique à la preview HTML).
+-->
+<VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="tn.jobnest.gentretien.controller.MatchingResultController"
-      prefWidth="640"
-      style="-fx-background-color:#F5F7FB;">
-
-    <!-- ══ HEADER ══ -->
-    <HBox alignment="CENTER_LEFT"
-          style="-fx-background-color:#1E3A5F; -fx-padding:20 24;">
-        <VBox spacing="4" HBox.hgrow="ALWAYS">
-            <Label text="🎯  Résultat du Matching"
-                   style="-fx-font-size:19px; -fx-font-weight:bold; -fx-text-fill:white;"/>
-            <Label fx:id="lblNomCandidat" text="Candidat"
-                   style="-fx-font-size:12px; -fx-text-fill:rgba(255,255,255,0.65);"/>
-        </VBox>
-        <Button text="✕" onAction="#fermer"
-                style="-fx-background-color:rgba(255,255,255,0.15); -fx-text-fill:white;
-                       -fx-font-size:15px; -fx-background-radius:8; -fx-cursor:hand;
-                       -fx-padding:4 10;"/>
-    </HBox>
-    <Region prefHeight="4"
-            style="-fx-background-color:linear-gradient(to right,#7C3AED,#2563EB);"/>
-
-    <VBox spacing="16" style="-fx-padding:22 24;">
-
-        <!-- Décision -->
-        <Label fx:id="lblDecision" text="Chargement..."
-               maxWidth="Infinity"
-               style="-fx-background-color:#F3F4F6; -fx-text-fill:#6B7280;
-                      -fx-font-weight:800; -fx-font-size:14px;
-                      -fx-padding:12 20; -fx-background-radius:12;"/>
-
-        <!-- Score final -->
-        <VBox spacing="8" style="-fx-background-color:white; -fx-padding:16 20;
-                                  -fx-background-radius:12; -fx-border-color:#E8EFF8;
-                                  -fx-border-width:1; -fx-border-radius:12;
-                                  -fx-effect:dropshadow(gaussian,rgba(30,58,95,0.07),8,0,0,3);">
-            <Label text="SCORES" style="-fx-font-size:10px; -fx-font-weight:800; -fx-text-fill:#94A3B8;"/>
-
-            <!-- Compétences -->
-            <HBox spacing="12" alignment="CENTER_LEFT">
-                <Label text="Compétences (60%)" prefWidth="180"
-                       style="-fx-font-size:13px; -fx-font-weight:600; -fx-text-fill:#374151;"/>
-                <StackPane HBox.hgrow="ALWAYS" prefHeight="14">
-                    <Region maxWidth="Infinity" prefHeight="14"
-                            style="-fx-background-color:#F1F5F9; -fx-background-radius:7;"/>
-                    <Region fx:id="barreCompetences" prefHeight="14" maxWidth="300"
-                            style="-fx-background-color:#2563EB; -fx-background-radius:7;" StackPane.alignment="CENTER_LEFT"/>
-                </StackPane>
-                <Label fx:id="lblScoreComp" text="0%"
-                       style="-fx-font-weight:800; -fx-font-size:14px; -fx-text-fill:#1E3A5F; -fx-min-width:50;"/>
-            </HBox>
-
-            <!-- Expériences -->
-            <HBox spacing="12" alignment="CENTER_LEFT">
-                <Label text="Expériences (40%)" prefWidth="180"
-                       style="-fx-font-size:13px; -fx-font-weight:600; -fx-text-fill:#374151;"/>
-                <StackPane HBox.hgrow="ALWAYS" prefHeight="14">
-                    <Region maxWidth="Infinity" prefHeight="14"
-                            style="-fx-background-color:#F1F5F9; -fx-background-radius:7;"/>
-                    <Region fx:id="barreExperiences" prefHeight="14" maxWidth="300"
-                            style="-fx-background-color:#059669; -fx-background-radius:7;" StackPane.alignment="CENTER_LEFT"/>
-                </StackPane>
-                <Label fx:id="lblScoreExp" text="0%"
-                       style="-fx-font-weight:800; -fx-font-size:14px; -fx-text-fill:#1E3A5F; -fx-min-width:50;"/>
-            </HBox>
-
-            <!-- Score final -->
-            <HBox spacing="12" alignment="CENTER_LEFT"
-                  style="-fx-padding:8 12; -fx-background-color:#F8FAFF;
-                         -fx-background-radius:10; -fx-border-color:#DBEAFE;
-                         -fx-border-width:1; -fx-border-radius:10;">
-                <Label text="⭐  Score FINAL" prefWidth="180"
-                       style="-fx-font-size:14px; -fx-font-weight:800; -fx-text-fill:#1E3A5F;"/>
-                <StackPane HBox.hgrow="ALWAYS" prefHeight="16">
-                    <Region maxWidth="Infinity" prefHeight="16"
-                            style="-fx-background-color:#E2E8F0; -fx-background-radius:8;"/>
-                    <Region fx:id="barreFinal" prefHeight="16" maxWidth="300"
-                            style="-fx-background-color:#7C3AED; -fx-background-radius:8;" StackPane.alignment="CENTER_LEFT"/>
-                </StackPane>
-                <Label fx:id="lblScoreFinal" text="0%"
-                       style="-fx-font-weight:900; -fx-font-size:18px; -fx-text-fill:#7C3AED; -fx-min-width:55;"/>
-            </HBox>
-        </VBox>
-
-        <!-- Comparaison compétences -->
-        <HBox spacing="12">
-            <VBox spacing="8" HBox.hgrow="ALWAYS"
-                  style="-fx-background-color:white; -fx-padding:14 16;
-                         -fx-background-radius:12; -fx-border-color:#DBEAFE;
-                         -fx-border-width:1; -fx-border-radius:12;">
-                <Label text="📋  Requises par l'offre"
-                       style="-fx-font-size:11px; -fx-font-weight:800; -fx-text-fill:#1D4ED8;"/>
-                <VBox fx:id="vboxCompetencesOffre" spacing="5"/>
-            </VBox>
-            <VBox spacing="8" HBox.hgrow="ALWAYS"
-                  style="-fx-background-color:white; -fx-padding:14 16;
-                         -fx-background-radius:12; -fx-border-color:#DCFCE7;
-                         -fx-border-width:1; -fx-border-radius:12;">
-                <Label text="✅  Possédées par le candidat"
-                       style="-fx-font-size:11px; -fx-font-weight:800; -fx-text-fill:#15803D;"/>
-                <VBox fx:id="vboxCompetencesCandidat" spacing="5"/>
-            </VBox>
-        </HBox>
-
-        <!-- Comparaison expériences -->
-        <HBox spacing="12">
-            <VBox spacing="8" HBox.hgrow="ALWAYS"
-                  style="-fx-background-color:white; -fx-padding:14 16;
-                         -fx-background-radius:12; -fx-border-color:#FEF3C7;
-                         -fx-border-width:1; -fx-border-radius:12;">
-                <Label text="📋  Expériences requises"
-                       style="-fx-font-size:11px; -fx-font-weight:800; -fx-text-fill:#B45309;"/>
-                <VBox fx:id="vboxExperiencesOffre" spacing="5"/>
-            </VBox>
-            <VBox spacing="8" HBox.hgrow="ALWAYS"
-                  style="-fx-background-color:white; -fx-padding:14 16;
-                         -fx-background-radius:12; -fx-border-color:#F0FDF4;
-                         -fx-border-width:1; -fx-border-radius:12;">
-                <Label text="✅  Expériences du candidat"
-                       style="-fx-font-size:11px; -fx-font-weight:800; -fx-text-fill:#166534;"/>
-                <VBox fx:id="vboxExperiencesCandidat" spacing="5"/>
-            </VBox>
-        </HBox>
-
-        <!-- Fermer -->
-        <Button text="Fermer" onAction="#fermer"
-                maxWidth="Infinity" prefHeight="42"
-                style="-fx-background-color:#F1F5F9; -fx-text-fill:#475569;
-                       -fx-font-weight:700; -fx-font-size:13px;
-                       -fx-background-radius:10; -fx-cursor:hand;
-                       -fx-border-color:#E2E8F0; -fx-border-radius:10; -fx-border-width:1.5;"/>
-    </VBox>
-</VBox>
+      fx:id="rootVBox"
+      prefWidth="860"
+      style="-fx-background-color:#0F1623;"/>
