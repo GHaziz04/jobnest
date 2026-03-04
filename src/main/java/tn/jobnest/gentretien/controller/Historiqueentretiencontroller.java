@@ -72,9 +72,6 @@ public class Historiqueentretiencontroller {
         showAlert(Alert.AlertType.INFORMATION, "Actualisation", "L'historique a été actualisé.");
     }
 
-    // =====================================================================
-    // CHARGEMENT
-    // =====================================================================
     private void chargerHistorique() {
         try {
             int nbExpires = service.annulerEntretiensExpires();
@@ -95,9 +92,6 @@ public class Historiqueentretiencontroller {
         }
     }
 
-    // =====================================================================
-    // STATS
-    // =====================================================================
     private void updateStats() {
         if (allHistorique == null) return;
         long totalR = allHistorique.stream().filter(e -> "réalisé".equals(e.getStatut())).count();
@@ -115,9 +109,6 @@ public class Historiqueentretiencontroller {
         sansFeedbackCount.setText(String.valueOf(sansFb));
     }
 
-    // =====================================================================
-    // FILTRE + AFFICHAGE
-    // =====================================================================
     private void filterAndDisplay() {
         historiqueVBox.getChildren().clear();
         if (allHistorique == null || allHistorique.isEmpty()) {
@@ -177,9 +168,6 @@ public class Historiqueentretiencontroller {
         historiqueVBox.getChildren().add(empty);
     }
 
-    // =====================================================================
-    // CRÉATION CARTE
-    // =====================================================================
     private Node createHistoriqueCard(Entretien e, List<String> participants,
                                       String titreOffre, boolean hasFeedback) {
         HBox card = new HBox(15);
@@ -198,7 +186,6 @@ public class Historiqueentretiencontroller {
                         "-fx-border-radius: 12px;" +
                         "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 3);");
 
-        // ── Avatar ──
         String participantName = participants.isEmpty() ? "Candidat" : participants.get(0);
         String initials = participantName.chars()
                 .filter(Character::isUpperCase)
@@ -221,7 +208,6 @@ public class Historiqueentretiencontroller {
         avatarBox.setAlignment(javafx.geometry.Pos.CENTER);
         avatarBox.setPrefWidth(70);
 
-        // ── Détails ──
         VBox details = new VBox(7);
         details.setPrefWidth(430);
         details.setPadding(new Insets(5, 0, 5, 0));
@@ -265,7 +251,6 @@ public class Historiqueentretiencontroller {
             details.getChildren().add(noteLabel);
         }
 
-        // ── Actions ──
         VBox actionsContainer = new VBox(10);
         actionsContainer.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
         actionsContainer.setPrefWidth(230);
@@ -278,7 +263,6 @@ public class Historiqueentretiencontroller {
                         "-fx-font-size: 11px; -fx-font-weight: 700;" +
                         "-fx-padding: 3 10 3 10; -fx-background-radius: 20px;");
 
-        // Bouton principal (Réorganiser ou Feedback)
         Button btnAction;
         if (estAnnule) {
             btnAction = new Button("🔄 Réorganiser");
@@ -312,40 +296,35 @@ public class Historiqueentretiencontroller {
                 btnAction.setPrefWidth(175);
                 btnAction.setPrefHeight(42);
                 btnAction.setStyle(
-                        "-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;"+
-                                " -fx-text-fill: white;"+
-                                "-fx-font-size: 13px;"+
-                                "-fx-font-weight: bold;"+
-                                "-fx-background-radius: 12px;"+
-                                "-fx-cursor: hand;"+
+                        "-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;" +
+                                " -fx-text-fill: white;" +
+                                "-fx-font-size: 13px;" +
+                                "-fx-font-weight: bold;" +
+                                "-fx-background-radius: 12px;" +
+                                "-fx-cursor: hand;" +
                                 "-fx-effect: dropshadow(gaussian, rgba(16,185,129,0.35), 10, 0, 0, 3);");
                 btnAction.setOnAction(ev -> ouvrirFeedbackPourEntretien(e));
                 Tooltip.install(btnAction, new Tooltip("Ajouter un feedback pour cet entretien réalisé"));
             }
         }
 
-        // ── Bouton Supprimer ──────────────────────────────────────────────
-        // Règle : visible et actif UNIQUEMENT pour les entretiens ANNULÉS
-        //         Les entretiens RÉALISÉS n'ont pas de bouton supprimer
         Button btnSupprimer = new Button(" Supprimer");
         btnSupprimer.setPrefWidth(165);
         btnSupprimer.setPrefHeight(42);
 
         if (estAnnule) {
-            // ✅ Annulé → suppression autorisée
             btnSupprimer.setStyle(
-                    "-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;"+
-                           " -fx-text-fill: white;"+
-            "-fx-font-size: 13px;"+
-            "-fx-font-weight: bold;"+
-            "-fx-background-radius: 12px;"+
-            "-fx-cursor: hand;"+
-            "-fx-effect: dropshadow(gaussian, rgba(16,185,129,0.35), 10, 0, 0, 3);");
+                    "-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;" +
+                            " -fx-text-fill: white;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 12px;" +
+                            "-fx-cursor: hand;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(16,185,129,0.35), 10, 0, 0, 3);");
             btnSupprimer.setOnAction(ev -> supprimerEntretienHistorique(e));
             Tooltip.install(btnSupprimer,
                     new Tooltip("🗑️ Supprimer définitivement cet entretien annulé"));
         } else {
-            // ❌ Réalisé → bouton caché
             btnSupprimer.setVisible(false);
             btnSupprimer.setManaged(false);
         }
@@ -376,9 +355,6 @@ public class Historiqueentretiencontroller {
         return badge;
     }
 
-    // =====================================================================
-    // SUPPRIMER UN ENTRETIEN ANNULÉ
-    // =====================================================================
     private void supprimerEntretienHistorique(Entretien e) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmation de suppression");
@@ -398,9 +374,6 @@ public class Historiqueentretiencontroller {
         }
     }
 
-    // =====================================================================
-    // ACTIONS MÉTIER
-    // =====================================================================
     private void reorganiserEntretien(Entretien e) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -460,9 +433,19 @@ public class Historiqueentretiencontroller {
         naviguerVers("/tn/jobnest/gentretien/GestionCandidatures.fxml",
                 "JobNest - Gestion des Candidatures", event);
     }
+
     @FXML
     private void ouvrirProfil(ActionEvent event) {
         naviguerVers("/tn/jobnest/gentretien/profil-recruteur.fxml", "JobNest - Mon Profil", event);
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  ✅ NAVIGATION VERS OFFRES D'EMPLOI (SIDEBAR)
+    // ────────────────────────────────────────────────────────────────
+    @FXML
+    private void ouvrirOffresEmploi(ActionEvent event) {
+        naviguerVers("/tn/jobnest/gentretien/offre-emploi_view.fxml",
+                "JobNest - Offres d'Emploi", event);
     }
 
     private void naviguerVers(String fxmlPath, String titre, ActionEvent event) {
@@ -490,5 +473,4 @@ public class Historiqueentretiencontroller {
         alert.setContentText(content);
         alert.showAndWait();
     }
-
 }

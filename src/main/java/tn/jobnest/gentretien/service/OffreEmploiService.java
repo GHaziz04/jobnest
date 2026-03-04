@@ -13,8 +13,7 @@ import java.util.List;
 /**
  * ✅ FIX COMPLET :
  *  - getOffres() charge les offres ET leurs compétences/expériences associées
- *    → c'est pour ça que les cartes s'affichaient vides (tags manquants)
- *  - getConn() appelé dynamiquement à chaque méthode
+ *  - fermerOffre() : change le statut d'une offre en 'fermee'
  */
 public class OffreEmploiService {
 
@@ -29,7 +28,6 @@ public class OffreEmploiService {
     // ─────────────────────────────────────────────────────────────
     public List<OffreEmploi> getOffres() throws SQLException {
         List<OffreEmploi> offres = dao.afficher();
-        // Charger les compétences et expériences pour chaque offre
         for (OffreEmploi o : offres) {
             o.setCompetences(getCompetencesByOffre(o.getIdOffre()));
             o.setExperiences(getExperiencesByOffre(o.getIdOffre()));
@@ -43,19 +41,11 @@ public class OffreEmploiService {
     public void ajouterOffre(OffreEmploi offre,
                              List<Competence> competences,
                              List<Experience> experiences) throws SQLException {
-
         int idOffre = dao.ajouterEtRetournerId(offre);
-
-        if (competences != null) {
-            for (Competence c : competences) {
-                addCompetenceToOffre(idOffre, c.getIdCompetence());
-            }
-        }
-        if (experiences != null) {
-            for (Experience e : experiences) {
-                addExperienceToOffre(idOffre, e.getIdExperience());
-            }
-        }
+        if (competences != null)
+            for (Competence c : competences) addCompetenceToOffre(idOffre, c.getIdCompetence());
+        if (experiences != null)
+            for (Experience e : experiences) addExperienceToOffre(idOffre, e.getIdExperience());
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -64,23 +54,13 @@ public class OffreEmploiService {
     public void modifierOffre(OffreEmploi offre,
                               List<Competence> competences,
                               List<Experience> experiences) throws SQLException {
-
         dao.modifier(offre);
-
-        // Supprimer les anciennes relations puis re-créer
         removeAllCompetencesFromOffre(offre.getIdOffre());
         removeAllExperiencesFromOffre(offre.getIdOffre());
-
-        if (competences != null) {
-            for (Competence c : competences) {
-                addCompetenceToOffre(offre.getIdOffre(), c.getIdCompetence());
-            }
-        }
-        if (experiences != null) {
-            for (Experience e : experiences) {
-                addExperienceToOffre(offre.getIdOffre(), e.getIdExperience());
-            }
-        }
+        if (competences != null)
+            for (Competence c : competences) addCompetenceToOffre(offre.getIdOffre(), c.getIdCompetence());
+        if (experiences != null)
+            for (Experience e : experiences) addExperienceToOffre(offre.getIdOffre(), e.getIdExperience());
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -90,6 +70,21 @@ public class OffreEmploiService {
         removeAllCompetencesFromOffre(idOffre);
         removeAllExperiencesFromOffre(idOffre);
         dao.supprimer(idOffre);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    //  ✅ FERMER UNE OFFRE (statut → 'fermee')
+    //  Met aussi à jour la date_expiration à aujourd'hui
+    // ─────────────────────────────────────────────────────────────
+    public void fermerOffre(int idOffre) throws SQLException {
+        String sql = "UPDATE offre_emploi SET statut = 'fermee', " +
+                "date_expiration = CURDATE() " +
+                "WHERE id_offre = ?";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, idOffre);
+            if (ps.executeUpdate() == 0)
+                throw new SQLException("Fermeture échouée : offre introuvable (id=" + idOffre + ")");
+        }
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -118,8 +113,7 @@ public class OffreEmploiService {
     private void addCompetenceToOffre(int idOffre, int idCompetence) throws SQLException {
         String sql = "INSERT IGNORE INTO offre_competence (id_offre, id_competence) VALUES (?,?)";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
-            ps.setInt(1, idOffre);
-            ps.setInt(2, idCompetence);
+            ps.setInt(1, idOffre); ps.setInt(2, idCompetence);
             ps.executeUpdate();
         }
     }
@@ -127,8 +121,7 @@ public class OffreEmploiService {
     private void removeAllCompetencesFromOffre(int idOffre) throws SQLException {
         try (PreparedStatement ps = getConn().prepareStatement(
                 "DELETE FROM offre_competence WHERE id_offre=?")) {
-            ps.setInt(1, idOffre);
-            ps.executeUpdate();
+            ps.setInt(1, idOffre); ps.executeUpdate();
         }
     }
 
@@ -158,8 +151,7 @@ public class OffreEmploiService {
     private void addExperienceToOffre(int idOffre, int idExperience) throws SQLException {
         String sql = "INSERT IGNORE INTO offre_experience (id_offre, id_experience) VALUES (?,?)";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
-            ps.setInt(1, idOffre);
-            ps.setInt(2, idExperience);
+            ps.setInt(1, idOffre); ps.setInt(2, idExperience);
             ps.executeUpdate();
         }
     }
@@ -167,8 +159,7 @@ public class OffreEmploiService {
     private void removeAllExperiencesFromOffre(int idOffre) throws SQLException {
         try (PreparedStatement ps = getConn().prepareStatement(
                 "DELETE FROM offre_experience WHERE id_offre=?")) {
-            ps.setInt(1, idOffre);
-            ps.executeUpdate();
+            ps.setInt(1, idOffre); ps.executeUpdate();
         }
     }
 }

@@ -20,7 +20,6 @@ import java.io.IOException;
 
 public class ProfileRecruteurController {
 
-    // ── Carte latérale gauche ──
     @FXML private Circle  circleAvatar;
     @FXML private Label   lblNomComplet;
     @FXML private Label   lblPoste;
@@ -31,7 +30,6 @@ public class ProfileRecruteurController {
     @FXML private Label   lblBalance;
     @FXML private Label   lblDateInscription;
 
-    // ── Formulaire informations personnelles ──
     @FXML private TextField txtPrenom;
     @FXML private TextField txtNom;
     @FXML private TextField txtEmail;
@@ -40,30 +38,22 @@ public class ProfileRecruteurController {
     @FXML private TextArea  txaBio;
     @FXML private TextField txtGitHub;
 
-    // ── Formulaire entreprise ──
     @FXML private TextField txtNomEntreprise;
     @FXML private TextField txtSecteur;
     @FXML private TextField txtSiteWeb;
     @FXML private TextArea  txaDescEntreprise;
 
-    // ── Feedback ──
     @FXML private Label lblSaveStatus;
 
     private final RecruteurService service = new RecruteurService();
     private Recruteur recruteurCourant;
-    private String   cheminPhotoTemp;   // chemin sélectionné avant sauvegarde
+    private String   cheminPhotoTemp;
 
-    // ────────────────────────────────────────────────────────────
-    //  INITIALISATION
-    // ────────────────────────────────────────────────────────────
     @FXML
     public void initialize() {
-        chargerProfil(1); // recruteur statique id = 1
+        chargerProfil(1);
     }
 
-    // ────────────────────────────────────────────────────────────
-    //  CHARGEMENT
-    // ────────────────────────────────────────────────────────────
     private void chargerProfil(int id) {
         recruteurCourant = service.getRecruteurById(id);
         if (recruteurCourant == null) {
@@ -71,7 +61,6 @@ public class ProfileRecruteurController {
             return;
         }
 
-        // Carte latérale
         lblNomComplet.setText(recruteurCourant.getNomComplet());
         lblPoste.setText(
                 (recruteurCourant.getNomEntreprise() != null && !recruteurCourant.getNomEntreprise().isEmpty())
@@ -82,7 +71,6 @@ public class ProfileRecruteurController {
         lblAdresseCard.setText(safe(recruteurCourant.getAdresse()));
         lblDateInscription.setText(safe(recruteurCourant.getDateInscription()));
 
-        // Badge statut
         String statut = recruteurCourant.getStatut();
         if (statut == null || statut.isEmpty()) statut = "actif";
         lblStatutBadge.setText(statut.toUpperCase());
@@ -105,10 +93,8 @@ public class ProfileRecruteurController {
 
         lblBalance.setText(String.format("%.2f TND", recruteurCourant.getBalance()));
 
-        // Avatar
         chargerAvatar(recruteurCourant.getPhotoDeProfil());
 
-        // Champs formulaire — Infos personnelles
         txtPrenom.setText(safe(recruteurCourant.getPrenomRecruteur()));
         txtNom.setText(safe(recruteurCourant.getNomRecruteur()));
         txtEmail.setText(safe(recruteurCourant.getEmail()));
@@ -117,7 +103,6 @@ public class ProfileRecruteurController {
         txaBio.setText(safe(recruteurCourant.getBio()));
         txtGitHub.setText(safe(recruteurCourant.getGitHub()));
 
-        // Champs formulaire — Entreprise
         txtNomEntreprise.setText(safe(recruteurCourant.getNomEntreprise()));
         txtSecteur.setText(safe(recruteurCourant.getSecteur()));
         txtSiteWeb.setText(safe(recruteurCourant.getSiteWeb()));
@@ -134,13 +119,9 @@ public class ProfileRecruteurController {
                 return;
             }
         }
-        // Initiales en fallback via couleur CSS
         circleAvatar.setStyle("-fx-fill: linear-gradient(to bottom right, #1e3a8a, #3b82f6);");
     }
 
-    // ────────────────────────────────────────────────────────────
-    //  CHANGER PHOTO
-    // ────────────────────────────────────────────────────────────
     @FXML
     private void choisirPhoto(ActionEvent event) {
         FileChooser fc = new FileChooser();
@@ -157,20 +138,15 @@ public class ProfileRecruteurController {
         }
     }
 
-    // ────────────────────────────────────────────────────────────
-    //  SAUVEGARDER
-    // ────────────────────────────────────────────────────────────
     @FXML
     private void sauvegarder(ActionEvent event) {
         if (recruteurCourant == null) return;
 
-        // Validation minimale
         if (txtEmail.getText().trim().isEmpty()) {
             afficherStatut("⚠️ L'email ne peut pas être vide.", "#DC2626");
             return;
         }
 
-        // Mise à jour du modèle
         recruteurCourant.setPrenomRecruteur(txtPrenom.getText().trim());
         recruteurCourant.setNomRecruteur(txtNom.getText().trim());
         recruteurCourant.setEmail(txtEmail.getText().trim());
@@ -189,16 +165,13 @@ public class ProfileRecruteurController {
         boolean ok = service.updateRecruteur(recruteurCourant);
         if (ok) {
             afficherStatut("✅ Profil mis à jour avec succès !", "#065F46");
-            chargerProfil(recruteurCourant.getIdUser()); // rafraîchir la carte
+            chargerProfil(recruteurCourant.getIdUser());
             cheminPhotoTemp = null;
         } else {
             afficherStatut("❌ Échec de la mise à jour. Vérifiez la base de données.", "#DC2626");
         }
     }
 
-    // ────────────────────────────────────────────────────────────
-    //  ANNULER (réinitialiser les champs)
-    // ────────────────────────────────────────────────────────────
     @FXML
     private void annuler(ActionEvent event) {
         chargerProfil(recruteurCourant != null ? recruteurCourant.getIdUser() : 1);
@@ -206,9 +179,9 @@ public class ProfileRecruteurController {
         afficherStatut("", "");
     }
 
-    // ────────────────────────────────────────────────────────────
+    // ────────────────────────────────────────────────────────────────
     //  NAVIGATION SIDEBAR
-    // ────────────────────────────────────────────────────────────
+    // ────────────────────────────────────────────────────────────────
     @FXML
     private void ouvrirEntretiens(ActionEvent event) {
         naviguer(event, "/tn/jobnest/gentretien/entretien-view.fxml",
@@ -233,6 +206,15 @@ public class ProfileRecruteurController {
                 "JobNest - Gestion des Candidatures");
     }
 
+    // ────────────────────────────────────────────────────────────────
+    //  ✅ NAVIGATION VERS OFFRES D'EMPLOI (SIDEBAR)
+    // ────────────────────────────────────────────────────────────────
+    @FXML
+    private void ouvrirOffresEmploi(ActionEvent event) {
+        naviguer(event, "/tn/jobnest/gentretien/offre-emploi_view.fxml",
+                "JobNest - Offres d'Emploi");
+    }
+
     private void naviguer(ActionEvent event, String fxmlPath, String titre) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
@@ -249,9 +231,6 @@ public class ProfileRecruteurController {
         }
     }
 
-    // ────────────────────────────────────────────────────────────
-    //  HELPERS
-    // ────────────────────────────────────────────────────────────
     private String safe(String s) { return s != null ? s : ""; }
 
     private void afficherStatut(String msg, String color) {

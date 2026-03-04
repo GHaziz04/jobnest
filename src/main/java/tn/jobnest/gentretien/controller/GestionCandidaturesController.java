@@ -1,5 +1,6 @@
 package tn.jobnest.gentretien.controller;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,7 +10,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import tn.jobnest.gentretien.model.CandidatureDTO;
 import tn.jobnest.gentretien.service.CandidatureService;
@@ -103,11 +106,8 @@ public class GestionCandidaturesController {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  CARTE CANDIDATURE — avatar coloré + badges identiques à Historique
-    // ─────────────────────────────────────────────────────────────────────────
     private VBox creerItemCandidature(CandidatureDTO dto) {
 
-        // Vérifier si ce candidat a déjà un entretien planifié pour cette offre
         boolean hasEntretien = service.candidatADejaUnEntretienPourOffre(
                 dto.getIdCandidat(), dto.getIdOffre());
 
@@ -121,11 +121,9 @@ public class GestionCandidaturesController {
                         ? "-fx-border-color: #7C3AED; -fx-border-width: 0 0 0 6; -fx-border-radius: 0 16 16 0;"
                         : "-fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 16;"));
 
-        // ── Ligne du haut ─────────────────────────────────────────────────
         HBox topRow = new HBox(18);
         topRow.setAlignment(Pos.CENTER_LEFT);
 
-        // ── Avatar coloré (bleu = entretien planifié / orange = sans entretien)
         String nomComplet = dto.getNomComplet();
         String[] parts = nomComplet.split(" ");
         String initials = parts.length >= 2
@@ -133,7 +131,7 @@ public class GestionCandidaturesController {
                 : nomComplet.substring(0, Math.min(2, nomComplet.length()));
         initials = initials.toUpperCase();
 
-        StackPane avatarStack = new StackPane();
+        javafx.scene.layout.StackPane avatarStack = new javafx.scene.layout.StackPane();
         Region avatarBg = new Region();
         avatarBg.setPrefSize(58, 58);
         avatarBg.setStyle(
@@ -151,7 +149,6 @@ public class GestionCandidaturesController {
         avatarStack.setMaxSize(58, 58);
         avatarStack.setMinSize(58, 58);
 
-        // Badge ⚡ boost sur l'avatar
         if (dto.isBoosted()) {
             Label boostBadge = new Label("⚡");
             boostBadge.setStyle(
@@ -162,9 +159,8 @@ public class GestionCandidaturesController {
             avatarStack.getChildren().add(boostBadge);
         }
 
-        // ── Bloc infos candidat ───────────────────────────────────────────
         VBox infoBlock = new VBox(6);
-        HBox.setHgrow(infoBlock, Priority.ALWAYS);
+        HBox.setHgrow(infoBlock, javafx.scene.layout.Priority.ALWAYS);
 
         Label lblNom = new Label(dto.getNomComplet());
         lblNom.setStyle("-fx-font-weight: 800; -fx-font-size: 17px; -fx-text-fill: #1E3A5F;");
@@ -183,8 +179,6 @@ public class GestionCandidaturesController {
         offreRow.getChildren().addAll(lblOffreLabel, lblOffreNom);
         infoBlock.getChildren().addAll(lblNom, lblTitrePro, offreRow);
 
-        // ── Badges (statut EN ATTENTE + badge entretien) ──────────────────
-        // Identiques à HistoriqueCandidaturesController
         VBox badgesBlock = new VBox(6);
         badgesBlock.setAlignment(Pos.CENTER_RIGHT);
 
@@ -208,14 +202,11 @@ public class GestionCandidaturesController {
         badgesBlock.getChildren().addAll(lblStatut, lblEntretien);
         topRow.getChildren().addAll(avatarStack, infoBlock, badgesBlock);
 
-        // ── Séparateur ────────────────────────────────────────────────────
         Separator separator = new Separator();
 
-        // ── Boutons d'actions ─────────────────────────────────────────────
         HBox actionsRow = new HBox(12);
         actionsRow.setAlignment(Pos.CENTER_RIGHT);
 
-        // Bouton Traiter
         Button btnTraiter = new Button("✓   Marquer comme Traité");
         btnTraiter.setPrefHeight(44);
         btnTraiter.setMinWidth(210);
@@ -234,7 +225,6 @@ public class GestionCandidaturesController {
             }
         });
 
-        // Bouton Détails
         Button btnDetails = new Button("📄   Voir Détails");
         btnDetails.setPrefHeight(44);
         btnDetails.setMinWidth(150);
@@ -251,7 +241,6 @@ public class GestionCandidaturesController {
                         + "-fx-border-width: 1.5;");
         btnDetails.setOnAction(e -> ouvrirDetails(dto, e));
 
-        // Bouton Supprimer → statut "annulé" en base, disparaît de l'interface
         Button btnSupprimer = new Button("🗑   Supprimer");
         btnSupprimer.setPrefHeight(44);
         btnSupprimer.setMinWidth(140);
@@ -309,7 +298,6 @@ public class GestionCandidaturesController {
             }
         });
 
-        // Ordre : Traiter | Détails | Supprimer
         actionsRow.getChildren().addAll(btnTraiter, btnDetails, btnSupprimer);
         card.getChildren().addAll(topRow, separator, actionsRow);
         return card;
@@ -323,7 +311,7 @@ public class GestionCandidaturesController {
             Parent root = loader.load();
             CandidatureDetailsController controller = loader.getController();
             controller.chargerDonnees(dto);
-            Stage popupStage = new Stage();
+            javafx.stage.Stage popupStage = new javafx.stage.Stage();
             popupStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             popupStage.setTitle("Documents de " + dto.getNomComplet());
             popupStage.setScene(new Scene(root));
@@ -341,6 +329,7 @@ public class GestionCandidaturesController {
         naviguer(event, "/tn/jobnest/gentretien/HistoriqueCandidatures.fxml",
                 "JobNest - Historique des Candidatures");
     }
+
     @FXML
     private void ouvrirProfil(ActionEvent event) {
         naviguer(event, "/tn/jobnest/gentretien/profil-recruteur.fxml", "JobNest - Mon Profil");
@@ -356,6 +345,15 @@ public class GestionCandidaturesController {
     private void ouvrirFeedbacks(ActionEvent event) {
         naviguer(event, "/tn/jobnest/gentretien/feedback-interface.fxml",
                 "JobNest - Gestion des Feedbacks");
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  ✅ NAVIGATION VERS OFFRES D'EMPLOI (SIDEBAR)
+    // ────────────────────────────────────────────────────────────────
+    @FXML
+    private void ouvrirOffresEmploi(ActionEvent event) {
+        naviguer(event, "/tn/jobnest/gentretien/offre-emploi_view.fxml",
+                "JobNest - Offres d'Emploi");
     }
 
     private void naviguer(ActionEvent event, String fxml, String titre) {

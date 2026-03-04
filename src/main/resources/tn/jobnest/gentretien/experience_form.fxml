@@ -1,42 +1,211 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox spacing="15"
+<VBox spacing="0"
       xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="tn.jobnest.gentretien.controller.ExperienceFormController">
+      fx:controller="tn.jobnest.gentretien.controller.ExperienceFormController"
+      prefWidth="500"
+      style="-fx-background-color: #F5F7FB;">
 
-    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-
-    <Label text="Nom de l'expérience"
-           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
-    <TextField fx:id="nomField" promptText="Ex: Développeur Java Senior"/>
-
-    <Label text="Catégorie"
-           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
-    <ComboBox fx:id="categorieBox" prefWidth="300"/>
-
-    <Label text="Description"
-           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
-    <TextArea fx:id="descriptionField" promptText="Description" prefRowCount="3" wrapText="true"/>
-
-    <Label text="Niveau requis"
-           style="-fx-font-weight:bold; -fx-text-fill:#374151;"/>
-    <ComboBox fx:id="niveauBox" prefWidth="300"/>
-
-    <HBox spacing="10">
-        <Button text="Parler"
-                onAction="#startVoice"
-                prefHeight="35"
-                style="-fx-background-color:#7c3aed; -fx-text-fill:white;
-                       -fx-background-radius:8px; -fx-cursor:hand;"/>
-
-        <Button text="Enregistrer"
-                onAction="#handleSave"
-                prefHeight="35" prefWidth="180"
-                style="-fx-background-color:#059669; -fx-text-fill:white;
-                       -fx-font-weight:bold; -fx-background-radius:8px; -fx-cursor:hand;"/>
+    <!-- ══════════════════ HEADER ══════════════════ -->
+    <HBox alignment="CENTER_LEFT"
+          style="-fx-background-color: #1E3A5F;
+                 -fx-padding: 20 24 20 24;">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="📋  Nouvelle Expérience"
+                   style="-fx-font-size: 19px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <Label text="Remplissez les informations de l'expérience requise"
+                   style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.55);"/>
+        </VBox>
+        <Button text="✕" onAction="#closePopup"
+                style="-fx-background-color: rgba(255,255,255,0.15);
+                       -fx-text-fill: white; -fx-font-size: 15px;
+                       -fx-background-radius: 8; -fx-cursor: hand;
+                       -fx-padding: 4 10 4 10;"/>
     </HBox>
+
+    <!-- Bande dégradée accent -->
+    <Region prefHeight="4"
+            style="-fx-background-color: linear-gradient(to right, #059669, #2563EB);"/>
+
+    <!-- ══════════════════ BODY ══════════════════ -->
+    <VBox spacing="16"
+          style="-fx-padding: 22 24 22 24; -fx-background-color: #F5F7FB;">
+
+        <!-- ─── SECTION : Informations principales ─── -->
+        <VBox spacing="12"
+              style="-fx-background-color: white; -fx-padding: 18;
+                     -fx-background-radius: 12;
+                     -fx-border-color: #E8EFF8; -fx-border-width: 1;
+                     -fx-border-radius: 12;
+                     -fx-effect: dropshadow(gaussian,rgba(30,58,95,0.07),10,0,0,3);">
+
+            <!-- Titre de section -->
+            <HBox spacing="8" alignment="CENTER_LEFT"
+                  style="-fx-padding: 0 0 4 0;">
+                <Region prefWidth="3" prefHeight="16"
+                        style="-fx-background-color: #059669; -fx-background-radius: 2;"/>
+                <Label text="INFORMATIONS PRINCIPALES"
+                       style="-fx-font-size: 10px; -fx-font-weight: 800; -fx-text-fill: #94A3B8;"/>
+            </HBox>
+
+            <!-- Nom de l'expérience -->
+            <VBox spacing="6">
+                <HBox spacing="4" alignment="CENTER_LEFT">
+                    <Label text="Nom de l'expérience"
+                           style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                    <Label text="*"
+                           style="-fx-text-fill:#EF4444; -fx-font-weight:bold;"/>
+                </HBox>
+                <TextField fx:id="nomField"
+                           promptText="Ex: Développeur Java Senior, Chef de projet..."
+                           style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                  -fx-border-width:1.5; -fx-border-radius:9;
+                                  -fx-background-radius:9; -fx-padding:9 12 9 12;
+                                  -fx-font-size:13px;"/>
+            </VBox>
+
+            <!-- Catégorie + Niveau côte à côte -->
+            <HBox spacing="14">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <HBox spacing="4" alignment="CENTER_LEFT">
+                        <Label text="Catégorie"
+                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                        <Label text="*"
+                               style="-fx-text-fill:#EF4444; -fx-font-weight:bold;"/>
+                    </HBox>
+                    <ComboBox fx:id="categorieBox"
+                              promptText="Choisir une catégorie"
+                              maxWidth="Infinity"
+                              style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                     -fx-border-width:1.5; -fx-border-radius:9;
+                                     -fx-background-radius:9; -fx-font-size:13px;
+                                     -fx-padding:4 10 4 10;"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <HBox spacing="4" alignment="CENTER_LEFT">
+                        <Label text="Niveau requis"
+                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                        <Label text="*"
+                               style="-fx-text-fill:#EF4444; -fx-font-weight:bold;"/>
+                    </HBox>
+                    <ComboBox fx:id="niveauBox"
+                              promptText="Choisir un niveau"
+                              maxWidth="Infinity"
+                              style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                     -fx-border-width:1.5; -fx-border-radius:9;
+                                     -fx-background-radius:9; -fx-font-size:13px;
+                                     -fx-padding:4 10 4 10;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- ─── SECTION : Description ─── -->
+        <VBox spacing="12"
+              style="-fx-background-color: white; -fx-padding: 18;
+                     -fx-background-radius: 12;
+                     -fx-border-color: #E8EFF8; -fx-border-width: 1;
+                     -fx-border-radius: 12;
+                     -fx-effect: dropshadow(gaussian,rgba(30,58,95,0.07),10,0,0,3);">
+
+            <HBox spacing="8" alignment="CENTER_LEFT"
+                  style="-fx-padding: 0 0 4 0;">
+                <Region prefWidth="3" prefHeight="16"
+                        style="-fx-background-color: #7C3AED; -fx-background-radius: 2;"/>
+                <Label text="DESCRIPTION"
+                       style="-fx-font-size: 10px; -fx-font-weight: 800; -fx-text-fill: #94A3B8;"/>
+            </HBox>
+
+            <VBox spacing="6">
+                <HBox spacing="4" alignment="CENTER_LEFT">
+                    <Label text="Description de l'expérience"
+                           style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                    <Label text="*"
+                           style="-fx-text-fill:#EF4444; -fx-font-weight:bold;"/>
+                </HBox>
+                <TextArea fx:id="descriptionField"
+                          promptText="Décrivez cette expérience, les missions, les technologies utilisées..."
+                          prefRowCount="4"
+                          wrapText="true"
+                          style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                 -fx-border-width:1.5; -fx-border-radius:9;
+                                 -fx-background-radius:9; -fx-font-size:13px;
+                                 -fx-padding:9 12 9 12;"/>
+            </VBox>
+        </VBox>
+
+        <!-- ─── SECTION : Reconnaissance vocale ─── -->
+        <VBox spacing="10"
+              style="-fx-background-color: white; -fx-padding: 16 18 16 18;
+                     -fx-background-radius: 12;
+                     -fx-border-color: #EDE9FE; -fx-border-width: 1;
+                     -fx-border-radius: 12;
+                     -fx-effect: dropshadow(gaussian,rgba(30,58,95,0.07),10,0,0,3);">
+
+            <HBox spacing="8" alignment="CENTER_LEFT"
+                  style="-fx-padding: 0 0 2 0;">
+                <Region prefWidth="3" prefHeight="16"
+                        style="-fx-background-color: #7C3AED; -fx-background-radius: 2;"/>
+                <Label text="SAISIE VOCALE"
+                       style="-fx-font-size: 10px; -fx-font-weight: 800; -fx-text-fill: #94A3B8;"/>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="🎤"
+                       style="-fx-font-size: 20px;"/>
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label text="Dicter la description"
+                           style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#374151;"/>
+                    <Label text="Cliquez sur « Parler » pour dicter automatiquement"
+                           style="-fx-font-size:11px; -fx-text-fill:#94A3B8;"/>
+                </VBox>
+                <Button text="🎤  Parler"
+                        onAction="#startVoice"
+                        prefHeight="38"
+                        style="-fx-background-color: #F5F3FF;
+                               -fx-text-fill: #7C3AED;
+                               -fx-font-weight: bold;
+                               -fx-font-size: 12px;
+                               -fx-background-radius: 9;
+                               -fx-border-color: #DDD6FE;
+                               -fx-border-width: 1.5;
+                               -fx-border-radius: 9;
+                               -fx-cursor: hand;
+                               -fx-padding: 0 18 0 18;"/>
+            </HBox>
+        </VBox>
+
+        <!-- ─── FOOTER : Boutons ─── -->
+        <HBox spacing="12" alignment="CENTER_RIGHT">
+            <Button text="Annuler"
+                    onAction="#closePopup"
+                    prefHeight="42"
+                    style="-fx-background-color: white;
+                           -fx-text-fill: #64748B;
+                           -fx-font-weight: bold;
+                           -fx-font-size: 13px;
+                           -fx-background-radius: 10;
+                           -fx-border-color: #E2E8F0;
+                           -fx-border-width: 1.5;
+                           -fx-border-radius: 10;
+                           -fx-cursor: hand;
+                           -fx-padding: 0 22 0 22;"/>
+            <Button text="✅  Enregistrer"
+                    onAction="#handleSave"
+                    prefHeight="42"
+                    style="-fx-background-color: linear-gradient(to right, #059669, #047857);
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;
+                           -fx-font-size: 13px;
+                           -fx-background-radius: 10;
+                           -fx-cursor: hand;
+                           -fx-padding: 0 28 0 28;
+                           -fx-effect: dropshadow(gaussian,rgba(5,150,105,0.40),10,0,0,3);"/>
+        </HBox>
+
+    </VBox>
 </VBox>

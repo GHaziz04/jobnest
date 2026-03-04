@@ -28,12 +28,7 @@
 
             <VBox styleClass="menu-container" spacing="5" VBox.vgrow="ALWAYS">
 
-                <Button styleClass="menu-item">
-                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
-                        <Text text="📊" style="-fx-font-size: 18px;"/>
-                        <Label text="Tableau de bord" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
-                    </HBox></graphic>
-                </Button>
+
 
                 <!-- ✅ BOUTON OFFRES D'EMPLOI avec navigation -->
                 <Button styleClass="menu-item" onAction="#ouvrirOffresEmploi">

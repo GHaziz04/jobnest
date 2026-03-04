@@ -50,6 +50,12 @@ public class CompetenceFormController {
         validate();
     }
 
+    // ================= CLOSE POPUP ================= ← MÉTHODE MANQUANTE AJOUTÉE
+    @FXML
+    private void closePopup() {
+        ((Stage) btnSave.getScene().getWindow()).close();
+    }
+
     // ================= SAVE =================
     @FXML
     private void save() {

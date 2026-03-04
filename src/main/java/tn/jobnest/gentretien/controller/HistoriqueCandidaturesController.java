@@ -126,8 +126,6 @@ public class HistoriqueCandidaturesController {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  CARTE CANDIDATURE
-    // ─────────────────────────────────────────────────────────────────────────
     private HBox creerItemHistorique(CandidatureDTO dto, boolean hasEntretien) {
         HBox row = new HBox(16);
         row.setAlignment(Pos.CENTER_LEFT);
@@ -141,7 +139,6 @@ public class HistoriqueCandidaturesController {
                         "-fx-border-radius: 0 14 14 0;"
         );
 
-        // ── Avatar ─────────────────────────────────────────────────────────
         String nom      = dto.getNomComplet();
         String[] parts  = nom.split(" ");
         String initials = parts.length >= 2
@@ -152,7 +149,6 @@ public class HistoriqueCandidaturesController {
         StackPane avatarStack = new StackPane();
         Region avatarBg = new Region();
         avatarBg.setPrefSize(48, 48);
-        // ✅ Gradient JavaFX valide (from/to, pas de degrés)
         avatarBg.setStyle(
                 "-fx-background-color: " + (hasEntretien
                         ? "linear-gradient(from 0% 0% to 100% 100%, #2563EB, #1E40AF)"
@@ -178,7 +174,6 @@ public class HistoriqueCandidaturesController {
             avatarStack.getChildren().add(boostBadge);
         }
 
-        // ── Candidat ───────────────────────────────────────────────────────
         VBox colCandidat = new VBox(4);
         colCandidat.setPrefWidth(200);
         Label lblNom = new Label(dto.getNomComplet());
@@ -188,7 +183,6 @@ public class HistoriqueCandidaturesController {
         lblPro.setStyle("-fx-text-fill: #64748B; -fx-font-size: 12px;");
         colCandidat.getChildren().addAll(lblNom, lblPro);
 
-        // ── Offre ──────────────────────────────────────────────────────────
         VBox colOffre = new VBox(4);
         colOffre.setPrefWidth(200);
         Label offreKey = new Label("POSTULÉ POUR");
@@ -197,7 +191,6 @@ public class HistoriqueCandidaturesController {
         offreVal.setStyle("-fx-font-weight: 700; -fx-text-fill: #2563EB; -fx-font-size: 13px;");
         colOffre.getChildren().addAll(offreKey, offreVal);
 
-        // ── Badges ─────────────────────────────────────────────────────────
         Label lblStatut = new Label("✅ TRAITÉ");
         lblStatut.setStyle(
                 "-fx-background-color: #DCFCE7; -fx-text-fill: #15803D;" +
@@ -216,7 +209,6 @@ public class HistoriqueCandidaturesController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // ── Actions ────────────────────────────────────────────────────────
         HBox actions = new HBox(8);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
@@ -259,48 +251,33 @@ public class HistoriqueCandidaturesController {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  PLANIFIER ENTRETIEN
-    //  ✅ LOGIQUE FILTRE DATE :
-    //     On ne garde que les entretiens dont la date est >= aujourd'hui.
-    //     Si la liste filtrée est vide → on crée directement sans dialog.
-    // ─────────────────────────────────────────────────────────────────────────
     private void planifierEntretien(CandidatureDTO dto) {
-        // Sécurité : vérifier qu'il n'a pas déjà un entretien
         if (candidatureService.candidatADejaUnEntretienPourOffre(dto.getIdCandidat(), dto.getIdOffre())) {
             showError("Ce candidat a déjà un entretien planifié pour cette offre.");
             return;
         }
 
-        // Récupérer tous les entretiens existants pour cette offre
         List<Entretien> tousEntretiensPourOffre = candidatureService.getEntretiensPourOffre(dto.getIdOffre());
 
-        // ✅ FILTRE : garder uniquement les entretiens :
-        //    - dont la date n'est PAS dépassée (date_entretien >= aujourd'hui)
-        //    - ET dont le statut n'est PAS "annulé"
         LocalDate today = LocalDate.now();
         List<Entretien> entretiensValides = tousEntretiensPourOffre.stream()
                 .filter(e -> {
-                    // Exclure si date dépassée
                     if (e.getDateEntretien() == null) return false;
                     if (e.getDateEntretien().toLocalDate().isBefore(today)) return false;
-                    // Exclure si statut annulé
                     if ("annulé".equalsIgnoreCase(e.getStatut())) return false;
                     return true;
                 })
                 .collect(Collectors.toList());
 
-        // Récupérer la fenêtre courante
         Stage ownerStage = null;
         if (vboxHistorique.getScene() != null && vboxHistorique.getScene().getWindow() instanceof Stage)
             ownerStage = (Stage) vboxHistorique.getScene().getWindow();
 
         if (entretiensValides.isEmpty()) {
-            // ✅ Tous les entretiens sont passés (ou aucun) → créer directement, sans dialog
             ouvrirFormulaireNouvelEntretien(dto);
         } else {
-            // Des entretiens valides (non dépassés) existent → proposer le choix via dialog
             PlanifierEntretienDialog.DialogResult result = PlanifierEntretienDialog.show(
-                    entretiensValides,          // ← on passe UNIQUEMENT les entretiens valides
+                    entretiensValides,
                     dto.getNomComplet(),
                     dto.getTitreOffre(),
                     ownerStage
@@ -320,7 +297,6 @@ public class HistoriqueCandidaturesController {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
     private void rejoindreEntretienExistant(CandidatureDTO dto, Entretien entretien) {
         boolean ok = candidatureService.ajouterParticipant(entretien.getIdEntretien(), dto.getIdCandidat());
         if (ok) {
@@ -337,7 +313,6 @@ public class HistoriqueCandidaturesController {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
     private void ouvrirFormulaireNouvelEntretien(CandidatureDTO dto) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -365,7 +340,6 @@ public class HistoriqueCandidaturesController {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
     private void ouvrirDetails(CandidatureDTO dto, ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -400,6 +374,15 @@ public class HistoriqueCandidaturesController {
         naviguer(event, "/tn/jobnest/gentretien/profil-recruteur.fxml", "JobNest - Mon Profil");
     }
 
+    // ────────────────────────────────────────────────────────────────
+    //  ✅ NAVIGATION VERS OFFRES D'EMPLOI (SIDEBAR)
+    // ────────────────────────────────────────────────────────────────
+    @FXML
+    private void ouvrirOffresEmploi(ActionEvent event) {
+        naviguer(event, "/tn/jobnest/gentretien/offre-emploi_view.fxml",
+                "JobNest - Offres d'Emploi");
+    }
+
     private void naviguer(ActionEvent event, String fxml, String titre) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
@@ -425,7 +408,4 @@ public class HistoriqueCandidaturesController {
         Alert a = new Alert(Alert.AlertType.INFORMATION);
         a.setTitle(title); a.setHeaderText(null); a.setContentText(msg); a.showAndWait();
     }
-
-
-
 }

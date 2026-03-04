@@ -13,34 +13,25 @@
             prefWidth="1400.0"
             prefHeight="850.0">
 
-    <!-- SIDEBAR -->
     <left>
         <VBox prefWidth="260" styleClass="sidebar" spacing="10">
             <padding><Insets top="30" right="20" bottom="30" left="25"/></padding>
-
             <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
                 <StackPane>
                     <Circle radius="18" fill="#F97316"/>
-                    <Text text="JN" fill="white"
-                          style="-fx-font-family: 'Segoe UI'; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <Text text="JN" fill="white" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 16px; -fx-font-weight: bold;"/>
                 </StackPane>
                 <Label text="JobNest" styleClass="logo"/>
             </HBox>
-
             <VBox styleClass="menu-container" spacing="5" VBox.vgrow="ALWAYS">
-                <Button styleClass="menu-item">
-                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
-                        <Text text="📊" style="-fx-font-size: 18px;"/>
-                        <Label text="Tableau de bord" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
-                    </HBox></graphic>
-                </Button>
-                <Button styleClass="menu-item">
+
+                <!-- ✅ OFFRES D'EMPLOI avec navigation -->
+                <Button styleClass="menu-item" onAction="#ouvrirOffresEmploi">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="💼" style="-fx-font-size: 18px;"/>
                         <Label text="Offres d'emploi" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
-                <!-- Candidatures — lien retour -->
                 <Button styleClass="menu-item" onAction="#ouvrirCandidatures">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📄" style="-fx-font-size: 18px;"/>
@@ -73,15 +64,12 @@
                     </HBox></graphic>
                 </Button>
             </VBox>
-
             <VBox styleClass="sidebar-footer" spacing="10">
                 <Button styleClass="menu-item" onAction="#ouvrirProfil">
-                    <graphic>
-                        <HBox spacing="15" alignment="CENTER_LEFT">
-                            <Text text="👤" style="-fx-font-size: 18px;"/>
-                            <Label text="Profil" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
-                        </HBox>
-                    </graphic>
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="👤" style="-fx-font-size: 18px;"/>
+                        <Label text="Profil" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
+                    </HBox></graphic>
                 </Button>
                 <Button styleClass="menu-item">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
@@ -93,75 +81,47 @@
         </VBox>
     </left>
 
-    <!-- CONTENU PRINCIPAL -->
     <center>
         <VBox spacing="20" style="-fx-background-color: #F5F7FB;">
             <padding><Insets top="25" right="35" bottom="25" left="35"/></padding>
-
             <VBox spacing="4">
                 <Label text="Historique des Candidatures" styleClass="page-title"/>
                 <Label text="Candidatures traitées — avec ou sans entretien planifié" styleClass="page-subtitle"/>
             </VBox>
-
-            <!-- Barre outils + filtres -->
             <HBox spacing="12" alignment="CENTER_LEFT">
-                <TextField fx:id="searchField"
-                           promptText="Rechercher par candidat ou offre..."
+                <TextField fx:id="searchField" promptText="Rechercher par candidat ou offre..."
                            prefWidth="280" HBox.hgrow="ALWAYS"/>
-
-                <!-- Filtre avec/sans entretien -->
                 <ComboBox fx:id="comboEntretien" prefWidth="210"/>
-
-                <!-- Actualiser -->
-                <Button text="🔄 Actualiser" onAction="#rafraichirListe"
-                        prefHeight="42"
+                <Button text="🔄 Actualiser" onAction="#rafraichirListe" prefHeight="42"
                         style="-fx-background-color:#1E3A5F; -fx-text-fill:#FFFF;
                                -fx-text-fill:white; -fx-font-weight:bold; -fx-font-size:13px;
                                -fx-background-radius:12; -fx-cursor:hand; -fx-padding:10 18;
                                -fx-effect:dropshadow(gaussian,rgba(16,185,129,0.35),10,0,0,3);"/>
-
-                <!-- Retour candidatures -->
-                <Button text="← Retour" onAction="#ouvrirCandidatures"
-                        prefHeight="42"
+                <Button text="← Retour" onAction="#ouvrirCandidatures" prefHeight="42"
                         style="-fx-background-color:#1E3A5F; -fx-text-fill:#FFFF;
                                -fx-font-weight:bold; -fx-font-size:13px; -fx-padding:10 18;
                                -fx-background-radius:12; -fx-border-color:#E2E8F0;
                                -fx-border-radius:12; -fx-border-width:1.5; -fx-cursor:hand;"/>
             </HBox>
-
-            <!-- Stats -->
             <HBox spacing="20" alignment="CENTER_LEFT">
-                <VBox styleClass="stat-card"
-                      style="-fx-border-color:#059669; -fx-border-width:0 0 3 0; -fx-border-radius:12px;">
-                    <Label fx:id="totalTraitesLabel" text="0" styleClass="stat-number"
-                           style="-fx-text-fill:#059669;"/>
+                <VBox styleClass="stat-card" style="-fx-border-color:#059669; -fx-border-width:0 0 3 0; -fx-border-radius:12px;">
+                    <Label fx:id="totalTraitesLabel" text="0" styleClass="stat-number" style="-fx-text-fill:#059669;"/>
                     <Label text="Total traités" styleClass="stat-label"/>
                 </VBox>
-                <VBox styleClass="stat-card"
-                      style="-fx-border-color:#2563EB; -fx-border-width:0 0 3 0; -fx-border-radius:12px;">
-                    <Label fx:id="avecEntretienLabel" text="0" styleClass="stat-number"
-                           style="-fx-text-fill:#2563EB;"/>
+                <VBox styleClass="stat-card" style="-fx-border-color:#2563EB; -fx-border-width:0 0 3 0; -fx-border-radius:12px;">
+                    <Label fx:id="avecEntretienLabel" text="0" styleClass="stat-number" style="-fx-text-fill:#2563EB;"/>
                     <Label text="Avec entretien" styleClass="stat-label"/>
                 </VBox>
-                <VBox styleClass="stat-card"
-                      style="-fx-border-color:#F97316; -fx-border-width:0 0 3 0; -fx-border-radius:12px;">
-                    <Label fx:id="sansEntretienLabel" text="0" styleClass="stat-number"
-                           style="-fx-text-fill:#F97316;"/>
+                <VBox styleClass="stat-card" style="-fx-border-color:#F97316; -fx-border-width:0 0 3 0; -fx-border-radius:12px;">
+                    <Label fx:id="sansEntretienLabel" text="0" styleClass="stat-number" style="-fx-text-fill:#F97316;"/>
                     <Label text="Sans entretien" styleClass="stat-label"/>
                 </VBox>
-                <VBox styleClass="stat-card"
-                      style="-fx-border-color:#7C3AED; -fx-border-width:0 0 3 0; -fx-border-radius:12px;">
-                    <Label fx:id="boostedTraitesLabel" text="0" styleClass="stat-number"
-                           style="-fx-text-fill:#7C3AED;"/>
+                <VBox styleClass="stat-card" style="-fx-border-color:#7C3AED; -fx-border-width:0 0 3 0; -fx-border-radius:12px;">
+                    <Label fx:id="boostedTraitesLabel" text="0" styleClass="stat-number" style="-fx-text-fill:#7C3AED;"/>
                     <Label text="Profils boostés" styleClass="stat-label"/>
                 </VBox>
-
-                <!-- Légende -->
-
             </HBox>
-
             <Label text="Candidatures traitées" styleClass="section-title"/>
-
             <ScrollPane fitToWidth="true" prefHeight="530.0"
                         style="-fx-background:transparent; -fx-background-color:transparent; -fx-border-color:transparent;"
                         VBox.vgrow="ALWAYS">

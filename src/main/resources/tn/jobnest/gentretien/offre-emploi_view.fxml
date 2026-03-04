@@ -13,183 +13,125 @@
             prefWidth="1400.0"
             prefHeight="850.0">
 
-    <!-- ═══════════════════════ SIDEBAR ═══════════════════════ -->
     <left>
         <VBox prefWidth="260" styleClass="sidebar" spacing="10">
             <padding><Insets top="30" right="20" bottom="30" left="25"/></padding>
-
-            <!-- Logo -->
-            <HBox spacing="12" alignment="CENTER_LEFT"
-                  style="-fx-padding: 0 0 20 0;">
+            <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
                 <StackPane>
-                    <Circle radius="18"
-                            fill="linear-gradient(to bottom right, #FF6B35, #FF8C5A)"/>
-                    <Text text="JN" fill="white"
-                          style="-fx-font-family:'Segoe UI'; -fx-font-size:16px; -fx-font-weight:bold;"/>
+                    <Circle radius="18" fill="linear-gradient(to bottom right, #FF6B35, #FF8C5A)"/>
+                    <Text text="JN" fill="white" style="-fx-font-family:'Segoe UI'; -fx-font-size:16px; -fx-font-weight:bold;"/>
                 </StackPane>
                 <Label text="JobNest" styleClass="logo"/>
             </HBox>
-
-            <!-- Menu -->
             <VBox styleClass="menu-container" spacing="5" VBox.vgrow="ALWAYS">
-
-                <Button styleClass="menu-item">
-                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
-                        <Text text="📊" style="-fx-font-size:18px;"/>
-                        <Label text="Tableau de bord"
-                               style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
-                    </HBox></graphic>
-                </Button>
 
                 <!-- ACTIF -->
                 <Button styleClass="menu-item, menu-item-active">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="💼" style="-fx-font-size:18px;"/>
-                        <Label text="Offres d'emploi"
-                               style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                        <Label text="Offres d'emploi" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
                     </HBox></graphic>
                 </Button>
-
-                <Button styleClass="menu-item">
+                <!-- ✅ NAVIGATION VERS CANDIDATURES -->
+                <Button styleClass="menu-item" onAction="#ouvrirCandidature">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📄" style="-fx-font-size:18px;"/>
-                        <Label text="Candidatures"
-                               style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                        <Label text="Candidatures" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
                     </HBox></graphic>
                 </Button>
-
+                <!-- ✅ NAVIGATION VERS ENTRETIENS -->
                 <Button styleClass="menu-item" onAction="#ouvrirEntretiens">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📅" style="-fx-font-size:18px;"/>
-                        <Label text="Entretiens"
-                               style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                        <Label text="Entretiens" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
                     </HBox></graphic>
                 </Button>
-
-                <Button styleClass="menu-item">
+                <!-- ✅ NAVIGATION VERS FEEDBACKS -->
+                <Button styleClass="menu-item" onAction="#ouvrirFeedbacks">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📊" style="-fx-font-size:18px;"/>
-                        <Label text="Feedbacks"
-                               style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                        <Label text="Feedbacks" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
                     </HBox></graphic>
                 </Button>
-
-                <Button styleClass="menu-item">
+                <!-- ✅ NAVIGATION VERS HISTORIQUE -->
+                <Button styleClass="menu-item" onAction="#ouvrirHistorique">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="🕐" style="-fx-font-size:18px;"/>
-                        <Label text="Historique"
-                               style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                        <Label text="Historique" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
                     </HBox></graphic>
                 </Button>
-
                 <Button styleClass="menu-item">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="🎯" style="-fx-font-size:18px;"/>
-                        <Label text="Matching"
-                               style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                        <Label text="Matching" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
                     </HBox></graphic>
                 </Button>
-
             </VBox>
-
-            <!-- Footer -->
             <VBox styleClass="sidebar-footer" spacing="10">
-                <Button styleClass="menu-item">
+                <!-- ✅ NAVIGATION VERS PROFIL -->
+                <Button styleClass="menu-item" onAction="#ouvrirProfil">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="👤" style="-fx-font-size:18px;"/>
-                        <Label text="Profil"
-                               style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                        <Label text="Profil" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
                     </HBox></graphic>
                 </Button>
                 <Button styleClass="menu-item">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="🚪" style="-fx-font-size:18px;"/>
-                        <Label text="Déconnexion"
-                               style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                        <Label text="Déconnexion" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
                     </HBox></graphic>
                 </Button>
             </VBox>
         </VBox>
     </left>
 
-    <!-- ═══════════════════════ MAIN CONTENT ═══════════════════════ -->
     <center>
-        <VBox spacing="18"
-              style="-fx-background-color: #F5F7FB;">
+        <VBox spacing="18" style="-fx-background-color: #F5F7FB;">
             <padding><Insets top="28" right="32" bottom="20" left="32"/></padding>
-
-            <!-- ── Top bar ── -->
             <HBox alignment="CENTER_LEFT" spacing="16">
                 <VBox spacing="4" HBox.hgrow="ALWAYS">
-                    <Label text="Gestion des Offres d'Emploi"
-                           styleClass="page-title"/>
-                    <Label text="Créez et gérez vos annonces de recrutement"
-                           styleClass="page-subtitle"/>
+                    <Label text="Gestion des Offres d'Emploi" styleClass="page-title"/>
+                    <Label text="Créez et gérez vos annonces de recrutement" styleClass="page-subtitle"/>
                 </VBox>
-                <Button text="＋  Nouvelle Offre"
-                        onAction="#showAddForm"
-                        prefHeight="44"
-                        style="-fx-background-color: #F97316;
-                               -fx-text-fill: white;
-                               -fx-font-weight: bold;
-                               -fx-font-size: 14px;
-                               -fx-background-radius: 12;
-                               -fx-cursor: hand;
+                <Button text="🔄  Actualiser" onAction="#actualiser" prefHeight="44"
+                        style="-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;
+                               -fx-font-size:13px; -fx-font-weight:bold;
+                               -fx-background-radius:12px; -fx-cursor:hand;
+                               -fx-effect:dropshadow(gaussian,rgb(37,99,235),10,0,0,3);"/>
+                <Button text="＋  Nouvelle Offre" onAction="#showAddForm" prefHeight="44"
+                        style="-fx-background-color: #F97316; -fx-text-fill: white;
+                               -fx-font-weight: bold; -fx-font-size: 14px;
+                               -fx-background-radius: 12; -fx-cursor: hand;
                                -fx-padding: 0 24 0 24;
                                -fx-effect: dropshadow(gaussian,rgba(249,115,22,0.45),12,0,0,3);"/>
             </HBox>
-
-            <!-- ── Barre de recherche ── -->
-            <HBox spacing="14" alignment="CENTER_LEFT">
-                <TextField fx:id="searchField"
-                           promptText="🔍  Rechercher par titre ou entreprise..."
-                           prefWidth="340"
-                           HBox.hgrow="ALWAYS"
-                           style="-fx-background-color:white;
-                                  -fx-border-color:#E2E8F0;
-                                  -fx-border-width:1.5;
-                                  -fx-border-radius:10;
-                                  -fx-background-radius:10;
-                                  -fx-padding:10 14 10 14;
-                                  -fx-font-size:13px;"/>
-                <ComboBox fx:id="contratFilterBox"
-                          promptText="Tous"
-                          prefWidth="200"
-                          style="-fx-background-color:white;
-                                 -fx-border-color:#E2E8F0;
-                                 -fx-border-width:1.5;
-                                 -fx-border-radius:10;
-                                 -fx-background-radius:10;
-                                 -fx-padding:4 10 4 10;
-                                 -fx-font-size:13px;"/>
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="🔍  Rechercher par titre ou entreprise..."
+                           prefWidth="300" HBox.hgrow="ALWAYS"
+                           style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                  -fx-border-width:1.5; -fx-border-radius:10;
+                                  -fx-background-radius:10; -fx-padding:10 14 10 14; -fx-font-size:13px;"/>
+                <ComboBox fx:id="contratFilterBox" promptText="Contrat" prefWidth="170"
+                          style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                 -fx-border-width:1.5; -fx-border-radius:10;
+                                 -fx-background-radius:10; -fx-padding:4 10 4 10; -fx-font-size:13px;"/>
+                <ComboBox fx:id="statutFilterBox" promptText="Statut" prefWidth="190"
+                          style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                 -fx-border-width:1.5; -fx-border-radius:10;
+                                 -fx-background-radius:10; -fx-padding:4 10 4 10; -fx-font-size:13px;"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label fx:id="tableCountLabel"
-                       text="0 offre"
+                <Label fx:id="tableCountLabel" text="0 offre"
                        style="-fx-font-size:13px; -fx-text-fill:#64748B; -fx-font-weight:bold;"/>
             </HBox>
-
-            <!-- ── Zone cartes ── -->
-            <ScrollPane fitToWidth="true"
-                        VBox.vgrow="ALWAYS"
-                        style="-fx-background:transparent;
-                               -fx-background-color:transparent;
-                               -fx-border-color:transparent;">
-                <FlowPane fx:id="cardContainer"
-                          hgap="20" vgap="20"
-                          prefWrapLength="1000"
-                          alignment="TOP_LEFT"
-                          style="-fx-background-color:transparent; -fx-padding:4 0 10 0;"/>
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background:transparent; -fx-background-color:transparent; -fx-border-color:transparent;">
+                <FlowPane fx:id="cardContainer" hgap="20" vgap="20" prefWrapLength="1000"
+                          alignment="TOP_LEFT" style="-fx-background-color:transparent; -fx-padding:4 0 10 0;"/>
             </ScrollPane>
-
-            <!-- ── Pagination ── -->
-            <HBox alignment="CENTER" spacing="12"
-                  style="-fx-padding:0 0 10 0;">
-                <Pagination fx:id="pagination"
-                            maxPageIndicatorCount="7"
+            <HBox alignment="CENTER" spacing="12" style="-fx-padding:0 0 10 0;">
+                <Pagination fx:id="pagination" maxPageIndicatorCount="7"
                             style="-fx-page-information-visible:false;"/>
             </HBox>
-
         </VBox>
     </center>
-
 </BorderPane>

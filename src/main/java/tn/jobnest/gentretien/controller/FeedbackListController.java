@@ -58,6 +58,7 @@ public class FeedbackListController {
 
         rafraichirListe();
     }
+
     @FXML
     private void ouvrirProfil(ActionEvent event) {
         try {
@@ -73,6 +74,28 @@ public class FeedbackListController {
             stage.show();
         } catch (IOException ex) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le profil : " + ex.getMessage());
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  ✅ NAVIGATION VERS OFFRES D'EMPLOI (SIDEBAR)
+    // ────────────────────────────────────────────────────────────────
+    @FXML
+    private void ouvrirOffresEmploi(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/tn/jobnest/gentretien/offre-emploi_view.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            java.net.URL css = getClass().getResource("/tn/jobnest/gentretien/styles.css");
+            if (css != null) scene.getStylesheets().add(css.toExternalForm());
+            stage.setScene(scene);
+            stage.setTitle("JobNest - Offres d'Emploi");
+            stage.show();
+        } catch (IOException ex) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir les offres : " + ex.getMessage());
         }
     }
 
@@ -585,7 +608,7 @@ public class FeedbackListController {
 
             FeedbackFormController ctrl = loader.getController();
             ctrl.setEntretien(entretien);
-            ctrl.setFeedbackExistant(f); // Nouvelle méthode à ajouter
+            ctrl.setFeedbackExistant(f);
 
             stage.setTitle("✏️ Modifier le Feedback - Entretien #" + entretien.getIdEntretien());
             stage.showAndWait();
