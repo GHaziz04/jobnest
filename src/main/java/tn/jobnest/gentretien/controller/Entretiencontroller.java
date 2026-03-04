@@ -548,4 +548,22 @@ public class Entretiencontroller {
                     "Impossible d'ouvrir le profil : " + ex.getMessage());
         }
     }
+    @FXML
+    private void ouvrirMatching(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/tn/jobnest/gentretien/matching-view.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            java.net.URL css = getClass().getResource("/tn/jobnest/gentretien/styles.css");
+            if (css != null) scene.getStylesheets().add(css.toExternalForm());
+            stage.setScene(scene);
+            stage.setTitle("JobNest - Matching");
+            stage.show();
+        } catch (IOException ex) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir le matching : " + ex.getMessage());
+        }
+    }
 }

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.jobnest.gentretien.controller.MatchingController"
+            stylesheets="@styles.css"
+            prefWidth="1400.0"
+            prefHeight="850.0">
+
+    <!-- ══════════════ SIDEBAR ══════════════ -->
+    <left>
+        <VBox prefWidth="260" styleClass="sidebar" spacing="10">
+            <padding><Insets top="30" right="20" bottom="30" left="25"/></padding>
+            <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
+                <StackPane>
+                    <Circle radius="18" fill="#F97316"/>
+                    <Text text="JN" fill="white" style="-fx-font-family:'Segoe UI'; -fx-font-size:16px; -fx-font-weight:bold;"/>
+                </StackPane>
+                <Label text="JobNest" styleClass="logo"/>
+            </HBox>
+            <VBox styleClass="menu-container" spacing="5" VBox.vgrow="ALWAYS">
+                <Button styleClass="menu-item" onAction="#ouvrirOffresEmploi">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="💼" style="-fx-font-size:18px;"/>
+                        <Label text="Offres d'emploi" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item" onAction="#ouvrirCandidature">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📄" style="-fx-font-size:18px;"/>
+                        <Label text="Candidatures" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item" onAction="#ouvrirEntretiens">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📅" style="-fx-font-size:18px;"/>
+                        <Label text="Entretiens" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item" onAction="#ouvrirFeedbacks">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="📊" style="-fx-font-size:18px;"/>
+                        <Label text="Feedbacks" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item" onAction="#ouvrirHistorique">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="🕐" style="-fx-font-size:18px;"/>
+                        <Label text="Historique" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <!-- ACTIF -->
+                <Button styleClass="menu-item, menu-item-active">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="🎯" style="-fx-font-size:18px;"/>
+                        <Label text="Matching" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                    </HBox></graphic>
+                </Button>
+            </VBox>
+            <VBox styleClass="sidebar-footer" spacing="10">
+                <Button styleClass="menu-item" onAction="#ouvrirProfil">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="👤" style="-fx-font-size:18px;"/>
+                        <Label text="Profil" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="menu-item">
+                    <graphic><HBox spacing="15" alignment="CENTER_LEFT">
+                        <Text text="🚪" style="-fx-font-size:18px;"/>
+                        <Label text="Déconnexion" style="-fx-text-fill:inherit; -fx-font-size:14px;"/>
+                    </HBox></graphic>
+                </Button>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ══════════════ CONTENU PRINCIPAL ══════════════ -->
+    <center>
+        <VBox spacing="20" style="-fx-background-color:#F5F7FB;">
+            <padding><Insets top="25" right="35" bottom="25" left="35"/></padding>
+
+            <!-- Titre + bouton global -->
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="🎯  Matching Candidatures / Offres" styleClass="page-title"/>
+                    <Label text="Évaluez automatiquement l'adéquation entre les candidats et vos offres"
+                           styleClass="page-subtitle"/>
+                </VBox>
+                <Button fx:id="btnMatchingTout" text="🎯  Lancer le Matching"
+                        onAction="#lancerMatchingTout"
+                        prefHeight="46"
+                        style="-fx-background-color: linear-gradient(to right,#7C3AED,#5B21B6);
+                               -fx-text-fill:white; -fx-font-weight:800; -fx-font-size:14px;
+                               -fx-background-radius:12; -fx-cursor:hand; -fx-padding:0 24;
+                               -fx-effect:dropshadow(gaussian,rgba(124,58,237,0.45),12,0,0,3);"/>
+                <Button text="🔄  Actualiser" onAction="#rafraichir"
+                        prefHeight="46"
+                        style="-fx-background-color:#1E3A5F; -fx-text-fill:white;
+                               -fx-font-weight:700; -fx-font-size:13px;
+                               -fx-background-radius:12; -fx-cursor:hand; -fx-padding:0 18;"/>
+            </HBox>
+
+            <!-- Statistiques -->
+            <HBox spacing="16" alignment="CENTER_LEFT">
+                <VBox styleClass="stat-card" style="-fx-border-color:#7C3AED; -fx-border-width:0 0 3 0;">
+                    <Label fx:id="totalLabel" text="0" styleClass="stat-number" style="-fx-text-fill:#7C3AED;"/>
+                    <Label text="Total" styleClass="stat-label"/>
+                </VBox>
+                <VBox styleClass="stat-card" style="-fx-border-color:#2563EB; -fx-border-width:0 0 3 0;">
+                    <Label fx:id="enAttenteLabel" text="0" styleClass="stat-number" style="-fx-text-fill:#2563EB;"/>
+                    <Label text="En attente" styleClass="stat-label"/>
+                </VBox>
+                <VBox styleClass="stat-card" style="-fx-border-color:#D97706; -fx-border-width:0 0 3 0;">
+                    <Label fx:id="revisionLabel" text="0" styleClass="stat-number" style="-fx-text-fill:#D97706;"/>
+                    <Label text="En révision" styleClass="stat-label"/>
+                </VBox>
+                <VBox styleClass="stat-card" style="-fx-border-color:#059669; -fx-border-width:0 0 3 0;">
+                    <Label fx:id="acceptesLabel" text="0" styleClass="stat-number" style="-fx-text-fill:#059669;"/>
+                    <Label text="Acceptées" styleClass="stat-label"/>
+                </VBox>
+                <VBox styleClass="stat-card" style="-fx-border-color:#DC2626; -fx-border-width:0 0 3 0;">
+                    <Label fx:id="annulesLabel" text="0" styleClass="stat-number" style="-fx-text-fill:#DC2626;"/>
+                    <Label text="Annulées" styleClass="stat-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- Filtres -->
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="🔍  Rechercher par candidat ou offre..."
+                           prefWidth="300" HBox.hgrow="ALWAYS"
+                           style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                  -fx-border-width:1.5; -fx-border-radius:10;
+                                  -fx-background-radius:10; -fx-padding:10 14; -fx-font-size:13px;"/>
+                <ComboBox fx:id="comboFiltre" prefWidth="200"
+                          style="-fx-background-color:white; -fx-border-color:#E2E8F0;
+                                 -fx-border-width:1.5; -fx-border-radius:10;
+                                 -fx-background-radius:10; -fx-font-size:13px;"/>
+            </HBox>
+
+            <!-- Explication des règles -->
+            <HBox spacing="12" alignment="CENTER_LEFT"
+                  style="-fx-background-color:white; -fx-background-radius:12;
+                         -fx-padding:14 20; -fx-border-color:#E2E8F0;
+                         -fx-border-radius:12; -fx-border-width:1;
+                         -fx-effect:dropshadow(gaussian,rgba(30,58,95,0.06),8,0,0,2);">
+                <Label text="📌  Règles :"
+                       style="-fx-font-weight:800; -fx-font-size:12px; -fx-text-fill:#374151;"/>
+                <Label text="≥ 80%  →  ✅ Acceptée auto"
+                       style="-fx-background-color:#DCFCE7; -fx-text-fill:#15803D;
+                              -fx-font-size:11px; -fx-font-weight:700;
+                              -fx-padding:4 10; -fx-background-radius:20;"/>
+                <Label text="40–79%  →  🔍 En révision (décision manuelle)"
+                       style="-fx-background-color:#FEF3C7; -fx-text-fill:#D97706;
+                              -fx-font-size:11px; -fx-font-weight:700;
+                              -fx-padding:4 10; -fx-background-radius:20;"/>
+                <Label text="&lt; 40%  →  ❌ Annulée auto"
+                       style="-fx-background-color:#FEE2E2; -fx-text-fill:#DC2626;
+                              -fx-font-size:11px; -fx-font-weight:700;
+                              -fx-padding:4 10; -fx-background-radius:20;"/>
+            </HBox>
+
+            <!-- Liste des candidatures -->
+            <Label text="Candidatures" styleClass="section-title"/>
+            <ScrollPane fitToWidth="true" prefHeight="500.0" VBox.vgrow="ALWAYS"
+                        style="-fx-background:transparent; -fx-background-color:transparent;
+                               -fx-border-color:transparent;">
+                <VBox fx:id="vboxCandidatures" spacing="12"
+                      style="-fx-background-color:transparent;"/>
+            </ScrollPane>
+        </VBox>
+    </center>
+</BorderPane>
