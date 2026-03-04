@@ -4,13 +4,16 @@
 
 <!--
     matching-result.fxml
-    Layout minimaliste : tout le design est construit dynamiquement
-    dans MatchingResultController#afficherResultat() pour reproduire
-    fidèlement le style dark premium (identique à la preview HTML).
+    Tout le design est construit dynamiquement dans MatchingResultController.
+    La charte graphique respecte le Design System JobNest :
+      - Bleu marine  #1E3A5F  (sidebar, titres)
+      - Bleu primaire #2563EB  (accents, boutons)
+      - Orange       #F97316  (CTA, highlights)
+      - Police       'Segoe UI'
 -->
 <VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="tn.jobnest.gentretien.controller.MatchingResultController"
       fx:id="rootVBox"
-      prefWidth="860"
-      style="-fx-background-color:#0F1623;"/>
+      prefWidth="880"
+      style="-fx-background-color:#1E3A5FFF;"/>

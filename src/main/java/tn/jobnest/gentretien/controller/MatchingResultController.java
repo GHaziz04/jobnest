@@ -10,8 +10,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.ArcType;
+import javafx.scene.shape.StrokeLineCap;
 import javafx.stage.Stage;
 import tn.jobnest.gentretien.service.MatchingService.DetailCompetence;
 import tn.jobnest.gentretien.service.MatchingService.DetailExperience;
@@ -19,88 +19,114 @@ import tn.jobnest.gentretien.service.MatchingService.MatchingResult;
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
- *  MatchingResultController  —  Design Dark Premium (JavaFX pur)
+ *  MatchingResultController — Design Premium JobNest
  *
- *  Reproduit fidèlement la maquette HTML :
- *   • Hero sombre avec gauge en arc Canvas
- *   • Barre d'accent tricolore
- *   • Tableau de matching ligne par ligne
- *   • Score monospace + mini-barre inline
+ *  Charte graphique cohérente avec le projet :
+ *    • Police     : 'Segoe UI' (identique au .root CSS du projet)
+ *    • Bleu marine: #1E3A5F  (sidebar, titres, hero)
+ *    • Bleu act.  : #2563EB  (accents, barres, scores compétences)
+ *    • Orange     : #F97316  (CTA, highlights expériences, logo)
+ *    • Fond dark  : #0D1B2E / #132039 / #1A2B45
+ *    • Texte clair: #CBD5E1 / #8BAECF
  * ════════════════════════════════════════════════════════════════════════════
  */
 public class MatchingResultController {
 
     @FXML private VBox rootVBox;
 
-    // ─── Palette ──────────────────────────────────────────────────────────────
-    private static final String C_BG_DEEP   = "#0F1623";
-    private static final String C_BG_HERO   = "#1A2540";
-    private static final String C_BG_BODY   = "#151E2E";
-    private static final String C_BG_CARD   = "#1C2537";
-    private static final String C_BG_HEADER = "#1E2D47";
-    private static final String C_BG_HDR_E  = "#1E2A30";
-    private static final String C_ROW_ODD   = "#212D42";
-    private static final String C_ROW_EVEN  = "#1C2537";
-    private static final String C_ROW_HOVER = "#263150";
+    // ─── Palette JobNest Dark ─────────────────────────────────────────────────
+    // Fonds (déclinaisons sombres de la sidebar #1E3A5F)
+    private static final String BG_DEEP    = "#0D1B2E";   // fond ultime
+    private static final String BG_HERO    = "#132039";   // fond hero
+    private static final String BG_BODY    = "#0F2034";   // fond corps
+    private static final String BG_CARD    = "#1A2B45";   // carte
+    private static final String BG_HDR_B   = "#1E3A5F";   // header section bleu (=sidebar)
+    private static final String BG_HDR_O   = "#1F2D1A";   // header section orange (vert sombre)
+    private static final String BG_ROW_ODD = "#172336";   // ligne impaire
+    private static final String BG_ROW_EVN = "#1A2B45";   // ligne paire
 
-    private static final String C_BLEU      = "#4B7BEC";
-    private static final String C_VERT      = "#10B981";
-    private static final String C_ORANGE    = "#F59E0B";
-    private static final String C_ROUGE     = "#EF4444";
+    // Couleurs primaires du projet
+    private static final String C_BLEU     = "#2563EB";   // bleu primaire
+    private static final String C_BLEU_LT  = "#60A5FA";   // bleu clair (texte sur dark)
+    private static final String C_MARINE   = "#1E3A5F";   // bleu marine
+    private static final String C_ORANGE   = "#F97316";   // orange CTA
+    private static final String C_ORANGE_LT= "#FED7AA";   // orange clair (texte)
+    private static final String C_VERT     = "#10B981";   // vert succès
+    private static final String C_ROUGE    = "#EF4444";   // rouge erreur
 
-    private static final String C_TEXT      = "#CBD5E1";
-    private static final String C_TEXT_DIM  = "#64748B";
-    private static final String C_TEXT_DARK = "#334155";
-    private static final String C_BORDER_B  = "#263252";
-    private static final String C_BORDER_G  = "#2D3748";
+    // Textes
+    private static final String TXT_MAIN   = "#E2E8F0";   // texte principal
+    private static final String TXT_SUB    = "#8BAECF";   // texte secondaire (=sidebar inactif)
+    private static final String TXT_MUTED  = "#4A6080";   // texte atténué
+
+    // Bordures
+    private static final String BDR_BLEU   = "#1D4ED8";
+    private static final String BDR_ORANGE = "#92400E";
+    private static final String BDR_CARD   = "#1E3A5F";
 
     // ════════════════════════════════════════════════════════════════════════
-    //  POINT D'ENTRÉE PUBLIC
+    //  POINT D'ENTRÉE
     // ════════════════════════════════════════════════════════════════════════
 
     public void afficherResultat(MatchingResult result, String nomCandidat) {
         if (rootVBox == null) return;
         rootVBox.getChildren().clear();
-        rootVBox.setStyle(bg(C_BG_DEEP));
+        rootVBox.setStyle(bg(BG_DEEP));
 
-        // 1 — Hero
-        rootVBox.getChildren().add(construireHero(result, nomCandidat));
-
-        // 2 — Barre accent tricolore
-        rootVBox.getChildren().add(construireAccent());
-
-        // 3 — Corps scrollable
-        rootVBox.getChildren().add(construireCorps(result));
+        rootVBox.getChildren().addAll(
+                buildHero(result, nomCandidat),
+                buildAccentBar(),
+                buildBody(result)
+        );
     }
 
     // ════════════════════════════════════════════════════════════════════════
     //  HERO
     // ════════════════════════════════════════════════════════════════════════
 
-    private VBox construireHero(MatchingResult result, String nomCandidat) {
+    private VBox buildHero(MatchingResult result, String nomCandidat) {
         VBox hero = new VBox(0);
         hero.setStyle(
-                "-fx-background-color:linear-gradient(to bottom right," + C_BG_DEEP + "," + C_BG_HERO + ");" +
-                        "-fx-padding:28 32 26 32;");
+                "-fx-background-color:linear-gradient(to bottom right," + BG_DEEP + "," + BG_HERO + ");" +
+                        "-fx-padding:26 32 24 32;");
 
         // ── Top bar ──────────────────────────────────────────────────────────
         HBox topBar = new HBox();
         topBar.setAlignment(Pos.CENTER_LEFT);
-        topBar.setPadding(new Insets(0, 0, 22, 0));
+        topBar.setPadding(new Insets(0, 0, 20, 0));
 
-        VBox titreZone = new VBox(3);
+        // Logo + titres
+        VBox titreZone = new VBox(4);
         HBox.setHgrow(titreZone, Priority.ALWAYS);
-        Label eyebrow = label("ANALYSE DE CANDIDATURE",
-                "font-family:'Courier New'; font-size:10px; font-weight:bold; " +
-                        "text-fill:" + C_BLEU + "; -fx-letter-spacing:3;");
-        Label titre = label("Rapport de Matching",
-                "font-family:'Georgia'; font-size:22px; font-weight:bold; text-fill:white;");
-        titreZone.getChildren().addAll(eyebrow, titre);
 
+        // Badge "JobNest" style projet
+        HBox logoRow = new HBox(8);
+        logoRow.setAlignment(Pos.CENTER_LEFT);
+        StackPane logoIcon = new StackPane();
+        logoIcon.setPrefSize(22, 22);
+        logoIcon.setStyle(
+                "-fx-background-color:linear-gradient(to bottom right,#F97316,#EA6B00);" +
+                        "-fx-background-radius:6;");
+        Label logoTxt = new Label("JN");
+        logoTxt.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:10px; " +
+                "-fx-font-weight:bold; -fx-text-fill:white;");
+        logoIcon.getChildren().add(logoTxt);
+
+        Label eyebrow = new Label("RAPPORT DE MATCHING");
+        eyebrow.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:10px; " +
+                "-fx-font-weight:bold; -fx-text-fill:" + C_BLEU_LT + "; -fx-letter-spacing:2;");
+        logoRow.getChildren().addAll(logoIcon, eyebrow);
+
+        Label titre = new Label("Analyse de Candidature");
+        titre.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:22px; " +
+                "-fx-font-weight:bold; -fx-text-fill:" + TXT_MAIN + ";");
+        titreZone.getChildren().addAll(logoRow, titre);
+
+        // Bouton fermer (style cohérent menu-item hover)
         Button btnClose = new Button("✕");
         btnClose.setStyle(
-                "-fx-background-color:rgba(255,255,255,0.06);" +
-                        "-fx-text-fill:#94A3B8; -fx-font-size:15px;" +
+                "-fx-background-color:rgba(255,255,255,0.07);" +
+                        "-fx-text-fill:" + TXT_SUB + "; -fx-font-size:15px;" +
                         "-fx-background-radius:50; -fx-cursor:hand;" +
                         "-fx-min-width:36; -fx-min-height:36;" +
                         "-fx-border-color:rgba(255,255,255,0.12);" +
@@ -109,165 +135,175 @@ public class MatchingResultController {
         topBar.getChildren().addAll(titreZone, btnClose);
 
         // ── Gauge + métriques ─────────────────────────────────────────────────
-        HBox bodyRow = new HBox(28);
-        bodyRow.setAlignment(Pos.CENTER_LEFT);
-
-        bodyRow.getChildren().addAll(
-                construireGauge(result.scoreFinal),
-                construireMetriques(result, nomCandidat)
+        HBox gaugeRow = new HBox(28);
+        gaugeRow.setAlignment(Pos.CENTER_LEFT);
+        gaugeRow.getChildren().addAll(
+                buildGauge(result.scoreFinal),
+                buildMetrics(result, nomCandidat)
         );
 
-        hero.getChildren().addAll(topBar, bodyRow);
+        hero.getChildren().addAll(topBar, gaugeRow);
         return hero;
     }
 
-    // ── Gauge arc Canvas ──────────────────────────────────────────────────────
+    // ── Gauge circulaire en Canvas ────────────────────────────────────────────
 
-    private StackPane construireGauge(double score) {
+    private StackPane buildGauge(double score) {
         StackPane pane = new StackPane();
-        pane.setPrefSize(160, 160);
-        pane.setMinSize(160, 160);
-        pane.setMaxSize(160, 160);
+        pane.setPrefSize(158, 158);
+        pane.setMinSize(158, 158);
+        pane.setMaxSize(158, 158);
         pane.setStyle(
-                "-fx-background-color:rgba(255,255,255,0.04);" +
-                        "-fx-background-radius:80;" +
-                        "-fx-border-color:rgba(255,255,255,0.08);" +
-                        "-fx-border-radius:80; -fx-border-width:1;");
+                "-fx-background-color:rgba(37,99,235,0.07);" +
+                        "-fx-background-radius:79;" +
+                        "-fx-border-color:" + BDR_BLEU + ";" +
+                        "-fx-border-radius:79; -fx-border-width:1;");
 
-        // Canvas pour l'arc
-        Canvas canvas = new Canvas(160, 160);
-        dessinerArc(canvas, score);
+        Canvas cv = new Canvas(158, 158);
+        drawArc(cv, score);
 
-        // Texte central
         VBox center = new VBox(3);
         center.setAlignment(Pos.CENTER);
-        String couleur = couleurScore(score);
+
+        String couleur = scoreColor(score);
         Label lblPct = new Label(String.format("%.0f%%", score));
-        lblPct.setStyle("-fx-font-family:'Georgia'; -fx-font-size:40px; " +
+        lblPct.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:38px; " +
                 "-fx-font-weight:bold; -fx-text-fill:" + couleur + ";");
+
         Label lblSub = new Label("SCORE FINAL");
-        lblSub.setStyle("-fx-font-family:'Courier New'; -fx-font-size:8px; " +
-                "-fx-text-fill:" + C_BLEU + "; -fx-letter-spacing:2;");
+        lblSub.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:8px; " +
+                "-fx-font-weight:bold; -fx-text-fill:" + C_BLEU_LT + "; -fx-letter-spacing:2;");
         center.getChildren().addAll(lblPct, lblSub);
 
-        pane.getChildren().addAll(canvas, center);
+        pane.getChildren().addAll(cv, center);
         return pane;
     }
 
-    private void dessinerArc(Canvas canvas, double score) {
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        double cx = 80, cy = 80, r = 64, ep = 9;
-        gc.clearRect(0, 0, 160, 160);
+    private void drawArc(Canvas cv, double score) {
+        GraphicsContext gc = cv.getGraphicsContext2D();
+        double cx = 79, cy = 79, r = 62, ep = 8;
+        gc.clearRect(0, 0, 158, 158);
 
-        // Fond de l'arc
-        gc.setStroke(Color.web("#263150"));
+        // Anneau fond (couleur sidebar atténuée)
+        gc.setStroke(Color.web("#1E3A5F", 0.8));
         gc.setLineWidth(ep);
         gc.setLineCap(StrokeLineCap.ROUND);
         gc.strokeArc(cx - r, cy - r, r * 2, r * 2, -210, 240, ArcType.OPEN);
 
-        // Arc coloré
-        if (score > 0) {
-            double angleBalayage = (score / 100.0) * 240;
-            Color couleur = score >= 80 ? Color.web(C_VERT)
-                    : score >= 40 ? Color.web(C_ORANGE)
-                    : Color.web(C_ROUGE);
-            gc.setStroke(couleur);
-            gc.setLineWidth(ep);
-            gc.strokeArc(cx - r, cy - r, r * 2, r * 2, -210, angleBalayage, ArcType.OPEN);
+        if (score <= 0) return;
 
-            // Point terminal lumineux
-            if (score > 3) {
-                double rad = Math.toRadians(-(-210 + angleBalayage));
-                double px  = cx + r * Math.cos(rad);
-                double py  = cy + r * Math.sin(rad);
-                // Halo
-                gc.setFill(Color.web(score >= 80 ? C_VERT : score >= 40 ? C_ORANGE : C_ROUGE, 0.25));
-                gc.fillOval(px - 9, py - 9, 18, 18);
-                // Point
-                gc.setFill(couleur);
-                gc.fillOval(px - 5, py - 5, 10, 10);
-            }
+        // Arc coloré
+        double sweep = (score / 100.0) * 240;
+        Color c = score >= 80 ? Color.web(C_VERT)
+                : score >= 40 ? Color.web(C_ORANGE)
+                : Color.web(C_ROUGE);
+        gc.setStroke(c);
+        gc.setLineWidth(ep);
+        gc.strokeArc(cx - r, cy - r, r * 2, r * 2, -210, sweep, ArcType.OPEN);
+
+        // Point terminal avec halo
+        if (score > 3) {
+            double rad = Math.toRadians(-(-210 + sweep));
+            double px  = cx + r * Math.cos(rad);
+            double py  = cy + r * Math.sin(rad);
+            gc.setFill(Color.web(score >= 80 ? C_VERT
+                    : score >= 40 ? C_ORANGE : C_ROUGE, 0.28));
+            gc.fillOval(px - 9, py - 9, 18, 18);
+            gc.setFill(c);
+            gc.fillOval(px - 5, py - 5, 10, 10);
         }
     }
 
-    // ── Métriques droite ──────────────────────────────────────────────────────
+    // ── Métriques (droite de la gauge) ───────────────────────────────────────
 
-    private VBox construireMetriques(MatchingResult result, String nomCandidat) {
-        VBox metrics = new VBox(14);
-        HBox.setHgrow(metrics, Priority.ALWAYS);
+    private VBox buildMetrics(MatchingResult result, String nomCandidat) {
+        VBox box = new VBox(14);
+        HBox.setHgrow(box, Priority.ALWAYS);
 
         // Badge décision
-        metrics.getChildren().add(construireDecision(result));
+        box.getChildren().add(buildDecisionBadge(result));
 
-        // Candidat
-        HBox candRow = new HBox(8);
+        // Nom candidat (style avatar-text du projet)
+        HBox candRow = new HBox(10);
         candRow.setAlignment(Pos.CENTER_LEFT);
-        candRow.getChildren().addAll(
-                label("👤", "font-size:14px;"),
-                label(nomCandidat != null ? nomCandidat : "—",
-                        "font-size:14px; font-weight:600; text-fill:" + C_TEXT + ";")
-        );
-        metrics.getChildren().add(candRow);
+
+        // Mini avatar initiales
+        StackPane avatarMini = new StackPane();
+        avatarMini.setPrefSize(34, 34);
+        avatarMini.setMinSize(34, 34);
+        avatarMini.setStyle(
+                "-fx-background-color:" + C_BLEU + ";" +
+                        "-fx-background-radius:17;" +
+                        "-fx-effect:dropshadow(gaussian,rgba(37,99,235,0.4),8,0,0,2);");
+        String initials = buildInitials(nomCandidat);
+        Label ini = new Label(initials);
+        ini.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:12px; " +
+                "-fx-font-weight:bold; -fx-text-fill:white;");
+        avatarMini.getChildren().add(ini);
+
+        Label lblCand = new Label(nomCandidat != null ? nomCandidat : "—");
+        lblCand.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:14px; " +
+                "-fx-font-weight:600; -fx-text-fill:" + TXT_MAIN + ";");
+        candRow.getChildren().addAll(avatarMini, lblCand);
+        box.getChildren().add(candRow);
 
         // Barres scores
-        VBox barres = new VBox(12);
-        barres.getChildren().addAll(
-                construireBarre("Compétences", result.scoreCompetences, "60%", C_BLEU),
-                construireBarre("Expériences",  result.scoreExperiences, "40%", C_VERT)
+        box.getChildren().addAll(
+                buildScoreBar("Compétences", result.scoreCompetences, "60%", C_BLEU, C_BLEU_LT),
+                buildScoreBar("Expériences",  result.scoreExperiences,  "40%", C_ORANGE, C_ORANGE_LT)
         );
-        metrics.getChildren().add(barres);
-        return metrics;
+        return box;
     }
 
-    private Label construireDecision(MatchingResult result) {
+    private Label buildDecisionBadge(MatchingResult result) {
         String txt, bg, fg, border;
         switch (result.decision) {
             case "ACCEPTÉ":
-                txt = "✓  Candidature ACCEPTÉE automatiquement";
-                bg = "rgba(16,185,129,0.12)"; fg = C_VERT; border = C_VERT; break;
+                txt    = "✓  Candidature ACCEPTÉE automatiquement";
+                bg     = "rgba(16,185,129,0.13)"; fg = C_VERT; border = C_VERT; break;
             case "EN_REVISION":
-                txt = "⟳  Mise EN RÉVISION — décision manuelle requise";
-                bg = "rgba(245,158,11,0.12)"; fg = C_ORANGE; border = C_ORANGE; break;
+                txt    = "⟳  Mise EN RÉVISION — décision manuelle requise";
+                bg     = "rgba(249,115,22,0.13)"; fg = C_ORANGE; border = C_ORANGE; break;
             default:
-                txt = "✗  Candidature REFUSÉE automatiquement";
-                bg = "rgba(239,68,68,0.12)"; fg = C_ROUGE; border = C_ROUGE;
+                txt    = "✗  Candidature REFUSÉE automatiquement";
+                bg     = "rgba(239,68,68,0.13)"; fg = C_ROUGE; border = C_ROUGE;
         }
         Label l = new Label(txt);
         l.setMaxWidth(Double.MAX_VALUE);
         l.setStyle(
-                "-fx-font-size:13px; -fx-font-weight:bold;" +
-                        "-fx-padding:10 18; -fx-background-radius:8;" +
+                "-fx-font-family:'Segoe UI'; -fx-font-size:13px; -fx-font-weight:bold;" +
+                        "-fx-padding:10 18; -fx-background-radius:10;" +
                         "-fx-text-fill:" + fg + ";" +
                         "-fx-background-color:" + bg + ";" +
                         "-fx-border-color:" + border + ";" +
-                        "-fx-border-width:1; -fx-border-radius:8;");
+                        "-fx-border-width:1; -fx-border-radius:10;");
         return l;
     }
 
-    private VBox construireBarre(String libelle, double score, String poids, String couleur) {
+    private VBox buildScoreBar(String label, double score, String poids,
+                               String couleur, String couleurLight) {
         VBox box = new VBox(5);
 
-        // Ligne top
         HBox top = new HBox();
         top.setAlignment(Pos.CENTER_LEFT);
-        Label lbl = label(libelle, "font-size:11px; font-weight:700; text-fill:" + C_TEXT_DIM + ";");
+        Label lbl = lbl(label, "'Segoe UI'; 11px; 700; " + TXT_SUB);
         HBox.setHgrow(lbl, Priority.ALWAYS);
-        Label valLbl = label(String.format("%.1f%%", score),
-                "font-size:12px; font-weight:800; text-fill:" + couleur + ";");
-        Label poidsLbl = label("  · " + poids, "font-size:10px; text-fill:" + C_TEXT_DARK + ";");
-        top.getChildren().addAll(lbl, valLbl, poidsLbl);
+        Label val = lbl(String.format("%.1f%%", score),
+                "'Segoe UI'; 12px; 800; " + couleurLight);
+        Label wgt = lbl("  · " + poids, "'Segoe UI'; 10px; 400; " + TXT_MUTED);
+        top.getChildren().addAll(lbl, val, wgt);
 
-        // Track + fill
         StackPane track = new StackPane();
         track.setPrefHeight(8);
         Region fond = new Region();
         fond.setPrefHeight(8);
         fond.setMaxWidth(Double.MAX_VALUE);
-        fond.setStyle("-fx-background-color:rgba(255,255,255,0.06); -fx-background-radius:4;");
+        fond.setStyle("-fx-background-color:rgba(37,99,235,0.15); -fx-background-radius:4;");
         Region fill = new Region();
         fill.setPrefHeight(8);
-        fill.setPrefWidth(Math.min(score / 100.0 * 400, 400));
-        fill.setStyle("-fx-background-color:" + couleur + "; -fx-background-radius:4;");
+        fill.setPrefWidth(Math.min(score / 100.0 * 420, 420));
+        fill.setStyle("-fx-background-color:" + couleur + "; -fx-background-radius:4;" +
+                "-fx-effect:dropshadow(gaussian," + couleur + ",6,0,0,1);");
         StackPane.setAlignment(fill, Pos.CENTER_LEFT);
         track.getChildren().addAll(fond, fill);
 
@@ -276,333 +312,313 @@ public class MatchingResultController {
     }
 
     // ════════════════════════════════════════════════════════════════════════
-    //  BARRE ACCENT
+    //  BARRE ACCENT (identique au gradient accent du header projet)
     // ════════════════════════════════════════════════════════════════════════
 
-    private Region construireAccent() {
+    private Region buildAccentBar() {
         Region r = new Region();
         r.setPrefHeight(3);
         r.setMaxWidth(Double.MAX_VALUE);
+        // Reprend les couleurs du projet : bleu → orange (logo accent)
         r.setStyle("-fx-background-color:linear-gradient(to right," +
-                C_BLEU + "," + C_VERT + "," + C_ORANGE + ");");
+                C_BLEU + ",#1D4ED8," + C_ORANGE + ");");
         return r;
     }
 
     // ════════════════════════════════════════════════════════════════════════
-    //  CORPS (ScrollPane)
+    //  CORPS SCROLLABLE
     // ════════════════════════════════════════════════════════════════════════
 
-    private ScrollPane construireCorps(MatchingResult result) {
-        VBox body = new VBox(20);
-        body.setPadding(new Insets(24, 28, 24, 28));
-        body.setStyle(bg(C_BG_BODY));
+    private ScrollPane buildBody(MatchingResult result) {
+        VBox body = new VBox(18);
+        body.setPadding(new Insets(22, 28, 22, 28));
+        body.setStyle(bg(BG_BODY));
 
-        // Section compétences
-        body.getChildren().add(construireSectionCompetences(result));
-
-        // Section expériences
-        body.getChildren().add(construireSectionExperiences(result));
-
-        // Bouton fermer
-        body.getChildren().add(construireBoutonFermer());
+        body.getChildren().addAll(
+                buildSection(result, true),   // Compétences
+                buildSection(result, false),  // Expériences
+                buildCloseBtn()
+        );
 
         ScrollPane sp = new ScrollPane(body);
         sp.setFitToWidth(true);
-        sp.setPrefHeight(540);
+        sp.setPrefHeight(520);
         sp.setStyle(
-                "-fx-background:" + C_BG_BODY + ";" +
-                        "-fx-background-color:" + C_BG_BODY + ";" +
+                "-fx-background:" + BG_BODY + ";" +
+                        "-fx-background-color:" + BG_BODY + ";" +
                         "-fx-border-color:transparent;");
         VBox.setVgrow(sp, Priority.ALWAYS);
         return sp;
     }
 
     // ════════════════════════════════════════════════════════════════════════
-    //  SECTION COMPÉTENCES
+    //  SECTION CARTE (compétences ou expériences)
     // ════════════════════════════════════════════════════════════════════════
 
-    private VBox construireSectionCompetences(MatchingResult result) {
-        int nb = result.detailsCompetences != null ? result.detailsCompetences.size() : 0;
-        VBox section = construireEnveloppeSectionHeader(
-                "◈", "COMPÉTENCES TECHNIQUES",
-                nb + " critère" + (nb > 1 ? "s" : "") + " analysé" + (nb > 1 ? "s" : ""),
-                C_BLEU, C_BG_HEADER, C_BORDER_B);
+    private VBox buildSection(MatchingResult result, boolean isComp) {
+        int nb = isComp
+                ? (result.detailsCompetences != null ? result.detailsCompetences.size() : 0)
+                : (result.detailsExperiences != null ? result.detailsExperiences.size()  : 0);
 
+        String icone   = isComp ? "◈" : "◈";
+        String titre   = isComp ? "COMPÉTENCES TECHNIQUES" : "EXPÉRIENCES PROFESSIONNELLES";
+        String compte  = nb + " critère" + (nb > 1 ? "s" : "") + " analysé" + (nb > 1 ? "s" : "");
+        String couleur = isComp ? C_BLEU_LT : C_ORANGE_LT;
+        String bgHdr   = isComp ? BG_HDR_B  : BG_HDR_O;
+        String border  = isComp ? BDR_BLEU  : BDR_ORANGE;
+
+        // Enveloppe card (style .card du projet)
+        VBox card = new VBox(0);
+        card.setStyle(
+                "-fx-background-color:" + BG_CARD + ";" +
+                        "-fx-background-radius:14;" +
+                        "-fx-border-color:" + border + ";" +
+                        "-fx-border-width:1; -fx-border-radius:14;" +
+                        "-fx-effect:dropshadow(gaussian,rgba(15,30,55,0.55),18,0,5,0);");
+
+        // En-tête section
+        HBox hdr = new HBox(10);
+        hdr.setAlignment(Pos.CENTER_LEFT);
+        hdr.setPadding(new Insets(12, 20, 12, 20));
+        hdr.setStyle(
+                "-fx-background-color:" + bgHdr + ";" +
+                        "-fx-background-radius:14 14 0 0;" +
+                        "-fx-border-color:" + border + ";" +
+                        "-fx-border-width:0 0 1 0;");
+
+        Label ico = new Label(icone);
+        ico.setStyle("-fx-font-size:15px; -fx-text-fill:" + couleur + ";");
+        Label lTitre = new Label(titre);
+        lTitre.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:11px; " +
+                "-fx-font-weight:bold; -fx-text-fill:" + couleur + "; -fx-letter-spacing:2;");
+        HBox.setHgrow(lTitre, Priority.ALWAYS);
+        Label lCompte = new Label(compte);
+        lCompte.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:10px; -fx-text-fill:" + TXT_MUTED + ";");
+
+        hdr.getChildren().addAll(ico, lTitre, lCompte);
+        card.getChildren().add(hdr);
+
+        // Tableau
         VBox tableau = new VBox(0);
-        if (result.detailsCompetences == null || result.detailsCompetences.isEmpty()) {
-            tableau.getChildren().add(ligneVide("Aucune compétence définie pour cette offre"));
+        if (isComp) {
+            if (result.detailsCompetences == null || result.detailsCompetences.isEmpty()) {
+                tableau.getChildren().add(emptyRow("Aucune compétence définie pour cette offre"));
+            } else {
+                for (int i = 0; i < result.detailsCompetences.size(); i++) {
+                    tableau.getChildren().add(buildCompRow(result.detailsCompetences.get(i), i));
+                }
+            }
         } else {
-            for (int i = 0; i < result.detailsCompetences.size(); i++) {
-                tableau.getChildren().add(creerLigneCompetence(result.detailsCompetences.get(i), i));
+            if (result.detailsExperiences == null || result.detailsExperiences.isEmpty()) {
+                tableau.getChildren().add(emptyRow("Aucune expérience définie pour cette offre"));
+            } else {
+                for (int i = 0; i < result.detailsExperiences.size(); i++) {
+                    tableau.getChildren().add(buildExpRow(result.detailsExperiences.get(i), i));
+                }
             }
         }
-        section.getChildren().add(tableau);
-        return section;
+        card.getChildren().add(tableau);
+        return card;
     }
 
-    private HBox creerLigneCompetence(DetailCompetence d, int index) {
-        String bg = index % 2 == 0 ? C_ROW_ODD : C_ROW_EVEN;
-        String couleur = couleurScore(d.scoreObtenu);
-        boolean trouve = !"—".equals(d.nomCandidat);
+    // ════════════════════════════════════════════════════════════════════════
+    //  LIGNE COMPÉTENCE
+    // ════════════════════════════════════════════════════════════════════════
 
-        HBox ligne = new HBox(0);
-        ligne.setAlignment(Pos.CENTER_LEFT);
-        ligne.setPrefHeight(52);
-        ligne.setStyle(bg(bg));
+    private HBox buildCompRow(DetailCompetence d, int idx) {
+        String bg     = idx % 2 == 0 ? BG_ROW_ODD : BG_ROW_EVN;
+        String couleur = scoreColor(d.scoreObtenu);
+        boolean found = !"—".equals(d.nomCandidat);
 
-        // Bande couleur gauche
-        Region bande = new Region();
-        bande.setPrefWidth(4);
-        bande.setPrefHeight(52);
-        bande.setStyle("-fx-background-color:" + couleur + ";");
+        HBox row = new HBox(0);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setPrefHeight(54);
+        row.setStyle(bg(bg));
+
+        // Bande colorée gauche
+        Region band = band(couleur);
 
         // Numéro
-        Label num = creerNum(index + 1, bg);
+        Label num = num(idx + 1, bg);
 
-        // Cellule requise (bleu)
-        VBox cellReq = creerCellule(
+        // Cellule requise — style bleu (comme .competence-tag du projet)
+        VBox reqCell = cell(
                 d.nomRequis,
                 d.niveauRequis != null ? d.niveauRequis.toUpperCase() : "N/A",
-                C_BLEU, bg, 185);
+                C_BLEU_LT, bg, 190);
 
-        // Flèche
-        Label fleche = creerFleche(bg);
+        Label arrow = arrow(bg);
 
-        // Cellule candidat (vert ou rouge)
-        VBox cellCand = creerCellule(
-                trouve ? d.nomCandidat : "Non trouvé",
-                trouve ? (d.niveauCandidat != null ? d.niveauCandidat.toUpperCase() : "N/A") : "—",
-                trouve ? C_VERT : C_ROUGE, bg, 185);
+        // Cellule candidat
+        VBox candCell = cell(
+                found ? d.nomCandidat : "Non trouvé",
+                found ? (d.niveauCandidat != null ? d.niveauCandidat.toUpperCase() : "N/A") : "—",
+                found ? C_VERT : C_ROUGE, bg, 190);
 
-        // Spacer
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        spacer.setStyle(bg(bg));
+        Region spacer = spacer(bg);
 
-        // Zone score
-        VBox scoreZone = creerScoreZone(d.scoreObtenu, couleur, bg);
+        VBox scoreZone = scoreZone(d.scoreObtenu, couleur, bg);
 
-        ligne.getChildren().addAll(bande, num, cellReq, fleche, cellCand, spacer, scoreZone);
-        return ligne;
+        row.getChildren().addAll(band, num, reqCell, arrow, candCell, spacer, scoreZone);
+        return row;
     }
 
     // ════════════════════════════════════════════════════════════════════════
-    //  SECTION EXPÉRIENCES
+    //  LIGNE EXPÉRIENCE
     // ════════════════════════════════════════════════════════════════════════
 
-    private VBox construireSectionExperiences(MatchingResult result) {
-        int nb = result.detailsExperiences != null ? result.detailsExperiences.size() : 0;
-        VBox section = construireEnveloppeSectionHeader(
-                "◈", "EXPÉRIENCES PROFESSIONNELLES",
-                nb + " critère" + (nb > 1 ? "s" : "") + " analysé" + (nb > 1 ? "s" : ""),
-                C_VERT, C_BG_HDR_E, C_BORDER_G);
+    private HBox buildExpRow(DetailExperience d, int idx) {
+        String bg     = idx % 2 == 0 ? BG_ROW_ODD : BG_ROW_EVN;
+        String couleur = scoreColor(d.scoreObtenu);
+        boolean found = !"—".equals(d.posteCandidat);
 
-        VBox tableau = new VBox(0);
-        if (result.detailsExperiences == null || result.detailsExperiences.isEmpty()) {
-            tableau.getChildren().add(ligneVide("Aucune expérience définie pour cette offre"));
-        } else {
-            for (int i = 0; i < result.detailsExperiences.size(); i++) {
-                tableau.getChildren().add(creerLigneExperience(result.detailsExperiences.get(i), i));
-            }
-        }
-        section.getChildren().add(tableau);
-        return section;
-    }
+        HBox row = new HBox(0);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setPrefHeight(54);
+        row.setStyle(bg(bg));
 
-    private HBox creerLigneExperience(DetailExperience d, int index) {
-        String bg = index % 2 == 0 ? C_ROW_ODD : C_ROW_EVEN;
-        String couleur = couleurScore(d.scoreObtenu);
-        boolean trouve = !"—".equals(d.posteCandidat);
+        Region band = band(couleur);
+        Label  num  = num(idx + 1, bg);
 
-        HBox ligne = new HBox(0);
-        ligne.setAlignment(Pos.CENTER_LEFT);
-        ligne.setPrefHeight(52);
-        ligne.setStyle(bg(bg));
-
-        // Bande
-        Region bande = new Region();
-        bande.setPrefWidth(4);
-        bande.setPrefHeight(52);
-        bande.setStyle("-fx-background-color:" + couleur + ";");
-
-        // Numéro
-        Label num = creerNum(index + 1, bg);
-
-        // Cellule requise (orange)
+        // Cellule requise — style orange (comme .button-map du projet)
         String reqAns = d.anneesRequises > 0
                 ? String.format("%.0f an%s requis", d.anneesRequises, d.anneesRequises >= 2 ? "s" : "")
                 : "Durée libre";
-        VBox cellReq = creerCellule(d.nomRequis, reqAns, C_ORANGE, bg, 185);
+        VBox reqCell = cell(d.nomRequis, reqAns, C_ORANGE_LT, bg, 190);
 
-        // Flèche
-        Label fleche = creerFleche(bg);
+        Label arrow = arrow(bg);
 
         // Cellule candidat
-        String candAns = trouve
+        String candAns = found
                 ? String.format("%.1f an%s", d.anneesCandidat, d.anneesCandidat >= 2 ? "s" : "")
                 : "—";
-        // Mention manque d'années
-        if (trouve && d.anneesRequises > 0 && d.anneesCandidat < d.anneesRequises) {
+        if (found && d.anneesRequises > 0 && d.anneesCandidat < d.anneesRequises) {
             double manque = d.anneesRequises - d.anneesCandidat;
             candAns += String.format("  ⚠ -%.0f an%s", manque, manque >= 2 ? "s" : "");
         }
-        VBox cellCand = creerCellule(
-                trouve ? d.posteCandidat : "Non trouvé",
+        VBox candCell = cell(
+                found ? d.posteCandidat : "Non trouvé",
                 candAns,
-                trouve ? C_VERT : C_ROUGE, bg, 185);
+                found ? C_VERT : C_ROUGE, bg, 190);
 
-        // Spacer
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        spacer.setStyle(bg(bg));
+        Region spacer = spacer(bg);
+        VBox   score  = scoreZone(d.scoreObtenu, couleur, bg);
 
-        // Zone score
-        VBox scoreZone = creerScoreZone(d.scoreObtenu, couleur, bg);
-
-        ligne.getChildren().addAll(bande, num, cellReq, fleche, cellCand, spacer, scoreZone);
-        return ligne;
+        row.getChildren().addAll(band, num, reqCell, arrow, candCell, spacer, score);
+        return row;
     }
 
     // ════════════════════════════════════════════════════════════════════════
     //  COMPOSANTS RÉUTILISABLES
     // ════════════════════════════════════════════════════════════════════════
 
-    /** Enveloppe section avec header coloré + border */
-    private VBox construireEnveloppeSectionHeader(
-            String icone, String titre, String compte,
-            String couleur, String bgHeader, String borderColor) {
-
-        VBox section = new VBox(0);
-        section.setStyle(
-                "-fx-background-color:" + C_BG_CARD + ";" +
-                        "-fx-background-radius:14;" +
-                        "-fx-border-color:" + borderColor + ";" +
-                        "-fx-border-width:1; -fx-border-radius:14;" +
-                        "-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.4),16,0,0,6);");
-
-        HBox header = new HBox(10);
-        header.setAlignment(Pos.CENTER_LEFT);
-        header.setPadding(new Insets(13, 20, 13, 20));
-        header.setStyle(
-                "-fx-background-color:" + bgHeader + ";" +
-                        "-fx-background-radius:14 14 0 0;" +
-                        "-fx-border-color:" + borderColor + ";" +
-                        "-fx-border-width:0 0 1 0;");
-
-        Label ico = new Label(icone);
-        ico.setStyle("-fx-font-size:15px; -fx-text-fill:" + couleur + ";");
-
-        Label lTitre = new Label(titre);
-        lTitre.setStyle("-fx-font-family:'Courier New'; -fx-font-size:11px; " +
-                "-fx-font-weight:bold; -fx-text-fill:" + couleur + "; -fx-letter-spacing:2;");
-        HBox.setHgrow(lTitre, Priority.ALWAYS);
-
-        Label lCompte = new Label(compte);
-        lCompte.setStyle("-fx-font-size:10px; -fx-text-fill:" + C_TEXT_DIM + ";");
-
-        header.getChildren().addAll(ico, lTitre, lCompte);
-        section.getChildren().add(header);
-        return section;
+    /** Bande colorée latérale (indicateur de score) */
+    private Region band(String couleur) {
+        Region r = new Region();
+        r.setPrefWidth(4); r.setPrefHeight(54);
+        r.setStyle("-fx-background-color:" + couleur + ";");
+        return r;
     }
 
-    /** Cellule : titre + sous-titre coloré */
-    private VBox creerCellule(String titre, String sous, String couleurSous, String bg, double largeur) {
-        VBox box = new VBox(2);
-        box.setAlignment(Pos.CENTER_LEFT);
-        box.setPrefWidth(largeur);
-        box.setPrefHeight(52);
-        box.setPadding(new Insets(6, 10, 6, 10));
-        box.setStyle(bg(bg));
-
-        Label lTitre = new Label(titre);
-        lTitre.setStyle("-fx-font-size:12px; -fx-font-weight:700; -fx-text-fill:" + C_TEXT + ";");
-        lTitre.setWrapText(false);
-
-        Label lSous = new Label(sous);
-        lSous.setStyle("-fx-font-family:'Courier New'; -fx-font-size:10px; " +
-                "-fx-font-weight:600; -fx-text-fill:" + couleurSous + ";");
-
-        box.getChildren().addAll(lTitre, lSous);
-        return box;
-    }
-
-    /** Numéro de ligne (ex: 01, 02) */
-    private Label creerNum(int index, String bg) {
-        Label l = new Label(String.format("%02d", index));
-        l.setPrefWidth(36);
-        l.setMinWidth(36);
+    /** Numéro de ligne 01, 02 … (style Segoe UI monospace-like) */
+    private Label num(int n, String bg) {
+        Label l = new Label(String.format("%02d", n));
+        l.setPrefWidth(38); l.setMinWidth(38);
         l.setAlignment(Pos.CENTER);
-        l.setStyle("-fx-font-family:'Courier New'; -fx-font-size:11px; " +
-                "-fx-font-weight:bold; -fx-text-fill:" + C_TEXT_DARK + "; " +
-                "-fx-background-color:" + bg + "; -fx-padding:0 8;");
+        l.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:11px; -fx-font-weight:bold; " +
+                "-fx-text-fill:" + TXT_MUTED + "; -fx-background-color:" + bg + "; -fx-padding:0 8;");
         return l;
     }
 
-    /** Flèche centrale → */
-    private Label creerFleche(String bg) {
+    /** Cellule : titre en blanc + sous-titre coloré */
+    private VBox cell(String titre, String sous, String couleurSous, String bg, double w) {
+        VBox box = new VBox(2);
+        box.setAlignment(Pos.CENTER_LEFT);
+        box.setPrefWidth(w); box.setPrefHeight(54);
+        box.setPadding(new Insets(6, 10, 6, 10));
+        box.setStyle(bg(bg));
+
+        Label t = new Label(titre);
+        t.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:12px; " +
+                "-fx-font-weight:700; -fx-text-fill:" + TXT_MAIN + ";");
+        t.setWrapText(false);
+
+        Label s = new Label(sous);
+        s.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:10px; " +
+                "-fx-font-weight:600; -fx-text-fill:" + couleurSous + ";");
+        box.getChildren().addAll(t, s);
+        return box;
+    }
+
+    /** Flèche → */
+    private Label arrow(String bg) {
         Label l = new Label("→");
-        l.setPrefWidth(32);
-        l.setMinWidth(32);
+        l.setPrefWidth(30); l.setMinWidth(30);
         l.setAlignment(Pos.CENTER);
-        l.setStyle("-fx-font-size:14px; -fx-text-fill:" + C_TEXT_DARK + "; " +
+        l.setStyle("-fx-font-size:13px; -fx-text-fill:" + TXT_MUTED + "; " +
                 "-fx-background-color:" + bg + ";");
         return l;
     }
 
-    /** Zone score : % + mini barre */
-    private VBox creerScoreZone(double score, String couleur, String bg) {
+    /** Spacer extensible */
+    private Region spacer(String bg) {
+        Region r = new Region();
+        HBox.setHgrow(r, Priority.ALWAYS);
+        r.setStyle(bg(bg));
+        return r;
+    }
+
+    /** Zone score : % en grand + mini barre */
+    private VBox scoreZone(double score, String couleur, String bg) {
         VBox zone = new VBox(4);
         zone.setAlignment(Pos.CENTER_RIGHT);
-        zone.setPrefWidth(100);
-        zone.setPrefHeight(52);
+        zone.setPrefWidth(110); zone.setPrefHeight(54);
         zone.setPadding(new Insets(8, 16, 8, 0));
         zone.setStyle(bg(bg));
 
         Label pct = new Label(String.format("%.0f%%", score));
-        pct.setStyle("-fx-font-family:'Courier New'; -fx-font-size:15px; " +
+        pct.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:16px; " +
                 "-fx-font-weight:bold; -fx-text-fill:" + couleur + ";");
 
-        // Mini barre
-        StackPane miniBar = new StackPane();
-        miniBar.setPrefHeight(4);
-        miniBar.setPrefWidth(80);
+        // Mini-barre inline
+        StackPane bar = new StackPane();
+        bar.setPrefHeight(4); bar.setPrefWidth(82);
         Region fond = new Region();
-        fond.setPrefHeight(4);
-        fond.setMaxWidth(Double.MAX_VALUE);
-        fond.setStyle("-fx-background-color:rgba(255,255,255,0.07); -fx-background-radius:2;");
+        fond.setPrefHeight(4); fond.setMaxWidth(Double.MAX_VALUE);
+        fond.setStyle("-fx-background-color:rgba(37,99,235,0.15); -fx-background-radius:2;");
         Region fill = new Region();
         fill.setPrefHeight(4);
-        fill.setPrefWidth(Math.min(score / 100.0 * 80, 80));
+        fill.setPrefWidth(Math.min(score / 100.0 * 82, 82));
         fill.setStyle("-fx-background-color:" + couleur + "; -fx-background-radius:2;");
         StackPane.setAlignment(fill, Pos.CENTER_LEFT);
-        miniBar.getChildren().addAll(fond, fill);
+        bar.getChildren().addAll(fond, fill);
 
-        zone.getChildren().addAll(pct, miniBar);
+        zone.getChildren().addAll(pct, bar);
         return zone;
     }
 
-    /** Ligne vide (message) */
-    private HBox ligneVide(String msg) {
+    /** Ligne message vide */
+    private HBox emptyRow(String msg) {
         HBox box = new HBox();
-        box.setPadding(new Insets(14, 16, 14, 16));
+        box.setPadding(new Insets(16, 16, 16, 16));
         Label l = new Label(msg);
-        l.setStyle("-fx-font-size:12px; -fx-text-fill:" + C_TEXT_DIM + "; -fx-font-style:italic;");
+        l.setStyle("-fx-font-family:'Segoe UI'; -fx-font-size:12px; " +
+                "-fx-text-fill:" + TXT_MUTED + "; -fx-font-style:italic;");
         box.getChildren().add(l);
         return box;
     }
 
-    /** Bouton fermer en bas */
-    private Button construireBoutonFermer() {
+    /** Bouton fermer — style .button-primary du projet */
+    private Button buildCloseBtn() {
         Button btn = new Button("Fermer le rapport");
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.setPrefHeight(44);
         btn.setStyle(
-                "-fx-background-color:rgba(75,123,236,0.10);" +
-                        "-fx-text-fill:" + C_BLEU + ";" +
-                        "-fx-font-weight:700; -fx-font-size:13px;" +
+                "-fx-background-color:" + C_BLEU + ";" +
+                        "-fx-text-fill:white;" +
+                        "-fx-font-family:'Segoe UI'; -fx-font-size:13px; -fx-font-weight:bold;" +
                         "-fx-background-radius:10; -fx-cursor:hand;" +
-                        "-fx-border-color:" + C_BLEU + ";" +
-                        "-fx-border-radius:10; -fx-border-width:1;");
+                        "-fx-effect:dropshadow(gaussian,rgba(37,99,235,0.45),10,0,0,3);");
         btn.setOnAction(e -> fermer());
         return btn;
     }
@@ -611,29 +627,42 @@ public class MatchingResultController {
     //  UTILITAIRES
     // ════════════════════════════════════════════════════════════════════════
 
-    private String couleurScore(double score) {
-        if (score >= 80) return C_VERT;
-        if (score >= 40) return C_ORANGE;
+    /** Couleur selon seuils : vert ≥80%, orange 40–79%, rouge <40% */
+    private String scoreColor(double s) {
+        if (s >= 80) return C_VERT;
+        if (s >= 40) return C_ORANGE;
         return C_ROUGE;
-    }
-
-    private Label label(String text, String inlineStyle) {
-        Label l = new Label(text);
-        l.setStyle(normaliserStyle(inlineStyle));
-        return l;
-    }
-
-    /** Convertit les raccourcis CSS en style JavaFX valide */
-    private String normaliserStyle(String s) {
-        return s.replace("font-family:", "-fx-font-family:")
-                .replace("font-size:", "-fx-font-size:")
-                .replace("font-weight:", "-fx-font-weight:")
-                .replace("text-fill:", "-fx-text-fill:")
-                .replace("letter-spacing:", "-fx-letter-spacing:");
     }
 
     private String bg(String hex) {
         return "-fx-background-color:" + hex + ";";
+    }
+
+    /**
+     * Crée un Label avec style compact.
+     * Format attendu : "'Police'; taillePx; poids; couleur"
+     */
+    private Label lbl(String text, String style) {
+        Label l = new Label(text);
+        String[] p = style.split(";\\s*");
+        StringBuilder sb = new StringBuilder();
+        if (p.length > 0) sb.append("-fx-font-family:").append(p[0].trim()).append(";");
+        if (p.length > 1) sb.append("-fx-font-size:").append(p[1].trim()).append(";");
+        if (p.length > 2) sb.append("-fx-font-weight:").append(p[2].trim()).append(";");
+        if (p.length > 3) sb.append("-fx-text-fill:").append(p[3].trim()).append(";");
+        l.setStyle(sb.toString());
+        return l;
+    }
+
+    /** Génère les initiales d'un nom (ex: "Ahmed Ben Salah" → "AB") */
+    private String buildInitials(String name) {
+        if (name == null || name.isBlank()) return "?";
+        String[] parts = name.trim().split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        sb.append(Character.toUpperCase(parts[0].charAt(0)));
+        if (parts.length > 1)
+            sb.append(Character.toUpperCase(parts[parts.length - 1].charAt(0)));
+        return sb.toString();
     }
 
     @FXML

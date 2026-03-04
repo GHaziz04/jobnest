@@ -26,14 +26,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * ════════════════════════════════════════════════════════════════
- *  MatchingController — Interface de matching candidatures/offres
- * ════════════════════════════════════════════════════════════════
- *
- *  Affiche les candidatures en attente avec leur score de matching.
- *  Permet au recruteur de lancer le matching automatique ou manuel.
- */
 public class MatchingController {
 
     // ─── FXML ────────────────────────────────────────────────────
@@ -60,8 +52,9 @@ public class MatchingController {
     @FXML
     public void initialize() {
         comboFiltre.setItems(FXCollections.observableArrayList(
-                "Toutes", "En attente", "En révision", "Acceptées", "Annulées"));
-        comboFiltre.setValue("Toutes");
+                "En attente", "Toutes", "En révision", "Acceptées", "Annulées"));
+        // ✅ CHANGEMENT : valeur par défaut "En attente" au lieu de "Toutes"
+        comboFiltre.setValue("En attente");
         comboFiltre.valueProperty().addListener((obs, o, n) -> filtrerEtAfficher());
 
         if (searchField != null)
@@ -98,7 +91,6 @@ public class MatchingController {
             return;
         }
 
-        // Confirmation
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Lancer le Matching");
         confirm.setHeaderText("Analyser " + enAttente.size() + " candidature(s) en attente ?");
@@ -115,7 +107,6 @@ public class MatchingController {
 
         confirm.showAndWait().ifPresent(btn -> {
             if (btn == btnLancer) {
-                // Lancer en arrière-plan pour ne pas bloquer l'UI
                 btnMatchingTout.setDisable(true);
                 btnMatchingTout.setText("⏳ Analyse en cours...");
 
@@ -125,9 +116,9 @@ public class MatchingController {
                         MatchingResult result = matchingService.calculerEtAppliquer(
                                 dto.getIdCandidature(), dto.getIdOffre(), dto.getIdCandidat());
                         System.out.println(result.toString());
-                        if (result.estAcceptee())   acceptes++;
+                        if (result.estAcceptee())        acceptes++;
                         else if (result.estEnRevision()) revisions++;
-                        else                          annules++;
+                        else                             annules++;
                     }
                     final int fa = acceptes, fr = revisions, fn = annules;
                     Platform.runLater(() -> {
@@ -167,12 +158,16 @@ public class MatchingController {
 
         List<CandidatureDTO> filtrees = toutesLesCandidatures.stream()
                 .filter(c -> {
-                    switch (filtre == null ? "Toutes" : filtre) {
-                        case "En attente":  return "en_attente".equalsIgnoreCase(c.getStatut());
-                        case "En révision": return "en_revision".equalsIgnoreCase(c.getStatut());
-                        case "Acceptées":   return "traité".equalsIgnoreCase(c.getStatut());
-                        case "Annulées":    return "annulé".equalsIgnoreCase(c.getStatut());
-                        default:            return true;
+                    switch (filtre == null ? "En attente" : filtre) {
+                        case "Toutes":       return true;
+                        case "En révision":  return "en_revision".equalsIgnoreCase(c.getStatut());
+                        case "Acceptées":    return "traité".equalsIgnoreCase(c.getStatut());
+                        case "Annulées":     return "annulé".equalsIgnoreCase(c.getStatut());
+                        // ✅ CHANGEMENT : "En attente" et default → uniquement en_attente
+                        case "En attente":
+                        default:
+                            return "en_attente".equalsIgnoreCase(c.getStatut())
+                                    || "en attente".equalsIgnoreCase(c.getStatut());
                     }
                 })
                 .filter(c -> search.isEmpty()
@@ -190,9 +185,11 @@ public class MatchingController {
             empty.setAlignment(Pos.CENTER);
             empty.setPadding(new Insets(60));
             Label icon = new Label("🎯"); icon.setStyle("-fx-font-size:48px;");
-            Label msg  = new Label("Aucune candidature pour ce filtre");
+            Label msg  = new Label("Aucune candidature en attente");
             msg.setStyle("-fx-font-size:16px; -fx-text-fill:#94A3B8; -fx-font-weight:700;");
-            empty.getChildren().addAll(icon, msg);
+            Label sub = new Label("Lancez le matching pour traiter les candidatures");
+            sub.setStyle("-fx-font-size:13px; -fx-text-fill:#CBD5E1;");
+            empty.getChildren().addAll(icon, msg, sub);
             vboxCandidatures.getChildren().add(empty);
             return;
         }
@@ -205,10 +202,11 @@ public class MatchingController {
     //  CARTE CANDIDAT avec score et boutons
     // ════════════════════════════════════════════════════════════
     private VBox creerCarteCandidat(CandidatureDTO dto) {
-        boolean enAttente   = "en_attente".equalsIgnoreCase(dto.getStatut());
-        boolean enRevision  = "en_revision".equalsIgnoreCase(dto.getStatut());
-        boolean accepte     = "traité".equalsIgnoreCase(dto.getStatut());
-        boolean annule      = "annulé".equalsIgnoreCase(dto.getStatut());
+        boolean enAttente  = "en_attente".equalsIgnoreCase(dto.getStatut())
+                || "en attente".equalsIgnoreCase(dto.getStatut());
+        boolean enRevision = "en_revision".equalsIgnoreCase(dto.getStatut());
+        boolean accepte    = "traité".equalsIgnoreCase(dto.getStatut());
+        boolean annule     = "annulé".equalsIgnoreCase(dto.getStatut());
 
         VBox card = new VBox(14);
         card.setPadding(new Insets(20, 24, 20, 24));
@@ -222,10 +220,8 @@ public class MatchingController {
         HBox topRow = new HBox(18);
         topRow.setAlignment(Pos.CENTER_LEFT);
 
-        // Avatar
         StackPane avatar = creerAvatar(dto.getNomComplet(), accepte);
 
-        // Infos
         VBox infos = new VBox(5);
         HBox.setHgrow(infos, Priority.ALWAYS);
         Label lblNom = new Label(dto.getNomComplet());
@@ -234,20 +230,17 @@ public class MatchingController {
         lblOffre.setStyle("-fx-font-size:13px; -fx-text-fill:#2563EB; -fx-font-weight:600;");
         infos.getChildren().addAll(lblNom, lblOffre);
 
-        // Badge statut
         Label badge = creerBadgeStatut(dto.getStatut());
 
         topRow.getChildren().addAll(avatar, infos, badge);
 
-        // ─── Séparateur ──────────────────────────────────────────
         Separator sep = new Separator();
 
-        // ─── Ligne d'actions ─────────────────────────────────────
         HBox actionsRow = new HBox(12);
         actionsRow.setAlignment(Pos.CENTER_RIGHT);
 
         if (enAttente) {
-            // Seul bouton disponible : lancer le matching individuel
+            // ✅ Seul cas affiché par défaut dans le matching
             Button btnMatch = new Button("🎯  Analyser (Matching)");
             btnMatch.setPrefHeight(44);
             btnMatch.setStyle(
@@ -258,7 +251,6 @@ public class MatchingController {
             actionsRow.getChildren().add(btnMatch);
 
         } else if (enRevision) {
-            // Le recruteur doit décider : accepter ou rejeter
             Label conseil = new Label("⚠️  Score modéré — votre décision est requise");
             conseil.setStyle("-fx-font-size:12px; -fx-text-fill:#D97706; -fx-font-weight:600;");
             HBox.setHgrow(conseil, Priority.ALWAYS);
@@ -290,7 +282,6 @@ public class MatchingController {
             actionsRow.getChildren().addAll(conseil, btnDetail, btnAccepter, btnRejeter);
 
         } else {
-            // Candidature déjà traitée
             Button btnDetail = new Button("📊  Voir Détail Matching");
             btnDetail.setPrefHeight(40);
             btnDetail.setStyle(
@@ -307,16 +298,12 @@ public class MatchingController {
     }
 
     // ════════════════════════════════════════════════════════════
-    //  MATCHING INDIVIDUEL (avec popup de résultat)
+    //  MATCHING INDIVIDUEL
     // ════════════════════════════════════════════════════════════
     private void lancerMatchingIndividuel(CandidatureDTO dto, VBox card) {
         MatchingResult result = matchingService.calculerEtAppliquer(
                 dto.getIdCandidature(), dto.getIdOffre(), dto.getIdCandidat());
-
-        // Afficher une popup de résultat détaillé
         afficherPopupResultat(result, dto.getNomComplet());
-
-        // Rafraîchir la liste
         chargerDonnees();
     }
 
@@ -334,7 +321,6 @@ public class MatchingController {
             stage.setMinHeight(500);
             stage.showAndWait();
         } catch (IOException e) {
-            // Fallback : alert simple si le FXML n'est pas encore créé
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Résultat du Matching");
             alert.setHeaderText(nomCandidat + " — " + result.decision);
@@ -350,7 +336,6 @@ public class MatchingController {
     }
 
     private void afficherDetailMatching(CandidatureDTO dto) {
-        // Recalcule le score sans modifier le statut (juste pour afficher)
         MatchingResult result = matchingService.calculerEtAppliquer(
                 dto.getIdCandidature(), dto.getIdOffre(), dto.getIdCandidat());
         afficherPopupResultat(result, dto.getNomComplet());
@@ -377,17 +362,22 @@ public class MatchingController {
     // ════════════════════════════════════════════════════════════
     private void mettreAJourStats() {
         if (toutesLesCandidatures == null) return;
-        long total     = toutesLesCandidatures.size();
-        long enAtt     = toutesLesCandidatures.stream().filter(c -> "en_attente".equalsIgnoreCase(c.getStatut())).count();
-        long enRev     = toutesLesCandidatures.stream().filter(c -> "en_revision".equalsIgnoreCase(c.getStatut())).count();
-        long accep     = toutesLesCandidatures.stream().filter(c -> "traité".equalsIgnoreCase(c.getStatut())).count();
-        long ann       = toutesLesCandidatures.stream().filter(c -> "annulé".equalsIgnoreCase(c.getStatut())).count();
+        long total = toutesLesCandidatures.size();
+        long enAtt = toutesLesCandidatures.stream()
+                .filter(c -> "en_attente".equalsIgnoreCase(c.getStatut())
+                        || "en attente".equalsIgnoreCase(c.getStatut())).count();
+        long enRev = toutesLesCandidatures.stream()
+                .filter(c -> "en_revision".equalsIgnoreCase(c.getStatut())).count();
+        long accep = toutesLesCandidatures.stream()
+                .filter(c -> "traité".equalsIgnoreCase(c.getStatut())).count();
+        long ann   = toutesLesCandidatures.stream()
+                .filter(c -> "annulé".equalsIgnoreCase(c.getStatut())).count();
 
-        if (totalLabel    != null) totalLabel.setText(String.valueOf(total));
+        if (totalLabel     != null) totalLabel.setText(String.valueOf(total));
         if (enAttenteLabel != null) enAttenteLabel.setText(String.valueOf(enAtt));
-        if (revisionLabel != null) revisionLabel.setText(String.valueOf(enRev));
-        if (acceptesLabel != null) acceptesLabel.setText(String.valueOf(accep));
-        if (annulesLabel  != null) annulesLabel.setText(String.valueOf(ann));
+        if (revisionLabel  != null) revisionLabel.setText(String.valueOf(enRev));
+        if (acceptesLabel  != null) acceptesLabel.setText(String.valueOf(accep));
+        if (annulesLabel   != null) annulesLabel.setText(String.valueOf(ann));
     }
 
     // ════════════════════════════════════════════════════════════
@@ -419,7 +409,8 @@ public class MatchingController {
             case "traité":      txt = "✅  Accepté";       bg = "#DCFCE7"; fg = "#15803D"; break;
             case "en_revision": txt = "🔍  En révision";   bg = "#FEF3C7"; fg = "#D97706"; break;
             case "annulé":      txt = "❌  Annulé";        bg = "#FEE2E2"; fg = "#DC2626"; break;
-            case "en_attente":  txt = "⏳  En attente";    bg = "#EFF6FF"; fg = "#2563EB"; break;
+            case "en_attente":
+            case "en attente":  txt = "⏳  En attente";    bg = "#EFF6FF"; fg = "#2563EB"; break;
             default:            txt = statut;              bg = "#F3F4F6"; fg = "#6B7280";
         }
         Label l = new Label(txt);
@@ -435,7 +426,8 @@ public class MatchingController {
             case "traité":      return "-fx-border-color:#059669; -fx-border-width:0 0 0 5; -fx-border-radius:0 16 16 0;";
             case "en_revision": return "-fx-border-color:#D97706; -fx-border-width:0 0 0 5; -fx-border-radius:0 16 16 0;";
             case "annulé":      return "-fx-border-color:#DC2626; -fx-border-width:0 0 0 5; -fx-border-radius:0 16 16 0;";
-            case "en_attente":  return "-fx-border-color:#2563EB; -fx-border-width:0 0 0 5; -fx-border-radius:0 16 16 0;";
+            case "en_attente":
+            case "en attente":  return "-fx-border-color:#2563EB; -fx-border-width:0 0 0 5; -fx-border-radius:0 16 16 0;";
             default:            return "";
         }
     }

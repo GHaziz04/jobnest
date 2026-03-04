@@ -25,7 +25,6 @@
             </HBox>
             <VBox styleClass="menu-container" spacing="5" VBox.vgrow="ALWAYS">
 
-                <!-- ✅ OFFRES D'EMPLOI avec navigation -->
                 <Button styleClass="menu-item" onAction="#ouvrirOffresEmploi">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="💼" style="-fx-font-size: 18px;"/>
@@ -78,8 +77,9 @@
     <center>
         <VBox spacing="20" style="-fx-background-color: #F5F7FB;">
             <padding><Insets top="25" right="35" bottom="25" left="35"/></padding>
+            <!-- ✅ CHANGEMENT : titre mis à jour -->
             <Label text="Tableau des Candidatures" styleClass="page-title"/>
-            <Label text="Candidatures en attente — à traiter et planifier" styleClass="page-subtitle"/>
+            <Label text="Candidatures en révision — à valider ou rejeter" styleClass="page-subtitle"/>
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <TextField fx:id="searchField" promptText="Rechercher par candidat ou offre..."
                            prefWidth="320" HBox.hgrow="ALWAYS"/>
@@ -98,7 +98,8 @@
             <HBox spacing="20" alignment="CENTER_LEFT">
                 <VBox styleClass="stat-card">
                     <Label fx:id="totalCandidaturesLabel" text="0" styleClass="stat-number"/>
-                    <Label text="En attente" styleClass="stat-label"/>
+                    <!-- ✅ CHANGEMENT : "En révision" au lieu de "En attente" -->
+                    <Label text="En révision" styleClass="stat-label"/>
                 </VBox>
                 <VBox styleClass="stat-card">
                     <Label fx:id="boostedLabel" text="0"
@@ -107,11 +108,13 @@
                 </VBox>
                 <VBox styleClass="stat-card">
                     <Label fx:id="enAttenteLabel" text="0"
-                           style="-fx-font-size:36px; -fx-font-weight:bold; -fx-text-fill:#F97316;"/>
-                    <Label text="Sans entretien" styleClass="stat-label"/>
+                           style="-fx-font-size:36px; -fx-font-weight:bold; -fx-text-fill:#D97706;"/>
+                    <!-- ✅ CHANGEMENT : "En révision" au lieu de "Sans entretien" -->
+                    <Label text="En révision" styleClass="stat-label"/>
                 </VBox>
             </HBox>
-            <Label text="Candidatures en attente de traitement" styleClass="section-title"/>
+            <!-- ✅ CHANGEMENT : titre section mis à jour -->
+            <Label text="Candidatures en révision — décision requise" styleClass="section-title"/>
             <ScrollPane fitToWidth="true" prefHeight="600.0"
                         style="-fx-background:transparent; -fx-background-color:transparent; -fx-border-color:transparent;"
                         VBox.vgrow="ALWAYS">

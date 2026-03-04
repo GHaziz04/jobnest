@@ -33,7 +33,8 @@ public class GestionCandidaturesController {
     private final CandidatureService service = new CandidatureService();
     private final int CURRENT_RECRUTEUR_ID = 1;
 
-    private List<CandidatureDTO> candidaturesEnAttente;
+    // ✅ CHANGEMENT : renommé pour refléter qu'on affiche les "en_revision"
+    private List<CandidatureDTO> candidaturesEnRevision;
 
     // ─────────────────────────────────────────────────────────────────────────
     @FXML
@@ -48,13 +49,13 @@ public class GestionCandidaturesController {
     private void chargerDonnees() {
         List<CandidatureDTO> toutes = service.getCandidaturesPourRecruteur(CURRENT_RECRUTEUR_ID);
 
-        candidaturesEnAttente = toutes.stream()
-                .filter(c -> "en_attente".equalsIgnoreCase(c.getStatut())
-                        || "en attente".equalsIgnoreCase(c.getStatut()))
+        // ✅ CHANGEMENT : on affiche uniquement les candidatures "en_revision"
+        candidaturesEnRevision = toutes.stream()
+                .filter(c -> "en_revision".equalsIgnoreCase(c.getStatut()))
                 .collect(Collectors.toList());
 
-        mettreAJourStats(candidaturesEnAttente);
-        afficherCandidatures(candidaturesEnAttente);
+        mettreAJourStats(candidaturesEnRevision);
+        afficherCandidatures(candidaturesEnRevision);
     }
 
     @FXML
@@ -72,11 +73,11 @@ public class GestionCandidaturesController {
     // ─────────────────────────────────────────────────────────────────────────
     private void filtrerCandidatures(String query) {
         if (query == null || query.isEmpty()) {
-            afficherCandidatures(candidaturesEnAttente);
+            afficherCandidatures(candidaturesEnRevision);
             return;
         }
         String q = query.toLowerCase();
-        List<CandidatureDTO> filtrees = candidaturesEnAttente.stream()
+        List<CandidatureDTO> filtrees = candidaturesEnRevision.stream()
                 .filter(c -> c.getNomComplet().toLowerCase().contains(q)
                         || c.getTitreOffre().toLowerCase().contains(q))
                 .collect(Collectors.toList());
@@ -92,7 +93,7 @@ public class GestionCandidaturesController {
             emptyBox.setPadding(new Insets(60));
             Label emptyIcon = new Label("📭");
             emptyIcon.setStyle("-fx-font-size: 48px;");
-            Label emptyText = new Label("Aucune candidature en attente");
+            Label emptyText = new Label("Aucune candidature en révision");
             emptyText.setStyle("-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #94A3B8;");
             Label emptySubText = new Label("Toutes les candidatures ont été traitées !");
             emptySubText.setStyle("-fx-font-size: 13px; -fx-text-fill: #CBD5E1;");
@@ -182,9 +183,10 @@ public class GestionCandidaturesController {
         VBox badgesBlock = new VBox(6);
         badgesBlock.setAlignment(Pos.CENTER_RIGHT);
 
-        Label lblStatut = new Label("⏳  EN ATTENTE");
+        // ✅ CHANGEMENT : badge "EN RÉVISION" au lieu de "EN ATTENTE"
+        Label lblStatut = new Label("🔍  EN RÉVISION");
         lblStatut.setStyle(
-                "-fx-background-color: #FEF3C7; -fx-text-fill: #B45309;"
+                "-fx-background-color: #FEF3C7; -fx-text-fill: #D97706;"
                         + "-fx-padding: 7 16; -fx-background-radius: 20;"
                         + "-fx-font-weight: 800; -fx-font-size: 12px;");
 
@@ -347,9 +349,6 @@ public class GestionCandidaturesController {
                 "JobNest - Gestion des Feedbacks");
     }
 
-    // ────────────────────────────────────────────────────────────────
-    //  ✅ NAVIGATION VERS OFFRES D'EMPLOI (SIDEBAR)
-    // ────────────────────────────────────────────────────────────────
     @FXML
     private void ouvrirOffresEmploi(ActionEvent event) {
         naviguer(event, "/tn/jobnest/gentretien/offre-emploi_view.fxml",
@@ -380,5 +379,4 @@ public class GestionCandidaturesController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
 }
