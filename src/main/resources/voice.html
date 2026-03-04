@@ -15,6 +15,7 @@
             font-size: 16px;
             margin: 20px;
             color: #64748B;
+            min-height: 30px;
         }
         button {
             font-size: 18px;
@@ -36,12 +37,10 @@
 <script>
     function start() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
         if (!SpeechRecognition) {
-            document.getElementById('status').innerText = '❌ Navigateur non supporté. Utilisez Chrome.';
+            document.getElementById('status').innerText = '❌ Utilisez Chrome.';
             return;
         }
-
         const recognition = new SpeechRecognition();
         recognition.lang = "fr-FR";
         recognition.continuous = false;
@@ -52,31 +51,21 @@
         recognition.onresult = function(event) {
             let text = event.results[0][0].transcript;
             document.getElementById('status').innerText = '✅ Reconnu : ' + text;
-            console.log("Recognized:", text);
-
-            // ✅ URL CORRIGÉE : localhost:5555 (pas localhost:127.0.0.1)
             fetch("http://localhost:5555/voice", {
                 method: "POST",
                 headers: { "Content-Type": "text/plain; charset=utf-8" },
                 body: text
             })
-                .then(res => {
-                    document.getElementById('status').innerText = '✅ Envoyé à JobNest : ' + text;
+                .then(() => {
+                    document.getElementById('status').innerText = '✅ Envoyé : ' + text;
                 })
                 .catch(err => {
-                    document.getElementById('status').innerText = '❌ Erreur envoi : ' + err;
-                    console.error(err);
+                    document.getElementById('status').innerText = '❌ Erreur : ' + err;
                 });
         };
 
         recognition.onerror = function(event) {
             document.getElementById('status').innerText = '❌ Erreur micro : ' + event.error;
-        };
-
-        recognition.onend = function() {
-            if (document.getElementById('status').innerText === '🎤 Écoute en cours...') {
-                document.getElementById('status').innerText = 'Aucune voix détectée. Réessayez.';
-            }
         };
 
         recognition.start();
