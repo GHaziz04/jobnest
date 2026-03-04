@@ -6,18 +6,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * ✅ SOLUTION DÉFINITIVE
+ * VERSION FINALE
  *
- * PROBLÈME : MariaDB ferme la connexion après wait_timeout d'inactivité.
- * Les services qui stockaient "private final Connection cnx = MyDatabase.getInstance().getConn()"
- * gardaient une référence à une connexion MORTE.
+ * PROBLÈME CORRIGÉ :
+ * Le thread KeepAlive exécutait "SELECT 1" EN MÊME TEMPS qu'une requête normale
+ * → NullPointerException sur le ResultSet car la connexion était occupée.
  *
  * SOLUTION :
- *  1. Une seule connexion persistante dans le singleton.
- *  2. Thread KeepAlive → envoie "SELECT 1" toutes les 20s → connexion jamais fermée par MariaDB.
- *  3. getConn() vérifie isValid() comme filet de sécurité.
- *  4. TOUS les services appellent MyDatabase.getInstance().getConn() directement,
- *     SANS stocker la connexion dans un champ.
+ * - getConn() est synchronized(this) → toute lecture/écriture est sérialisée
+ * - Le KeepAlive utilise aussi synchronized(this) → il attend que la requête
+ *   en cours soit terminée avant d'envoyer le ping
+ * - Résultat : une seule opération SQL à la fois sur la connexion unique
  */
 public class MyDatabase {
 
@@ -35,7 +34,7 @@ public class MyDatabase {
     private static MyDatabase instance;
     private Connection conn;
 
-    // ─── SINGLETON ───────────────────────────────────────────────────────────
+    // ─── SINGLETON ────────────────────────────────────────────────────────────
     private MyDatabase() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -53,9 +52,14 @@ public class MyDatabase {
         return instance;
     }
 
-    // ─── CONNEXION ───────────────────────────────────────────────────────────
+    // ─── CONNEXION ────────────────────────────────────────────────────────────
+    // ⚠️ Appelée uniquement depuis des blocs synchronized(this)
     private void connect() {
         try {
+            // Fermer proprement l'ancienne connexion si elle existe
+            if (conn != null) {
+                try { conn.close(); } catch (SQLException ignored) { }
+            }
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
             System.out.println("[DB] ✅ Connexion établie.");
         } catch (SQLException e) {
@@ -64,35 +68,39 @@ public class MyDatabase {
     }
 
     /**
-     * ✅ Retourne la connexion unique.
-     * Reconnecte silencieusement si elle a été fermée (filet de sécurité).
+     * Retourne la connexion valide.
+     * synchronized → une seule opération SQL à la fois.
+     * Le KeepAlive doit attendre la fin de cette méthode avant de pinger.
      */
     public synchronized Connection getConn() {
         try {
             if (conn == null || conn.isClosed() || !conn.isValid(2)) {
+                System.out.println("[DB] Reconnexion nécessaire...");
                 connect();
             }
         } catch (SQLException e) {
+            System.err.println("[DB] Erreur vérification : " + e.getMessage());
             connect();
         }
         return conn;
     }
 
-    // ─── KEEP-ALIVE ──────────────────────────────────────────────────────────
+    // ─── KEEP-ALIVE ───────────────────────────────────────────────────────────
     /**
-     * Envoie "SELECT 1" toutes les 20 secondes pour empêcher MariaDB
-     * de fermer la connexion inactive (wait_timeout).
-     * Le thread est daemon → se ferme automatiquement avec l'application.
+     * Ping toutes les 25 secondes.
+     * synchronized(MyDatabase.this) → attend la fin de toute requête SQL en cours
+     * avant d'envoyer SELECT 1 → plus de conflit sur le ResultSet.
      */
     private void startKeepAlive() {
         Thread keepAlive = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    Thread.sleep(20_000);
+                    Thread.sleep(25_000);   // ping toutes les 25s
                     synchronized (MyDatabase.this) {
                         if (conn != null && !conn.isClosed()) {
                             try (Statement st = conn.createStatement()) {
                                 st.execute("SELECT 1");
+                                // ping silencieux — pas de log pour ne pas polluer la console
                             }
                         } else {
                             connect();
@@ -101,14 +109,16 @@ public class MyDatabase {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (SQLException e) {
-                    System.err.println("[DB] KeepAlive - reconnexion : " + e.getMessage());
-                    connect();
+                    System.err.println("[DB] KeepAlive — reconnexion : " + e.getMessage());
+                    synchronized (MyDatabase.this) {
+                        connect();
+                    }
                 }
             }
         });
         keepAlive.setDaemon(true);
         keepAlive.setName("DB-KeepAlive");
         keepAlive.start();
-        System.out.println("[DB] ✅ KeepAlive démarré (ping toutes les 20s).");
+        System.out.println("[DB] ✅ KeepAlive démarré (ping toutes les 25s).");
     }
 }

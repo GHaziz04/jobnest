@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<!--
+    notification-panel.fxml
+    Panneau latéral de notifications JobNest — inclus via fx:include
+    dans le layout principal (entretien-view.fxml)
+-->
+<VBox fx:id="panelRoot"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.jobnest.gentretien.controller.NotificationPanelController"
+      prefWidth="340"
+      spacing="0"
+      style="-fx-background-color: white;
+             -fx-effect: dropshadow(gaussian, rgba(15,30,55,0.18), 20, 0, -4, 0);
+             -fx-background-radius: 0;">
+
+    <!-- ── En-tête ── -->
+    <VBox style="-fx-background-color: #1E3A5F; -fx-padding: 20 20 16 20;" spacing="4">
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Text text="🔔" style="-fx-font-size:18px;"/>
+            <Label text="Notifications" style="-fx-font-size:17px; -fx-font-weight:bold; -fx-text-fill:white;"/>
+            <HBox HBox.hgrow="ALWAYS"/>
+            <Label fx:id="headerCountLabel" text="—"
+                   style="-fx-font-size:11px; -fx-text-fill:#94A3B8;"/>
+        </HBox>
+        <Button fx:id="btnToutLire" text="Tout marquer comme lu"
+                onAction="#marquerToutesLues"
+                style="-fx-background-color: rgba(37,99,235,0.25);
+                       -fx-text-fill: #BFDBFE;
+                       -fx-font-size: 11px;
+                       -fx-font-weight: bold;
+                       -fx-background-radius: 8;
+                       -fx-cursor: hand;
+                       -fx-padding: 5 12 5 12;
+                       -fx-border-color: rgba(37,99,235,0.4);
+                       -fx-border-width: 1;
+                       -fx-border-radius: 8;"/>
+    </VBox>
+
+    <!-- ── Liste scrollable ── -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background:transparent; -fx-background-color:transparent;
+                       -fx-border-color:transparent; -fx-padding:0;">
+        <VBox fx:id="notifListVBox" spacing="8"
+              style="-fx-background-color:#F8FAFC; -fx-padding: 14 12 14 12;">
+
+            <Label fx:id="emptyLabel"
+                   text="🎉  Aucune notification pour le moment"
+                   wrapText="true"
+                   style="-fx-font-size:13px; -fx-text-fill:#94A3B8;
+                          -fx-padding: 30 20 30 20; -fx-alignment:center;"/>
+        </VBox>
+    </ScrollPane>
+</VBox>

@@ -6,6 +6,12 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
 
+<!--
+    entretien-view.fxml — VERSION CORRIGÉE
+    Changement clé : fx:include fx:id="notifInclude"
+    → Le contrôleur sera injecté sous le nom "notifIncludeController"
+      (convention JavaFX : fx:id + "Controller")
+-->
 <BorderPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="tn.jobnest.gentretien.controller.Entretiencontroller"
@@ -27,53 +33,42 @@
             </HBox>
 
             <VBox styleClass="menu-container" spacing="5" VBox.vgrow="ALWAYS">
-
-
-
-                <!-- ✅ BOUTON OFFRES D'EMPLOI avec navigation -->
                 <Button styleClass="menu-item" onAction="#ouvrirOffresEmploi">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="💼" style="-fx-font-size: 18px;"/>
                         <Label text="Offres d'emploi" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
-
                 <Button styleClass="menu-item" onAction="#ouvrirCandidature">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📄" style="-fx-font-size: 18px;"/>
                         <Label text="Candidatures" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
-
-                <!-- ACTIF -->
                 <Button styleClass="menu-item, menu-item-active">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📅" style="-fx-font-size: 18px;"/>
                         <Label text="Entretiens" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
-
                 <Button styleClass="menu-item" onAction="#ouvrirFeedbacks">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📊" style="-fx-font-size: 18px;"/>
                         <Label text="Feedbacks" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
-
                 <Button styleClass="menu-item" onAction="#ouvrirHistorique">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="📅" style="-fx-font-size: 18px;"/>
                         <Label text="Historique" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
-
                 <Button styleClass="menu-item" onAction="#ouvrirMatching">
                     <graphic><HBox spacing="15" alignment="CENTER_LEFT">
                         <Text text="🎯" style="-fx-font-size: 18px;"/>
                         <Label text="Matching" style="-fx-text-fill: inherit; -fx-font-size: 14px;"/>
                     </HBox></graphic>
                 </Button>
-
             </VBox>
 
             <VBox styleClass="sidebar-footer" spacing="10">
@@ -94,55 +89,115 @@
     </left>
 
     <center>
-        <VBox spacing="20" style="-fx-background-color: #F5F7FB;">
-            <padding><Insets top="25" right="35" bottom="25" left="35"/></padding>
+        <!-- HBox principale : contenu à gauche + panneau notifs à droite -->
+        <HBox spacing="0">
 
-            <Label text="Gestion des Entretiens" styleClass="page-title"/>
-            <Label text="Entretiens en cours — proposés et confirmés uniquement" styleClass="page-subtitle"/>
+            <!-- ── Contenu principal ── -->
+            <VBox spacing="20" style="-fx-background-color: #F5F7FB;" HBox.hgrow="ALWAYS">
+                <padding><Insets top="25" right="35" bottom="25" left="35"/></padding>
 
-            <HBox spacing="15" alignment="CENTER_LEFT">
-                <TextField fx:id="searchField"
-                           promptText="Rechercher par candidat ou poste..."
-                           prefWidth="320" HBox.hgrow="ALWAYS"/>
-                <ComboBox fx:id="comboType" prefWidth="160"/>
-                <ComboBox fx:id="comboStatut" prefWidth="180"/>
-                <Button text="🔄 Actualiser" onAction="#actualiserListe"
-                        prefHeight="42" prefWidth="135"
-                        style="-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;
-                               -fx-font-size:13px; -fx-font-weight:bold;
-                               -fx-background-radius:12px; -fx-cursor:hand;
-                               -fx-effect:dropshadow(gaussian,rgb(37,99,235),10,0,0,3);"/>
-                <Button text="📊 Voir Feedbacks" onAction="#ouvrirFeedbacks"
-                        prefHeight="42" prefWidth="160"
-                        style="-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;
-                               -fx-font-size:14px; -fx-font-weight:bold;
-                               -fx-background-radius:12px; -fx-cursor:hand;
-                               -fx-effect:dropshadow(gaussian,rgb(37,99,235),10,0,0,3);"/>
-            </HBox>
+                <!-- Header : titre + CLOCHE -->
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Gestion des Entretiens" styleClass="page-title"/>
+                        <Label text="Entretiens en cours — proposés uniquement" styleClass="page-subtitle"/>
+                    </VBox>
 
-            <HBox spacing="20" alignment="CENTER_LEFT">
-                <VBox styleClass="stat-card">
-                    <Label fx:id="planifiesCount" text="0" styleClass="stat-number"/>
-                    <Label text="Planifiés" styleClass="stat-label"/>
-                </VBox>
-                <VBox styleClass="stat-card">
-                    <Label fx:id="terminesCount" text="0" styleClass="stat-number"/>
-                    <Label text="Terminés" styleClass="stat-label"/>
-                </VBox>
-                <VBox styleClass="stat-card">
-                    <Label fx:id="semaineCount" text="0" styleClass="stat-number"/>
-                    <Label text="Cette semaine" styleClass="stat-label"/>
-                </VBox>
-            </HBox>
+                    <!-- ════ CLOCHE AVEC BADGE ════ -->
+                    <StackPane alignment="TOP_RIGHT">
+                        <Button fx:id="btnNotifications"
+                                onAction="#toggleNotificationPanel"
+                                prefWidth="46" prefHeight="46"
+                                style="-fx-background-color: white;
+                                       -fx-background-radius: 50;
+                                       -fx-border-color: #E2E8F0;
+                                       -fx-border-width: 1.5;
+                                       -fx-border-radius: 50;
+                                       -fx-cursor: hand;
+                                       -fx-padding: 0;
+                                       -fx-effect: dropshadow(gaussian,rgba(30,58,95,0.08),10,0,0,3);">
+                            <graphic>
+                                <Text text="🔔" style="-fx-font-size: 20px;"/>
+                            </graphic>
+                        </Button>
+                        <!-- Badge rouge — fx:id doit correspondre exactement au @FXML -->
+                        <Label fx:id="notifBadgeLabel"
+                               text="0"
+                               visible="false"
+                               managed="false"
+                               style="-fx-background-color: #EF4444;
+                                      -fx-text-fill: white;
+                                      -fx-font-size: 9px;
+                                      -fx-font-weight: bold;
+                                      -fx-background-radius: 10;
+                                      -fx-padding: 2 5 2 5;
+                                      -fx-min-width: 18;
+                                      -fx-min-height: 18;
+                                      -fx-alignment: center;"
+                               StackPane.alignment="TOP_RIGHT"
+                               translateX="4" translateY="-4"/>
+                    </StackPane>
+                    <!-- ═══════════════════════════════ -->
+                </HBox>
 
-            <Label text="Entretiens en cours" styleClass="section-title"/>
+                <!-- Barre de filtres -->
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <TextField fx:id="searchField"
+                               promptText="Rechercher par candidat ou poste..."
+                               prefWidth="320" HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="comboType" prefWidth="160"/>
+                    <ComboBox fx:id="comboStatut" prefWidth="180"/>
+                    <Button text="🔄 Actualiser" onAction="#actualiserListe"
+                            prefHeight="42" prefWidth="135"
+                            style="-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;
+                                   -fx-font-size:13px; -fx-font-weight:bold;
+                                   -fx-background-radius:12px; -fx-cursor:hand;
+                                   -fx-effect:dropshadow(gaussian,rgb(37,99,235),10,0,0,3);"/>
+                    <Button text="📊 Voir Feedbacks" onAction="#ouvrirFeedbacks"
+                            prefHeight="42" prefWidth="160"
+                            style="-fx-background-color:#1e3a8a; -fx-text-fill:#ffffff;
+                                   -fx-font-size:14px; -fx-font-weight:bold;
+                                   -fx-background-radius:12px; -fx-cursor:hand;
+                                   -fx-effect:dropshadow(gaussian,rgb(37,99,235),10,0,0,3);"/>
+                </HBox>
 
-            <ScrollPane fitToWidth="true" prefHeight="600.0"
-                        style="-fx-background:transparent; -fx-background-color:transparent;
-                               -fx-border-color:transparent;"
-                        VBox.vgrow="ALWAYS">
-                <VBox fx:id="entretiensVBox" spacing="12" style="-fx-background-color:transparent;"/>
-            </ScrollPane>
-        </VBox>
+                <!-- Stat cards -->
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <VBox styleClass="stat-card">
+                        <Label fx:id="planifiesCount" text="0" styleClass="stat-number"/>
+                        <Label text="Planifiés" styleClass="stat-label"/>
+                    </VBox>
+                    <VBox styleClass="stat-card">
+                        <Label fx:id="terminesCount" text="0" styleClass="stat-number"/>
+                        <Label text="Terminés" styleClass="stat-label"/>
+                    </VBox>
+                    <VBox styleClass="stat-card">
+                        <Label fx:id="semaineCount" text="0" styleClass="stat-number"/>
+                        <Label text="Cette semaine" styleClass="stat-label"/>
+                    </VBox>
+                </HBox>
+
+                <Label text="Entretiens en cours" styleClass="section-title"/>
+
+                <ScrollPane fitToWidth="true" prefHeight="600.0"
+                            style="-fx-background:transparent; -fx-background-color:transparent;
+                                   -fx-border-color:transparent;"
+                            VBox.vgrow="ALWAYS">
+                    <VBox fx:id="entretiensVBox" spacing="12"
+                          style="-fx-background-color:transparent;"/>
+                </ScrollPane>
+            </VBox>
+
+            <!--
+            ════ PANNEAU NOTIFICATIONS ════
+            fx:id="notifInclude"  → injecté dans @FXML Node notifInclude
+            Le contrôleur sera automatiquement injecté sous "notifIncludeController"
+            (convention JavaFX : fx:id + "Controller")
+            -->
+            <fx:include fx:id="notifInclude"
+                        source="notification-panel.fxml"/>
+
+        </HBox>
     </center>
+
 </BorderPane>
