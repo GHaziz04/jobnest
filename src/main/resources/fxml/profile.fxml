@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.controller.ProfileController"
+            stylesheets="@/css/profile.css">
+
+    <!-- ===== TOP BAR ===== -->
+    <top>
+        <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="12">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <ImageView fitHeight="38" fitWidth="38" preserveRatio="true">
+                    <image><Image url="@/images/logo.png"/></image>
+                </ImageView>
+                <Label text="JobNest" styleClass="top-logo-text"/>
+            </HBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="welcomeLabel" styleClass="welcome-text"/>
+            <Button fx:id="backBtn" text="← Retour" onAction="#goBack" styleClass="nav-btn"/>
+            <Button fx:id="logoutBtn" text="Déconnexion" onAction="#logout" styleClass="logout-btn"/>
+        </HBox>
+    </top>
+
+    <!-- ===== CONTENT ===== -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+            <VBox styleClass="profile-container" spacing="24">
+                <padding><Insets top="28" right="36" bottom="36" left="36"/></padding>
+
+                <!-- ===== HERO HEADER ===== -->
+                <HBox styleClass="profile-header" spacing="0">
+                    <HBox styleClass="profile-header-gradient" spacing="32" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                        <padding><Insets top="32" right="36" bottom="32" left="36"/></padding>
+                        <VBox alignment="CENTER" spacing="12">
+                            <StackPane styleClass="profile-image-wrapper">
+                                <StackPane styleClass="profile-image-container">
+                                    <ImageView fx:id="profileImageView"
+                                               fitWidth="110" fitHeight="110"
+                                               preserveRatio="false" pickOnBounds="true"/>
+                                </StackPane>
+                            </StackPane>
+                            <Button fx:id="changePhotoBtn" text="📷 Changer"
+                                    onAction="#changeProfileImage" styleClass="change-photo-btn"/>
+                            <Button fx:id="generateAvatarBtn" text="✨ Avatar IA"
+                                    onAction="#generateAIAvatar" styleClass="ai-avatar-button"/>
+                        </VBox>
+                        <VBox spacing="10" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+                            <Label fx:id="fullNameLabel" styleClass="profile-name"/>
+                            <HBox styleClass="profile-role-badge" maxWidth="160">
+                                <Label fx:id="roleLabel" styleClass="profile-role"/>
+                            </HBox>
+                            <Label fx:id="emailLabel" styleClass="profile-email"/>
+                            <Label fx:id="joinDateLabel" text="✦ Membre depuis 2024" styleClass="profile-join-date"/>
+                        </VBox>
+                        <HBox spacing="14" alignment="CENTER_RIGHT">
+                            <VBox styleClass="stat-mini-card" alignment="CENTER" spacing="4">
+                                <Label fx:id="stat1Value" text="0" styleClass="stat-value"/>
+                                <Label fx:id="stat1Label" text="—" styleClass="stat-label"/>
+                            </VBox>
+                            <VBox styleClass="stat-mini-card" alignment="CENTER" spacing="4">
+                                <Label fx:id="stat2Value" text="0" styleClass="stat-value"/>
+                                <Label fx:id="stat2Label" text="—" styleClass="stat-label"/>
+                            </VBox>
+                            <VBox styleClass="stat-mini-card" alignment="CENTER" spacing="4">
+                                <Label fx:id="stat3Value" text="0" styleClass="stat-value"/>
+                                <Label fx:id="stat3Label" text="—" styleClass="stat-label"/>
+                            </VBox>
+                        </HBox>
+                    </HBox>
+                </HBox>
+
+                <!-- ===== TWO-COLUMN LAYOUT ===== -->
+                <HBox spacing="24" alignment="TOP_LEFT">
+
+                    <!-- LEFT COLUMN -->
+                    <VBox spacing="24" HBox.hgrow="ALWAYS">
+
+                        <!-- INFORMATIONS PERSONNELLES -->
+                        <VBox styleClass="section-card" spacing="0">
+                            <HBox styleClass="section-header-bar" alignment="CENTER_LEFT" spacing="10">
+                                <Label text="👤" styleClass="section-icon"/>
+                                <VBox spacing="2">
+                                    <Label fx:id="sectionPersonalTitle" text="Informations personnelles" styleClass="section-title"/>
+                                    <Label fx:id="sectionPersonalSubtitle" text="Gérez vos informations de base" styleClass="section-subtitle"/>
+                                </VBox>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button fx:id="editButton" text="✏️ Modifier"
+                                        onAction="#toggleEditMode" styleClass="edit-btn"/>
+                            </HBox>
+                            <VBox spacing="20">
+                                <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+                                <HBox spacing="16">
+                                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                        <Label fx:id="labelPrenom" text="PRÉNOM" styleClass="field-label"/>
+                                        <TextField fx:id="prenomField" editable="false" styleClass="info-field"/>
+                                    </VBox>
+                                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                        <Label fx:id="labelNom" text="NOM" styleClass="field-label"/>
+                                        <TextField fx:id="nomField" editable="false" styleClass="info-field"/>
+                                    </VBox>
+                                </HBox>
+                                <VBox spacing="6">
+                                    <Label fx:id="labelEmail" text="EMAIL" styleClass="field-label"/>
+                                    <TextField fx:id="emailField" editable="false" styleClass="info-field"/>
+                                </VBox>
+                                <HBox spacing="16">
+                                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                        <Label fx:id="labelPhone" text="TÉLÉPHONE" styleClass="field-label"/>
+                                        <TextField fx:id="phoneField" editable="false" styleClass="info-field"/>
+                                    </VBox>
+                                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                        <Label fx:id="labelAdresse" text="ADRESSE" styleClass="field-label"/>
+                                        <TextField fx:id="adresseField" editable="false" styleClass="info-field"/>
+                                    </VBox>
+                                </HBox>
+                                <HBox fx:id="actionButtons" spacing="12" alignment="CENTER_RIGHT"
+                                      visible="false" managed="false">
+                                    <Button fx:id="cancelBtn" text="Annuler" onAction="#cancelEdit" styleClass="cancel-btn"/>
+                                    <Button fx:id="saveBtn" text="💾 Enregistrer" onAction="#saveProfile" styleClass="save-btn"/>
+                                </HBox>
+                            </VBox>
+                        </VBox>
+
+                        <!-- SÉCURITÉ -->
+                        <VBox styleClass="section-card" spacing="0">
+                            <HBox styleClass="section-header-bar" alignment="CENTER_LEFT" spacing="10">
+                                <Label text="🔒" styleClass="section-icon"/>
+                                <VBox spacing="2">
+                                    <Label fx:id="sectionSecurityTitle" text="Sécurité" styleClass="section-title"/>
+                                    <Label fx:id="sectionSecuritySubtitle" text="Protégez votre compte" styleClass="section-subtitle"/>
+                                </VBox>
+                            </HBox>
+                            <VBox spacing="16">
+                                <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+                                <HBox alignment="CENTER_LEFT" spacing="16">
+                                    <VBox spacing="3" HBox.hgrow="ALWAYS">
+                                        <Label fx:id="labelPasswordTitle" text="Mot de passe" styleClass="pref-title"/>
+                                        <Label fx:id="labelPasswordDesc" text="Dernière modification il y a 30 jours" styleClass="pref-desc"/>
+                                    </VBox>
+                                    <Button fx:id="changePasswordBtn" text="🔑 Changer le mot de passe"
+                                            onAction="#changePassword" styleClass="secondary-btn"/>
+                                </HBox>
+                                <Separator/>
+                                <HBox alignment="CENTER_LEFT" spacing="16">
+                                    <VBox spacing="3" HBox.hgrow="ALWAYS">
+                                        <Label fx:id="labelTwoFa" text="Double authentification" styleClass="pref-title"/>
+                                        <Label fx:id="labelTwoFaDesc" text="Ajoutez une couche de sécurité" styleClass="pref-desc"/>
+                                    </VBox>
+                                    <Button fx:id="twoFaToggle" text="DÉSACTIVÉ"
+                                            onAction="#toggleTwoFA" styleClass="toggle-off"/>
+                                </HBox>
+                            </VBox>
+                        </VBox>
+
+                    </VBox>
+
+                    <!-- RIGHT COLUMN -->
+                    <VBox spacing="24" prefWidth="340" minWidth="300">
+
+                        <!-- PRÉFÉRENCES -->
+                        <VBox styleClass="section-card" spacing="0">
+                            <HBox styleClass="section-header-bar" alignment="CENTER_LEFT" spacing="10">
+                                <Label text="⚙️" styleClass="section-icon"/>
+                                <VBox spacing="2">
+                                    <Label fx:id="sectionPrefsTitle" text="Préférences" styleClass="section-title"/>
+                                    <Label fx:id="sectionPrefsSubtitle" text="Personnalisez votre expérience" styleClass="section-subtitle"/>
+                                </VBox>
+                            </HBox>
+                            <VBox spacing="0">
+                                <padding><Insets top="8" right="24" bottom="8" left="24"/></padding>
+
+                                <!-- Thème -->
+                                <HBox styleClass="pref-row" alignment="CENTER_LEFT" spacing="16">
+                                    <VBox spacing="3" HBox.hgrow="ALWAYS">
+                                        <Label fx:id="labelTheme" text="🌗 Thème" styleClass="pref-title"/>
+                                        <Label fx:id="labelThemeDesc" text="Clair ou sombre" styleClass="pref-desc"/>
+                                    </VBox>
+                                    <HBox spacing="4">
+                                        <Button fx:id="themeLightBtn" text="☀️ Clair"
+                                                onAction="#setThemeLight" styleClass="theme-btn-active"/>
+                                        <Button fx:id="themeDarkBtn" text="🌙 Sombre"
+                                                onAction="#setThemeDark" styleClass="theme-btn-inactive"/>
+                                    </HBox>
+                                </HBox>
+
+                                <!-- Langue -->
+                                <HBox styleClass="pref-row" alignment="CENTER_LEFT" spacing="16">
+                                    <VBox spacing="3" HBox.hgrow="ALWAYS">
+                                        <Label fx:id="labelLangue" text="🌍 Langue" styleClass="pref-title"/>
+                                        <Label fx:id="labelLangueDesc" text="Langue de l'interface" styleClass="pref-desc"/>
+                                    </VBox>
+                                    <ComboBox fx:id="langCombo" styleClass="lang-combo"
+                                              onAction="#changeLanguage" prefWidth="130"/>
+                                </HBox>
+
+                                <!-- Notifications -->
+                                <HBox styleClass="pref-row" alignment="CENTER_LEFT" spacing="16">
+                                    <VBox spacing="3" HBox.hgrow="ALWAYS">
+                                        <Label fx:id="labelNotif" text="🔔 Notifications" styleClass="pref-title"/>
+                                        <Label fx:id="labelNotifDesc" text="Alertes et rappels" styleClass="pref-desc"/>
+                                    </VBox>
+                                    <Button fx:id="notifToggle" text="ACTIVÉ"
+                                            onAction="#toggleNotifications" styleClass="toggle-on"/>
+                                </HBox>
+
+                                <!-- Emails -->
+                                <HBox styleClass="pref-row" alignment="CENTER_LEFT" spacing="16">
+                                    <VBox spacing="3" HBox.hgrow="ALWAYS">
+                                        <Label fx:id="labelEmails" text="📧 Emails" styleClass="pref-title"/>
+                                        <Label fx:id="labelEmailsDesc" text="Recevoir des emails" styleClass="pref-desc"/>
+                                    </VBox>
+                                    <Button fx:id="emailToggle" text="ACTIVÉ"
+                                            onAction="#toggleEmails" styleClass="toggle-on"/>
+                                </HBox>
+
+                                <!-- Visibilité -->
+                                <HBox styleClass="pref-row" alignment="CENTER_LEFT" spacing="16">
+                                    <VBox spacing="3" HBox.hgrow="ALWAYS">
+                                        <Label fx:id="labelVisibility" text="👁 Profil public" styleClass="pref-title"/>
+                                        <Label fx:id="labelVisibilityDesc" text="Visible par les recruteurs" styleClass="pref-desc"/>
+                                    </VBox>
+                                    <Button fx:id="visibilityToggle" text="ACTIVÉ"
+                                            onAction="#toggleVisibility" styleClass="toggle-on"/>
+                                </HBox>
+
+                            </VBox>
+                        </VBox>
+
+                        <!-- DANGER ZONE -->
+                        <VBox styleClass="section-card" spacing="0">
+                            <HBox styleClass="section-header-bar" alignment="CENTER_LEFT" spacing="10">
+                                <Label text="⚠️" styleClass="section-icon"/>
+                                <VBox spacing="2">
+                                    <Label fx:id="sectionDangerTitle" text="Zone de danger" styleClass="section-title"/>
+                                    <Label fx:id="sectionDangerSubtitle" text="Actions irréversibles" styleClass="section-subtitle"/>
+                                </VBox>
+                            </HBox>
+                            <VBox spacing="12">
+                                <padding><Insets top="18" right="20" bottom="18" left="20"/></padding>
+                                <Button fx:id="deleteAccountBtn" text="🗑 Supprimer mon compte"
+                                        onAction="#deleteAccount" styleClass="danger-btn" maxWidth="Infinity"/>
+                            </VBox>
+                        </VBox>
+
+                    </VBox>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

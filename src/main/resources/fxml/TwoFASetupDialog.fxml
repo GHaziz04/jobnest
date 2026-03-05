@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.controller.TwoFASetupController"
+      spacing="0" styleClass="twofa-root"
+      stylesheets="/css/twofa-dialog.css">
+
+    <!-- HEADER -->
+    <HBox styleClass="twofa-header" alignment="CENTER" spacing="12">
+        <Label text="🔐" styleClass="twofa-header-icon"/>
+        <VBox spacing="2">
+            <Label text="Activer la double authentification" styleClass="twofa-header-title"/>
+            <Label text="Sécurisez votre compte avec Google Authenticator" styleClass="twofa-header-sub"/>
+        </VBox>
+    </HBox>
+
+    <VBox spacing="24" styleClass="twofa-body">
+        <padding><Insets top="28" right="32" bottom="28" left="32"/></padding>
+
+        <!-- ÉTAPES -->
+        <HBox spacing="0" alignment="CENTER">
+            <!-- Étape 1 -->
+            <VBox alignment="CENTER" spacing="6" prefWidth="160">
+                <StackPane styleClass="step-circle-active">
+                    <Label text="1" styleClass="step-number"/>
+                </StackPane>
+                <Label text="Scanner le QR" styleClass="step-label-active" wrapText="true" textAlignment="CENTER"/>
+            </VBox>
+            <Region styleClass="step-line" prefWidth="60" prefHeight="2"/>
+            <!-- Étape 2 -->
+            <VBox alignment="CENTER" spacing="6" prefWidth="160">
+                <StackPane styleClass="step-circle">
+                    <Label text="2" styleClass="step-number"/>
+                </StackPane>
+                <Label text="Vérifier le code" styleClass="step-label" wrapText="true" textAlignment="CENTER"/>
+            </VBox>
+            <Region styleClass="step-line" prefWidth="60" prefHeight="2"/>
+            <!-- Étape 3 -->
+            <VBox alignment="CENTER" spacing="6" prefWidth="160">
+                <StackPane styleClass="step-circle">
+                    <Label text="3" styleClass="step-number"/>
+                </StackPane>
+                <Label text="2FA activé ✅" styleClass="step-label" wrapText="true" textAlignment="CENTER"/>
+            </VBox>
+        </HBox>
+
+        <!-- QR CODE -->
+        <VBox styleClass="qr-section" alignment="CENTER" spacing="16">
+            <Label text="📱 Scannez ce QR code avec Google Authenticator"
+                   styleClass="qr-instruction"/>
+            <StackPane styleClass="qr-wrapper">
+                <ImageView fx:id="qrImageView" fitWidth="200" fitHeight="200" preserveRatio="true"/>
+            </StackPane>
+            <Label text="Ou entrez manuellement la clé secrète :"
+                   styleClass="manual-label"/>
+            <HBox styleClass="secret-box" alignment="CENTER" spacing="10">
+                <Label fx:id="secretLabel" styleClass="secret-text"/>
+                <Button text="📋 Copier" onAction="#copySecret" styleClass="copy-btn"/>
+            </HBox>
+        </VBox>
+
+        <!-- VÉRIFICATION CODE -->
+        <VBox styleClass="verify-section" spacing="12">
+            <Label text="🔑 Entrez le code à 6 chiffres généré par l'application :"
+                   styleClass="verify-label"/>
+            <HBox spacing="10" alignment="CENTER">
+                <TextField fx:id="codeField"
+                           promptText="• • • • • •"
+                           styleClass="code-field"
+                           maxWidth="200"/>
+                <Button text="✅ Vérifier et activer"
+                        onAction="#verifyAndEnable"
+                        styleClass="verify-btn"/>
+            </HBox>
+            <Label fx:id="errorLabel" styleClass="error-label" visible="false" managed="false"/>
+        </VBox>
+
+        <!-- BOUTONS -->
+        <HBox spacing="12" alignment="CENTER_RIGHT">
+            <Button text="Annuler" onAction="#cancel" styleClass="cancel-btn"/>
+        </HBox>
+    </VBox>
+</VBox>

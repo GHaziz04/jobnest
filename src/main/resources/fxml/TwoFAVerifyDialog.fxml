@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.controller.TwoFAVerifyController"
+      spacing="0" styleClass="twofa-root"
+      stylesheets="/css/twofa-dialog.css">
+
+    <!-- HEADER -->
+    <HBox styleClass="twofa-header" alignment="CENTER" spacing="12">
+        <Label text="🔐" styleClass="twofa-header-icon"/>
+        <VBox spacing="2">
+            <Label text="Vérification en deux étapes" styleClass="twofa-header-title"/>
+            <Label text="Entrez le code de votre application d'authentification" styleClass="twofa-header-sub"/>
+        </VBox>
+    </HBox>
+
+    <VBox spacing="28" styleClass="twofa-body" alignment="CENTER">
+        <padding><Insets top="36" right="40" bottom="36" left="40"/></padding>
+
+        <Label text="📱" style="-fx-font-size:56px;"/>
+
+        <VBox spacing="8" alignment="CENTER">
+            <Label text="Code d'authentification" styleClass="verify-label"/>
+            <Label text="Ouvrez Google Authenticator et entrez le code affiché pour JobNest"
+                   styleClass="verify-sub" wrapText="true" textAlignment="CENTER" maxWidth="320"/>
+        </VBox>
+
+        <!-- Champs 6 chiffres -->
+        <HBox fx:id="codeBoxes" spacing="10" alignment="CENTER">
+            <TextField fx:id="d1" styleClass="digit-field" maxWidth="52" promptText="•"/>
+            <TextField fx:id="d2" styleClass="digit-field" maxWidth="52" promptText="•"/>
+            <TextField fx:id="d3" styleClass="digit-field" maxWidth="52" promptText="•"/>
+            <Label text="—" styleClass="digit-separator"/>
+            <TextField fx:id="d4" styleClass="digit-field" maxWidth="52" promptText="•"/>
+            <TextField fx:id="d5" styleClass="digit-field" maxWidth="52" promptText="•"/>
+            <TextField fx:id="d6" styleClass="digit-field" maxWidth="52" promptText="•"/>
+        </HBox>
+
+        <Label fx:id="errorLabel" styleClass="error-label" visible="false" managed="false"/>
+
+        <Button fx:id="verifyBtn" text="✅  Vérifier"
+                onAction="#verify" styleClass="verify-btn" maxWidth="260" prefHeight="46"/>
+
+        <Label text="⏱ Le code change toutes les 30 secondes"
+               styleClass="hint-label"/>
+
+    </VBox>
+</VBox>

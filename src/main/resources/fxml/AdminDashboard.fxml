@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.controller.AdminDashboardController"
+      styleClass="root" stylesheets="@../css/admin-dashboard.css"
+      prefWidth="1280" prefHeight="800">
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <VBox styleClass="sidebar" spacing="0">
+
+        <!-- Logo -->
+        <HBox styleClass="sidebar-logo" alignment="CENTER_LEFT" spacing="10">
+            <Label text="🚀" styleClass="logo-icon"/>
+            <VBox spacing="2">
+                <Label text="JobNest" styleClass="logo-text"/>
+                <Label text="ADMIN" styleClass="logo-badge"/>
+            </VBox>
+        </HBox>
+
+        <!-- Admin Info -->
+        <VBox styleClass="content-area" spacing="0">
+            <HBox styleClass="admin-info-box" alignment="CENTER_LEFT" spacing="12">
+                <StackPane styleClass="admin-avatar">
+                    <Label fx:id="adminAvatarLabel" text="A" styleClass="admin-avatar-text"/>
+                </StackPane>
+                <VBox spacing="4">
+                    <Label fx:id="adminNameLabel" text="Administrateur" styleClass="admin-name"/>
+                    <Label text="Super Admin" styleClass="admin-role-badge"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- Navigation -->
+        <Label text="NAVIGATION" styleClass="nav-section-label"/>
+
+        <Button text="  📊  Tableau de bord" onAction="#showDashboard"
+                styleClass="nav-item, nav-item-active" maxWidth="Infinity"
+                fx:id="navDashboard"/>
+        <Button text="  👥  Utilisateurs" onAction="#showUsers"
+                styleClass="nav-item" maxWidth="Infinity"
+                fx:id="navUsers"/>
+        <Button text="  💼  Offres d'emploi" onAction="#showOffres"
+                styleClass="nav-item" maxWidth="Infinity"
+                fx:id="navOffres"/>
+        <Button text="  📚  Formations" onAction="#showFormations"
+                styleClass="nav-item" maxWidth="Infinity"
+                fx:id="navFormations"/>
+
+        <Label text="ADMINISTRATION" styleClass="nav-section-label"/>
+
+        <Button text="  📋  Rapports" onAction="#showRapports"
+                styleClass="nav-item" maxWidth="Infinity"
+                fx:id="navRapports"/>
+        <Button text="  🔔  Notifications" onAction="#showNotifications"
+                styleClass="nav-item" maxWidth="Infinity"
+                fx:id="navNotifications"/>
+        <Button text="  ⚙️  Paramètres" onAction="#showParametres"
+                styleClass="nav-item" maxWidth="Infinity"
+                fx:id="navParametres"/>
+
+        <Region VBox.vgrow="ALWAYS"/>
+
+        <!-- Footer -->
+        <VBox styleClass="sidebar-footer" spacing="10">
+            <Button text="← Retour Accueil" onAction="#goBack"
+                    styleClass="btn-secondary" maxWidth="Infinity"/>
+            <Button text="🔓 Déconnexion" onAction="#logout"
+                    styleClass="logout-btn" maxWidth="Infinity"/>
+        </VBox>
+
+    </VBox>
+
+    <!-- ===================== MAIN CONTENT ===================== -->
+    <VBox HBox.hgrow="ALWAYS" styleClass="main-content" spacing="0">
+
+        <!-- TOP BAR -->
+        <HBox styleClass="topbar" alignment="CENTER_LEFT" spacing="15">
+            <VBox spacing="2">
+                <Label fx:id="pageTitleLabel" text="Tableau de bord" styleClass="page-title"/>
+                <Label text="Administration > Tableau de bord" styleClass="breadcrumb"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <TextField styleClass="topbar-search"
+                       promptText="🔍  Recherche globale..."/>
+            <Button text="🔔" styleClass="notification-btn" onAction="#showNotifications"/>
+            <Button text="⚙️" styleClass="notification-btn" onAction="#showParametres"/>
+        </HBox>
+
+        <!-- SCROLLABLE CONTENT -->
+        <ScrollPane VBox.vgrow="ALWAYS" styleClass="content-scroll"
+                    fitToWidth="true" fitToHeight="false">
+
+            <VBox styleClass="content-area" spacing="25">
+
+                <!-- WELCOME BANNER -->
+                <HBox styleClass="kpi-card" alignment="CENTER_LEFT" spacing="15">
+                    <VBox spacing="4">
+                        <Label fx:id="welcomeLabel" text="Bonjour 👋" styleClass="page-title"/>
+                        <Label fx:id="dateLabel" text="Samedi 21 Février 2026" styleClass="section-subtitle"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="systemStatusLabel" text="✅ Système Opérationnel" styleClass="kpi-trend-up"/>
+                </HBox>
+
+                <!-- KPI CARDS ROW 1 -->
+                <HBox spacing="16" fx:id="kpiContainer">
+                    <!-- Total Users -->
+                    <VBox styleClass="kpi-card" spacing="12" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="kpi-icon-box">
+                                <Label text="👤" styleClass="kpi-icon"/>
+                            </StackPane>
+                            <VBox spacing="3">
+                                <Label fx:id="totalUsersLabel" text="0" styleClass="kpi-value"/>
+                                <Label text="Total Utilisateurs" styleClass="kpi-label"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="trendUsersLabel" text="↑ 12%" styleClass="kpi-trend-up"/>
+                        </HBox>
+                        <ProgressBar fx:id="progressUsers" progress="0.75" styleClass="progress-stat" maxWidth="Infinity"/>
+                    </VBox>
+
+                    <!-- Candidats -->
+                    <VBox styleClass="kpi-card kpi-green" spacing="12" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="kpi-icon-box">
+                                <Label text="🎯" styleClass="kpi-icon"/>
+                            </StackPane>
+                            <VBox spacing="3">
+                                <Label fx:id="candidatsLabel" text="0" styleClass="kpi-value"/>
+                                <Label text="Candidats" styleClass="kpi-label"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="↑ 8%" styleClass="kpi-trend-up"/>
+                        </HBox>
+                        <ProgressBar fx:id="progressCandidats" progress="0.6" styleClass="progress-stat progress-stat-green" maxWidth="Infinity"/>
+                    </VBox>
+
+                    <!-- Recruteurs -->
+                    <VBox styleClass="kpi-card kpi-orange" spacing="12" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="kpi-icon-box">
+                                <Label text="🏢" styleClass="kpi-icon"/>
+                            </StackPane>
+                            <VBox spacing="3">
+                                <Label fx:id="recruteursLabel" text="0" styleClass="kpi-value"/>
+                                <Label text="Recruteurs" styleClass="kpi-label"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="↑ 5%" styleClass="kpi-trend-up"/>
+                        </HBox>
+                        <ProgressBar fx:id="progressRecruteurs" progress="0.45" styleClass="progress-stat progress-stat-orange" maxWidth="Infinity"/>
+                    </VBox>
+
+                    <!-- Formateurs -->
+                    <VBox styleClass="kpi-card kpi-purple" spacing="12" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="kpi-icon-box">
+                                <Label text="🎓" styleClass="kpi-icon"/>
+                            </StackPane>
+                            <VBox spacing="3">
+                                <Label fx:id="formateursLabel" text="0" styleClass="kpi-value"/>
+                                <Label text="Formateurs" styleClass="kpi-label"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="↑ 3%" styleClass="kpi-trend-up"/>
+                        </HBox>
+                        <ProgressBar fx:id="progressFormateurs" progress="0.3" styleClass="progress-stat progress-stat-purple" maxWidth="Infinity"/>
+                    </VBox>
+                </HBox>
+
+                <!-- SECOND ROW KPI -->
+                <HBox spacing="16">
+                    <VBox styleClass="kpi-card kpi-red" spacing="12" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="kpi-icon-box">
+                                <Label text="⚠️" styleClass="kpi-icon"/>
+                            </StackPane>
+                            <VBox spacing="3">
+                                <Label fx:id="comptesBloqueLabel" text="0" styleClass="kpi-value"/>
+                                <Label text="Comptes Bloqués" styleClass="kpi-label"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="↓ 2%" styleClass="kpi-trend-down"/>
+                        </HBox>
+                    </VBox>
+
+                    <VBox styleClass="kpi-card" spacing="12" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="kpi-icon-box">
+                                <Label text="📝" styleClass="kpi-icon"/>
+                            </StackPane>
+                            <VBox spacing="3">
+                                <Label fx:id="inscriptionsAujourdLabel" text="0" styleClass="kpi-value"/>
+                                <Label text="Inscriptions Aujourd'hui" styleClass="kpi-label"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="Aujourd'hui" styleClass="kpi-trend-up"/>
+                        </HBox>
+                    </VBox>
+
+                    <VBox styleClass="kpi-card kpi-green" spacing="12" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="kpi-icon-box">
+                                <Label text="✅" styleClass="kpi-icon"/>
+                            </StackPane>
+                            <VBox spacing="3">
+                                <Label fx:id="comptesActifsLabel" text="0" styleClass="kpi-value"/>
+                                <Label text="Comptes Actifs" styleClass="kpi-label"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="En ligne" styleClass="kpi-trend-up"/>
+                        </HBox>
+                    </VBox>
+
+                    <VBox styleClass="kpi-card kpi-orange" spacing="12" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="kpi-icon-box">
+                                <Label text="📨" styleClass="kpi-icon"/>
+                            </StackPane>
+                            <VBox spacing="3">
+                                <Label fx:id="demandesAttenteLabel" text="0" styleClass="kpi-value"/>
+                                <Label text="Demandes en Attente" styleClass="kpi-label"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="À traiter" styleClass="nav-badge-warn"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+
+                <!-- USERS TABLE SECTION -->
+                <HBox styleClass="section-header" alignment="CENTER_LEFT">
+                    <VBox spacing="3">
+                        <Label text="Gestion des Utilisateurs" styleClass="section-title"/>
+                        <Label fx:id="tableSubtitle" text="Tous les comptes enregistrés" styleClass="section-subtitle"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <HBox spacing="10">
+                        <Button text="📥 Exporter CSV" onAction="#exportCSV" styleClass="btn-export"/>
+                        <Button text="📤 Importer" onAction="#importUsers" styleClass="btn-secondary"/>
+                        <Button text="🔄 Actualiser" onAction="#refreshData" styleClass="btn-secondary"/>
+                        <Button text="➕ Nouvel Utilisateur" onAction="#addUser" styleClass="btn-primary"/>
+                    </HBox>
+                </HBox>
+
+                <!-- TOOLBAR -->
+                <HBox styleClass="toolbar-card" alignment="CENTER_LEFT" spacing="12">
+                    <TextField fx:id="searchField"
+                               promptText="🔍  Rechercher par nom, email, téléphone..."
+                               styleClass="search-field" HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="roleFilterCombo" styleClass="filter-combo"
+                              promptText="Tous les rôles"/>
+                    <ComboBox fx:id="statusFilterCombo" styleClass="filter-combo"
+                              promptText="Tous les statuts"/>
+                    <ComboBox fx:id="sortCombo" styleClass="filter-combo"
+                              promptText="Trier par..."/>
+                    <Button text="🗑️ Sélection" onAction="#deleteSelected" styleClass="btn-secondary"/>
+                </HBox>
+
+                <!-- TABLE -->
+                <TableView fx:id="usersTable" styleClass="users-table" prefHeight="420">
+                    <columns>
+                        <TableColumn fx:id="selectColumn" text="" prefWidth="40" sortable="false"/>
+                        <TableColumn fx:id="idColumn" text="ID" prefWidth="55" sortable="true"/>
+                        <TableColumn fx:id="prenomColumn" text="PRÉNOM" prefWidth="110" sortable="true"/>
+                        <TableColumn fx:id="nomColumn" text="NOM" prefWidth="110" sortable="true"/>
+                        <TableColumn fx:id="emailColumn" text="EMAIL" prefWidth="200" sortable="true"/>
+                        <TableColumn fx:id="roleColumn" text="RÔLE" prefWidth="110" sortable="true"/>
+                        <TableColumn fx:id="telephoneColumn" text="TÉLÉPHONE" prefWidth="120" sortable="false"/>
+                        <TableColumn fx:id="statusColumn" text="STATUT" prefWidth="90" sortable="true"/>
+                        <TableColumn fx:id="dateCreationColumn" text="INSCRIT LE" prefWidth="130" sortable="true"/>
+                        <TableColumn fx:id="actionsColumn" text="ACTIONS" prefWidth="140" sortable="false"/>
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+
+                <!-- PAGINATION + INFO -->
+                <HBox styleClass="pagination" alignment="CENTER_LEFT" spacing="10">
+                    <Label fx:id="paginationInfoLabel" text="Affichage de 1–25 sur 0 utilisateurs"
+                           styleClass="pagination-info"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="◀ Précédent" onAction="#prevPage" styleClass="pagination-btn"/>
+                    <Button fx:id="page1Btn" text="1" styleClass="pagination-btn-active" onAction="#goToPage1"/>
+                    <Button fx:id="page2Btn" text="2" styleClass="pagination-btn" onAction="#goToPage2"/>
+                    <Button fx:id="page3Btn" text="3" styleClass="pagination-btn" onAction="#goToPage3"/>
+                    <Button text="Suivant ▶" onAction="#nextPage" styleClass="pagination-btn"/>
+                </HBox>
+
+                <!-- BOTTOM ROW: Activity Log + Quick Actions -->
+                <HBox spacing="16">
+
+                    <!-- Activity Log -->
+                    <VBox styleClass="activity-card" spacing="0" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 0 0 15px 0;">
+                            <Label text="Journal d'Activité" styleClass="section-title"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="Tout voir →" styleClass="btn-secondary"
+                                    style="-fx-font-size: 11px; -fx-padding: 5px 12px;"
+                                    onAction="#showFullLog"/>
+                        </HBox>
+
+                        <HBox styleClass="activity-item" alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="activity-dot-green"/>
+                            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                <Label text="Nouvel utilisateur inscrit" styleClass="activity-text"/>
+                                <Label text="ahmed.ali@mail.com — Candidat" styleClass="activity-time"/>
+                            </VBox>
+                            <Label text="Il y a 2 min" styleClass="activity-time"/>
+                        </HBox>
+
+                        <HBox styleClass="activity-item" alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="activity-dot-blue"/>
+                            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                <Label text="Profil modifié" styleClass="activity-text"/>
+                                <Label text="sara.ben@mail.com — Recruteur" styleClass="activity-time"/>
+                            </VBox>
+                            <Label text="Il y a 15 min" styleClass="activity-time"/>
+                        </HBox>
+
+                        <HBox styleClass="activity-item" alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="activity-dot-red"/>
+                            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                <Label text="Compte supprimé" styleClass="activity-text"/>
+                                <Label text="test.user@mail.com" styleClass="activity-time"/>
+                            </VBox>
+                            <Label text="Il y a 1h" styleClass="activity-time"/>
+                        </HBox>
+
+                        <HBox styleClass="activity-item" alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="activity-dot-orange"/>
+                            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                <Label text="Compte bloqué" styleClass="activity-text"/>
+                                <Label text="spam@domain.com — Banni" styleClass="activity-time"/>
+                            </VBox>
+                            <Label text="Il y a 3h" styleClass="activity-time"/>
+                        </HBox>
+
+                        <HBox styleClass="activity-item" alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="activity-dot-green"/>
+                            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                <Label text="Connexion administrateur" styleClass="activity-text"/>
+                                <Label text="admin@jobnest.com" styleClass="activity-time"/>
+                            </VBox>
+                            <Label text="Aujourd'hui 09:12" styleClass="activity-time"/>
+                        </HBox>
+
+                    </VBox>
+
+                    <!-- Quick Actions -->
+                    <VBox styleClass="activity-card" spacing="12" minWidth="260" maxWidth="300">
+                        <Label text="Actions Rapides" styleClass="section-title"/>
+
+                        <Button text="📧  Envoyer Email à Tous" onAction="#sendBulkEmail"
+                                styleClass="btn-secondary" maxWidth="Infinity"/>
+                        <Button text="🔒  Verrouiller Comptes Inactifs" onAction="#lockInactiveAccounts"
+                                styleClass="btn-secondary" maxWidth="Infinity"/>
+                        <Button text="🧹  Purger Comptes Non Vérifiés" onAction="#purgeUnverified"
+                                styleClass="btn-secondary" maxWidth="Infinity"/>
+                        <Button text="📊  Générer Rapport" onAction="#generateReport"
+                                styleClass="btn-export" maxWidth="Infinity"/>
+                        <Button text="💾  Sauvegarde Base de Données" onAction="#backupDatabase"
+                                styleClass="btn-secondary" maxWidth="Infinity"/>
+                        <Button text="🔑  Réinitialiser Mots de Passe" onAction="#resetAllPasswords"
+                                styleClass="btn-secondary" maxWidth="Infinity"/>
+
+                        <Separator/>
+
+                        <Label text="Statistiques Rapides" styleClass="section-subtitle"/>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Taux d'activation" styleClass="activity-time"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="tauxActivationLabel" text="—" styleClass="activity-text"/>
+                        </HBox>
+                        <ProgressBar fx:id="tauxActivationBar" progress="0" styleClass="progress-stat progress-stat-green" maxWidth="Infinity"/>
+
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Stockage utilisé" styleClass="activity-time"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="2.4 GB / 10 GB" styleClass="activity-text"/>
+                        </HBox>
+                        <ProgressBar progress="0.24" styleClass="progress-stat progress-stat-orange" maxWidth="Infinity"/>
+
+                    </VBox>
+
+                </HBox>
+
+            </VBox>
+        </ScrollPane>
+
+    </VBox>
+
+</HBox>

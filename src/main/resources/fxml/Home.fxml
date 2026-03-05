@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.controller.HomeController"
+            stylesheets="@/css/home.css">
+
+    <!-- ===== TOP BAR ===== -->
+    <top>
+        <HBox styleClass="top-bar" alignment="CENTER_LEFT">
+
+            <!-- LEFT : LOGO -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ImageView fitHeight="60" fitWidth="60" preserveRatio="true">
+                    <image>
+                        <Image url="@/images/logo.png"/>
+                    </image>
+                </ImageView>
+
+                <Label text="JobNest" styleClass="top-logo-text"/>
+            </HBox>
+
+            <!-- Spacer -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- RIGHT : USER -->
+            <Label fx:id="welcomeLabel" styleClass="welcome-text"/>
+            <Button text="👤 Profil"
+                    onAction="#openProfile"
+                    styleClass="profile-btn"/>
+            <Button text="Déconnexion"
+                    onAction="#logout"
+                    styleClass="logout-btn"/>
+        </HBox>
+    </top>
+
+    <!-- ===== SIDEBAR ===== -->
+    <left>
+        <VBox styleClass="sidebar" spacing="20">
+            <Label text="JobNest" styleClass="logo"/>
+            <Button text="🏠 Dashboard" styleClass="menu-btn"/>
+            <Button text="👤 Profil"
+                    onAction="#openProfile"
+                    styleClass="menu-btn"/>
+            <Button text="📄 Candidatures" styleClass="menu-btn"/>
+            <Button text="📊 Statistiques" styleClass="menu-btn"/>
+            <Button text="⚙ Paramètres" styleClass="menu-btn"/>
+        </VBox>
+    </left>
+
+    <!-- ===== CONTENT ===== -->
+    <center>
+        <VBox styleClass="content" spacing="25">
+
+            <!-- Cards -->
+            <HBox spacing="20">
+                <VBox styleClass="card">
+                    <Label text="Candidatures" styleClass="card-title"/>
+                    <Label text="128" styleClass="card-value"/>
+                </VBox>
+
+                <VBox styleClass="card">
+                    <Label text="Entretiens" styleClass="card-title"/>
+                    <Label text="24" styleClass="card-value"/>
+                </VBox>
+
+                <VBox styleClass="card">
+                    <Label text="Offres actives" styleClass="card-title"/>
+                    <Label text="12" styleClass="card-value"/>
+                </VBox>
+            </HBox>
+
+            <!-- BOUTON ADMIN (visible uniquement pour les admins) -->
+            <HBox alignment="CENTER">
+                <Button fx:id="adminButton"
+                        text="⚙️ Administration - Gestion des utilisateurs"
+                        onAction="#openAdminDashboard"
+                        styleClass="admin-dashboard-btn"
+                        visible="false"
+                        managed="false"/>
+            </HBox>
+
+            <!-- Section -->
+            <VBox styleClass="section">
+                <Label text="Activité récente" styleClass="section-title"/>
+                <Label text="✔ Nouveau candidat inscrit"/>
+                <Label text="✔ Offre publiée avec succès"/>
+                <Label text="✔ Entretien planifié"/>
+            </VBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>

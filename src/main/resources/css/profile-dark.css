@@ -1,0 +1,56 @@
+/* Override thème sombre */
+.profile-container,
+.scroll-pane,
+.scroll-pane > .viewport {
+    -fx-background-color: #0F172A !important;
+}
+
+.section-card {
+    -fx-background-color: #1E293B !important;
+    -fx-border-color: #334155 !important;
+}
+
+.section-header-bar {
+    -fx-background-color: #0F172A !important;
+    -fx-border-color: #334155 !important;
+}
+
+.section-title {
+    -fx-text-fill: #F1F5F9 !important;
+}
+
+.section-subtitle {
+    -fx-text-fill: #64748B !important;
+}
+
+.field-label {
+    -fx-text-fill: #94A3B8 !important;
+}
+
+.info-field {
+    -fx-background-color: #0F172A !important;
+    -fx-border-color: #334155 !important;
+    -fx-text-fill: #F1F5F9 !important;
+}
+
+.info-field:focused {
+    -fx-background-color: #1E293B !important;
+    -fx-border-color: #6366F1 !important;
+}
+
+.info-field:disabled {
+    -fx-background-color: #0F172A !important;
+    -fx-text-fill: #CBD5E1 !important;
+}
+
+.pref-title {
+    -fx-text-fill: #E2E8F0 !important;
+}
+
+.pref-desc {
+    -fx-text-fill: #475569 !important;
+}
+
+.pref-row {
+    -fx-border-color: transparent transparent #1E293B transparent !important;
+}
